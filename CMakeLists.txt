@@ -10,8 +10,13 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(Box2d
+    GIT_REPOSITORY https://github.com/erincatto/box2d.git
+    GIT_TAG v2.4.1)
+FetchContent_MakeAvailable(Box2d)
+
 add_executable(CMakeSFMLProject src/main.cpp)
-target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics)
+target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics box2d)
 target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
 
 if(WIN32)
