@@ -9,9 +9,9 @@ Game::~Game() {
 }
 
 void Game::run() {
-    while (view_->getWindow().isOpen()) {
+    while (view_->isOpen()) {
         controller_->handleEvents();
         model_->update();
-        view_->render();
+        view_->render(model_->getState());
     }
 }
