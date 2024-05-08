@@ -2,7 +2,7 @@
 
 int main()
 {
-    auto window = sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" };
+    auto window = sf::RenderWindow{ { 1024u, 720u }, "Angry Birds Game" };
     window.setFramerateLimit(144);
 
     while (window.isOpen())
@@ -15,7 +15,7 @@ int main()
             }
         }
 
-        window.clear();
+        window.clear(sf::Color::Blue);
         window.display();
     }
 }
