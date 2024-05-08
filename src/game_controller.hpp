@@ -9,6 +9,7 @@ class GameController {
         GameController(GameModel& model, GameView& view);
         void handleEvent(const sf::Event& event);
         void handleEvents();
+        void handleKeyPress(const sf::Keyboard::Key& code);
 
     private:
         GameModel& model_;
