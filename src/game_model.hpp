@@ -10,7 +10,9 @@ class GameModel {
             MENU,
             RUNNING,
             PAUSED,
-        }; 
+        };
+
+        const State& getState() const;
 
     private:
         State state_;
