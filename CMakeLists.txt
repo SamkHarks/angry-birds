@@ -15,7 +15,9 @@ FetchContent_Declare(Box2d
     GIT_TAG v2.4.1)
 FetchContent_MakeAvailable(Box2d)
 
-add_executable(AngryBirds src/main.cpp)
+file(GLOB SOURCES src/*.cpp)
+
+add_executable(AngryBirds ${SOURCES})
 target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d)
 target_compile_features(AngryBirds PRIVATE cxx_std_17)
 
