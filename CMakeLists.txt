@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(CMakeSFMLProject LANGUAGES CXX)
+project(AngryBirdsGame LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
@@ -15,16 +15,16 @@ FetchContent_Declare(Box2d
     GIT_TAG v2.4.1)
 FetchContent_MakeAvailable(Box2d)
 
-add_executable(CMakeSFMLProject src/main.cpp)
-target_link_libraries(CMakeSFMLProject PRIVATE sfml-graphics box2d)
-target_compile_features(CMakeSFMLProject PRIVATE cxx_std_17)
+add_executable(AngryBirds src/main.cpp)
+target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d)
+target_compile_features(AngryBirds PRIVATE cxx_std_17)
 
 if(WIN32)
     add_custom_command(
-        TARGET CMakeSFMLProject
+        TARGET AngryBirds
         COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:CMakeSFMLProject>
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:AngryBirds>
         VERBATIM)
 endif()
 
-install(TARGETS CMakeSFMLProject)
+install(TARGETS AngryBirds)
