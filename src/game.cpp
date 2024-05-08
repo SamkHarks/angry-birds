@@ -1,30 +1,17 @@
 #include "game.hpp"
 
-Game::Game() : _window(sf::VideoMode(1024, 720), "Angry Birds") {
-    _window.setFramerateLimit(144);
+Game::Game() : model_(new GameModel()), view_(new GameView()), controller_(new GameController(*model_, *view_)) {}
+
+Game::~Game() {
+    delete model_;
+    delete view_;
+    delete controller_;
 }
 
 void Game::run() {
-    while (_window.isOpen()) {
-        handleEvents();
-        update();
-        render();
+    while (view_->getWindow().isOpen()) {
+        controller_->handleEvents();
+        model_->update();
+        view_->render();
     }
-}
-
-void Game::handleEvents() {
-    for (auto event = sf::Event{}; _window.pollEvent(event);) {
-        if (event.type == sf::Event::Closed) {
-            _window.close();
-        }
-    }
-}
-
-void Game::update() {
-    // TODO: Update game logic here
-}
-
-void Game::render() {
-    _window.clear(sf::Color::Blue);
-    _window.display();
 }

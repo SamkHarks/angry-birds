@@ -1,18 +1,21 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include <SFML/Graphics.hpp>
+#include "game_model.hpp"
+#include "game_view.hpp"
+#include "game_controller.hpp"
 
 class Game {
     public:
         Game();
+        ~Game();
+        
         void run();
 
     private:
-        sf::RenderWindow _window;
-        void render();
-        void update();
-        void handleEvents();
+        GameModel* model_;
+        GameView* view_;
+        GameController* controller_;
 };
 
 #endif // GAME_HPP
