@@ -7,15 +7,13 @@
 
 class Game {
     public:
-        Game();
-        ~Game();
-        
+        Game(); 
         void run();
 
     private:
-        GameModel* model_;
-        GameView* view_;
-        GameController* controller_;
+        GameModel model_;
+        GameView view_;
+        GameController controller_;
 };
 
 #endif // GAME_HPP
