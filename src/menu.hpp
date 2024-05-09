@@ -11,9 +11,8 @@ class Menu {
             SETTINGS,   // The settings menu.
             GAME_OVER,  // The game over menu.
         };
-        Menu(Type& type);
-        ~Menu();
-        virtual void draw(sf::RenderWindow& window) = 0;
+        Menu(Type type);
+        virtual void draw(sf::RenderWindow& window) const = 0;
         const Type getType() const;
     private:
         Type type_;
