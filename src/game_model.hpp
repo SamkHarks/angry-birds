@@ -1,6 +1,8 @@
 #ifndef GAME_MODEL_HPP
 #define GAME_MODEL_HPP
 
+#include "main_menu.hpp"
+
 class GameModel {
     public:
         GameModel();   
@@ -19,8 +21,11 @@ class GameModel {
 
         const State& getState() const;
 
+        const Menu& getMenu(Menu::Type type) const;
+
     private:
         State state_;
+        MainMenu main_menu_;
 };
 
 #endif // GAME_MODEL_HPP
