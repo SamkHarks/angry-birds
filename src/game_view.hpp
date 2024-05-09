@@ -7,8 +7,8 @@
 class GameView: public sf::RenderWindow {
     public:
         GameView();
-        void draw(const GameModel::State& state);
-        void render(const GameModel::State& state);
+        void draw(const GameModel& model);
+        void render(const GameModel& model);
 };
 
 #endif // GAME_VIEW_HPP

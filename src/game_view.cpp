@@ -3,17 +3,17 @@
 GameView::GameView() : sf::RenderWindow(sf::VideoMode(1024, 720), "Angry Birds") {}
 
 
-void GameView::render(const GameModel::State& state) {
+void GameView::render(const GameModel& model) {
     this->clear(sf::Color::Blue);
-    draw(state);
+    draw(model);
     this->display();
 }
 
-void GameView::draw(const GameModel::State& state) {
+void GameView::draw(const GameModel& model) {
     // TODO: Draw game objects here
-    switch (state) {
+    switch (model.getState()) {
         case GameModel::State::MENU:
-            // TODO: Draw menu
+            model.getMenu(Menu::Type::MAIN).draw(*this);
             break;
         case GameModel::State::RUNNING:
             // TODO: Draw game objects
