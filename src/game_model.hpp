@@ -21,6 +21,8 @@ class GameModel {
 
         const State& getState() const;
 
+        void setState(State);
+
         const Menu& getMenu(Menu::Type type) const;
 
     private:

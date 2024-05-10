@@ -11,6 +11,10 @@ const GameModel::State& GameModel::getState() const {
     return state_;
 }
 
+void GameModel::setState(State state) {
+    state_ = state;
+}
+
 const Menu& GameModel::getMenu(Menu::Type type) const {
     switch (type) {
         case Menu::Type::MAIN:
