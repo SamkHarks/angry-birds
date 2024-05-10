@@ -21,6 +21,11 @@ add_executable(AngryBirds ${SOURCES})
 target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d)
 target_compile_features(AngryBirds PRIVATE cxx_std_17)
 
+# Copy assets directory to build directory
+add_custom_command(TARGET AngryBirds POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:AngryBirds>/assets)
+
 if(WIN32)
     add_custom_command(
         TARGET AngryBirds
