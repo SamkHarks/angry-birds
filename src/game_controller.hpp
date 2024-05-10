@@ -7,9 +7,10 @@
 class GameController {
     public:
         GameController(GameModel& model, GameView& view);
-        void handleEvent(const sf::Event& event);
+        void handleEvent(const sf::Event& event, sf::Vector2f mousePosition);
         void handleEvents();
         void handleKeyPress(const sf::Keyboard::Key& code);
+        void handleMousePress(const sf::Mouse::Button& mouseButton, sf::Vector2f mousePosition);
 
     private:
         GameModel& model_;
