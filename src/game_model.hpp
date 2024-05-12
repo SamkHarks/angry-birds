@@ -25,6 +25,8 @@ class GameModel {
 
         const Menu& getMenu(Menu::Type type) const;
 
+        void setMenuSelection(Menu::Type type, sf::Keyboard::Key);
+
     private:
         State state_;
         MainMenu main_menu_;

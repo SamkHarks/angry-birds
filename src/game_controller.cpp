@@ -36,9 +36,23 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
             break;
         case sf::Keyboard::Key::Up:
             // TODO: Implement the moveUp method in the GameModel class
+            switch (model_.getState()) {
+                case GameModel::State::MENU:
+                    model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Up);
+                    break;
+                default:
+                    break;
+            }
             break;
         case sf::Keyboard::Key::Down:
            // TODO: Implement the moveDown method in the GameModel class
+            switch (model_.getState()) {
+                case GameModel::State::MENU:
+                    model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Down);
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             break;
