@@ -57,7 +57,15 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
         case sf::Keyboard::Key::Enter:
             // TODO: Implement Enter actions for different states
             switch (model_.getState()) {
-                case GameModel::State::MENU:
+                case GameModel::State::MENU: {
+                    const int selectedItem = model_.getMenu(Menu::Type::MAIN).getSelectedItem();
+                    model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
+                    break;
+                }
+                case GameModel::State::GAME_OVER:
+                case GameModel::State::PAUSED:
+                case GameModel::State::SETTINGS:
+                    // TODO: Handle other menus 
                     break;
                 default:
                     break;  
