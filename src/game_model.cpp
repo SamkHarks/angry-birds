@@ -55,3 +55,28 @@ void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
             break;
     }
 }
+
+void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
+    switch (type) {
+        case Menu::Type::MAIN:
+            if (selectedItem == 0) {
+                state_ = State::RUNNING;
+            } else if (selectedItem == 1) {
+                state_ = State::SETTINGS;
+            } else {
+                state_ = State::QUIT;
+            }
+            break;
+       case Menu::Type::PAUSE:
+            // TODO: handle pause menu update
+            break;
+        case Menu::Type::SETTINGS:
+            // TODO: handle settings update
+            break;
+        case Menu::Type::GAME_OVER:
+            // TODO: handle game over update
+            break;
+        default:
+            break;
+    }
+}

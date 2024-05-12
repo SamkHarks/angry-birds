@@ -28,6 +28,8 @@ class GameModel {
 
         void setMenuSelection(Menu::Type type, sf::Keyboard::Key);
 
+        void setStateFromMenu(Menu::Type type, int selectedItem);
+
     private:
         State state_;
         MainMenu main_menu_;
