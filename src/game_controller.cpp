@@ -54,6 +54,15 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
                     break;
             }
             break;
+        case sf::Keyboard::Key::Enter:
+            // TODO: Implement Enter actions for different states
+            switch (model_.getState()) {
+                case GameModel::State::MENU:
+                    break;
+                default:
+                    break;  
+            }
+            break;
         default:
             break;
     }
@@ -65,10 +74,13 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
             // TODO: Implement mouse left actions
             switch(model_.getState()) {
                 case GameModel::State::MENU:
-                    if (mousePosition.x >= 400 && mousePosition.x < 600 && mousePosition.y >= 200 && mousePosition.y < 300) {
+                    if (mousePosition.x >= 400 && mousePosition.x <= 560 && mousePosition.y >= 220 && mousePosition.y <= 300) {
                         model_.setState(GameModel::State::RUNNING);
+                    } else if (mousePosition.x >= 400 && mousePosition.x <= 665 && mousePosition.y >= 320 && mousePosition.y <= 390) {
+                        model_.setState(GameModel::State::SETTINGS);
+                    } else if (mousePosition.x >= 400 && mousePosition.x <= 545 && mousePosition.y >= 420 && mousePosition.y <= 480) {
+                        model_.setState(GameModel::State::QUIT);
                     }
-                    // TODO: Handle rest of the menu buttons
                     break;
                 case GameModel::State::RUNNING:
                     // TODO: Implement mouse actions in running state
