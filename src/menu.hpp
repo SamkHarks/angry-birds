@@ -13,6 +13,7 @@ class Menu {
         };
         Menu(Type type);
         virtual void draw(sf::RenderWindow& window) const = 0;
+        virtual const int getSelectedItem() const = 0;
         const Type getType() const;
     private:
         Type type_;
