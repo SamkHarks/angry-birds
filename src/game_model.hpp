@@ -17,6 +17,7 @@ class GameModel {
             GAME_OVER,  // The game has ended.
             WIN,        // The player has won the game.
             LOSE,       // The player has lost the game.
+            QUIT,       // Quit game
         };
 
         const State& getState() const;
