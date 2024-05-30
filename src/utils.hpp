@@ -15,6 +15,14 @@
 #define MAX_PATH 4096
 #endif
 
-std::string get_executable_path();
+#include <SFML/Graphics/Texture.hpp>
+
+std::string getExecutablePath();
+
+template <typename T>
+bool loadFromFile(T& object, const std::string& FilePath) {
+    std::string executablePath = getExecutablePath();
+    return object.loadFromFile(executablePath + FilePath);
+}
 
 #endif // UTILS_HPP

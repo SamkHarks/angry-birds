@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-std::string get_executable_path() {
+std::string getExecutablePath() {
     std::string path;
     #ifdef _WIN32
         char result[MAX_PATH];
