@@ -2,7 +2,7 @@
 #define OBJECT_HPP
 
 #include <box2d/box2d.h>
-
+#include <SFML/Graphics.hpp>
 
 class Object {
     public:
@@ -12,12 +12,20 @@ class Object {
             Ground,
             Wall,
         };
-        Object(b2Body *body);
+        Object(b2Body *body, Type type, std::string texture_file);
         virtual ~Object() = default;
         b2Body* getBody();
+        sf::Sprite& getSprite();
+        virtual char getTypeAsChar() const = 0;
+        Type getType() const;
 
-    private:
+    protected:
+        sf::Texture texture_;
+        sf::Sprite sprite_;
         b2Body *body_;
+    private:
+        
+        Type type_;
        
 };
 
