@@ -17,6 +17,7 @@ std::istream &operator>>(std::istream &input, b2Vec2 &vector) {
 
 std::istream &operator>>(std::istream &input, b2BodyType &type) {
     int bodyType;
+    input >> bodyType;
     if (bodyType == 0) {
         type = b2_staticBody;
     } else if (bodyType == 1) {
