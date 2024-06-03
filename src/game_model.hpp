@@ -2,6 +2,7 @@
 #define GAME_MODEL_HPP
 
 #include "main_menu.hpp"
+#include "world.hpp"
 
 class GameModel {
     public:
@@ -30,9 +31,12 @@ class GameModel {
 
         void setStateFromMenu(Menu::Type type, int selectedItem);
 
+        World &getWorld();
+
     private:
         State state_;
         MainMenu main_menu_;
+        World world_;
 };
 
 #endif // GAME_MODEL_HPP

@@ -1,7 +1,7 @@
 #include "game_model.hpp"
 #include "main_menu.hpp"
 
-GameModel::GameModel() : state_(State::MENU), main_menu_(0) {}
+GameModel::GameModel() : state_(State::MENU), main_menu_(0), world_() {}
 
 void GameModel::update() {
     // TODO: Update game logic here
@@ -79,4 +79,8 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
         default:
             break;
     }
+}
+
+World &GameModel::getWorld() {
+    return world_;
 }
