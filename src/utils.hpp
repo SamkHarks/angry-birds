@@ -2,6 +2,8 @@
 #define UTILS_HPP
 
 #include <string>
+#include <box2d/box2d.h>
+#include <iostream>
 #ifdef _WIN32
     #include <windows.h>
 #elif __APPLE__
@@ -16,6 +18,10 @@
 #endif
 
 #include <SFML/Graphics/Texture.hpp>
+
+std::istream &operator>>(std::istream &input, b2Vec2 &vector);
+
+std::istream &operator>>(std::istream &input, b2BodyType &type);
 
 std::string getExecutablePath();
 
