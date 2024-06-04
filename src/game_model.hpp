@@ -33,6 +33,8 @@ class GameModel {
 
         World &getWorld();
 
+        const World &getWorld() const;
+
     private:
         State state_;
         MainMenu main_menu_;
