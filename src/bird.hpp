@@ -10,7 +10,7 @@ class Bird : public Object {
             Blue,
             Green,
         };
-        Bird(b2Body *body, std::string texture_file, Type bird_type);
+        Bird(b2Body *body, std::string texture_file, Type bird_type, float radius);
         virtual char getTypeAsChar() const = 0;
 
         Type getBirdType() const;
@@ -21,7 +21,7 @@ class Bird : public Object {
 
 class RedBird : public Bird {
     public:
-        RedBird(b2Body *body);
+        RedBird(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
 };
 
