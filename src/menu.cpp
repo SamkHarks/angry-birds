@@ -3,11 +3,11 @@
 #include <iostream>
 
 Menu::Menu(Type type) : type_(type) {
-    if(!loadFromFile(font_, "/assets/fonts/BerkshireSwash-Regular.ttf")) {
+    if(!utils::loadFromFile(font_, "/assets/fonts/BerkshireSwash-Regular.ttf")) {
         std::cerr << "Failed to load font" << std::endl;
         std::exit(1);
     }
-    if(!loadFromFile(background_image_, "/assets/images/background.jpg")) {
+    if(!utils::loadFromFile(background_image_, "/assets/images/background.jpg")) {
         std::cerr << "Failed to load image" << std::endl;
         std::exit(1);
     }

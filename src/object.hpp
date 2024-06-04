@@ -15,7 +15,9 @@ class Object {
         Object(b2Body *body, Type type, std::string texture_file);
         virtual ~Object() = default;
         b2Body* getBody();
+        const b2Body* getBody() const;
         sf::Sprite& getSprite();
+        const sf::Sprite& getSprite() const;
         virtual char getTypeAsChar() const = 0;
         Type getType() const;
 
