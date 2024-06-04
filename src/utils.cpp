@@ -29,22 +29,42 @@ std::istream &operator>>(std::istream &input, b2BodyType &type) {
     }
     return input;
 }
+namespace utils
+{
+    std::string getExecutablePath() {
+        std::string path;
+        #ifdef _WIN32
+            char result[MAX_PATH];
+            DWORD count = GetModuleFileName(NULL, result, MAX_PATH);
+            path = std::string(result, (count > 0) ? count : 0);
+        #elif __APPLE__
+            char result[PATH_MAX];
+            uint32_t count = sizeof(result);
+            if (_NSGetExecutablePath(result, &count) == 0)
+                path = std::string(result);
+        #else
+            char result[PATH_MAX];
+            ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+            path = std::string(result, (count > 0) ? count : 0);
+        #endif
+        return path.substr(0, path.find_last_of("/\\"));
+    }
 
-std::string getExecutablePath() {
-    std::string path;
-    #ifdef _WIN32
-        char result[MAX_PATH];
-        DWORD count = GetModuleFileName(NULL, result, MAX_PATH);
-        path = std::string(result, (count > 0) ? count : 0);
-    #elif __APPLE__
-        char result[PATH_MAX];
-        uint32_t count = sizeof(result);
-        if (_NSGetExecutablePath(result, &count) == 0)
-            path = std::string(result);
-    #else
-        char result[PATH_MAX];
-        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-        path = std::string(result, (count > 0) ? count : 0);
-    #endif
-    return path.substr(0, path.find_last_of("/\\"));
+
+
+    sf::Vector2f B2ToSfCoords(const b2Vec2 b2_vector) {
+        return sf::Vector2f(b2_vector.x * SCALE, VIEW_HEIGHT - ( b2_vector.y * SCALE ));
+    }
+
+    b2Vec2 SfToB2Coords(const sf::Vector2f sf_vector) {
+        return b2Vec2(sf_vector.x / SCALE, ( VIEW_HEIGHT - sf_vector.y )/ SCALE);
+    }
+
+    float RadiansToDegrees(const float radians) {
+        return radians * 180 / b2_pi;
+    }
+
+    float DegreesToRadians(const float degrees) {
+        return degrees * b2_pi / 180;
+    }
 }

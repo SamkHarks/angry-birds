@@ -19,16 +19,30 @@
 
 #include <SFML/Graphics/Texture.hpp>
 
+const int VIEW_WIDTH = 1024;
+const int VIEW_HEIGHT = 720;
+const float SCALE = 100.0f;
+
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
 std::istream &operator>>(std::istream &input, b2BodyType &type);
 
-std::string getExecutablePath();
+namespace utils
+{
+    std::string getExecutablePath();
 
-template <typename T>
-bool loadFromFile(T& object, const std::string& FilePath) {
-    std::string executablePath = getExecutablePath();
-    return object.loadFromFile(executablePath + FilePath);
+    template <typename T>
+    bool loadFromFile(T& object, const std::string& FilePath) {
+        std::string executablePath = getExecutablePath();
+        return object.loadFromFile(executablePath + FilePath);
+    }
+    sf::Vector2f B2ToSfCoords(const b2Vec2 b2_vector);
+
+    b2Vec2 SfToB2Coords(const sf::Vector2f sf_vector);
+
+    float RadiansToDegrees(const float radians);
+
+    float DegreesToRadians(const float degrees);
 }
 
 #endif // UTILS_HPP
