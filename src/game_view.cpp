@@ -1,6 +1,7 @@
 #include "game_view.hpp"
+#include "utils.hpp"
 
-GameView::GameView() : sf::RenderWindow(sf::VideoMode(1024, 720), "Angry Birds") {}
+GameView::GameView() : sf::RenderWindow(sf::VideoMode(VIEW_WIDTH, VIEW_HEIGHT), "Angry Birds") {}
 
 
 void GameView::render(const GameModel& model) {
@@ -17,6 +18,7 @@ void GameView::draw(const GameModel& model) {
             break;
         case GameModel::State::RUNNING:
             // TODO: Draw game objects
+            model.getWorld().draw(*this);
             break;
         case GameModel::State::PAUSED:
             // TODO: Draw pause menu
