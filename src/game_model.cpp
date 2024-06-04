@@ -5,6 +5,15 @@ GameModel::GameModel() : state_(State::MENU), main_menu_(0), world_() {}
 
 void GameModel::update() {
     // TODO: Update game logic here
+    switch (state_) {
+        case State::RUNNING:
+            world_.step();
+            b2Body* bird_body = world_.GetBird()->getBody();
+            /*b2Vec2 bird_position = world_.GetBird()->getBody()->GetPosition();
+            sf::Sprite& sprite = world_.GetBird()->getSprite();
+            sprite.setPosition(bird_position.x, bird_position.y);*/
+            break;
+    }
 }
 
 const GameModel::State& GameModel::getState() const {
@@ -82,5 +91,9 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
 }
 
 World &GameModel::getWorld() {
+    return world_;
+}
+
+const World &GameModel::getWorld() const {
     return world_;
 }
