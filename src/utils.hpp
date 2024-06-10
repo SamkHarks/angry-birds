@@ -22,6 +22,10 @@
 const int VIEW_WIDTH = 1024;
 const int VIEW_HEIGHT = 720;
 const float SCALE = 100.0f;
+const int FRAME_RATE = 60;
+const float TIME_STEP = 1.0f / FRAME_RATE;
+const int VELOCITY_ITERATIONS = 6;
+const int POSITION_ITERATIONS = 2;
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
