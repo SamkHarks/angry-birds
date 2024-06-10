@@ -4,11 +4,7 @@
 #include <box2d/box2d.h>
 #include <list>
 #include "bird.hpp"
-
-const int FRAME_RATE = 60;
-const float TIME_STEP = 1.0f / FRAME_RATE;
-const int VELOCITY_ITERATIONS = 8;
-const int POSITION_ITERATIONS = 3;
+#include "ground.hpp"
 
 struct ObjectData {
     Object::Type type; // Object type
@@ -25,20 +21,23 @@ struct ObjectData {
     // Add more fields here as needed...
 };
 
+// Define the shapes of the objects
+struct Shapes {
+    b2CircleShape circle;
+    b2PolygonShape polygon;
+};
+
 class World {
     public:
         World();
         ~World();
         void loadLevel(const std::string& filename);
         void setLevelName(std::ifstream &file);
-        std::vector<Bird::Type> readBirdList(std::ifstream &file); 
-        ObjectData readObjectData(std::ifstream &file) const;
-        b2Body* createBody(const ObjectData& data);
-        void readFixture(std::ifstream& file, b2FixtureDef& fixture_def);
-        void createShape(int shape_type, std::stringstream& fixture, b2FixtureDef& fixtureDef);
-        void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
         void addObject(Object *object);
         void step();
+        void draw(sf::RenderWindow &window) const;
+        Bird *GetBird();
+        const Bird* GetBird() const;
         b2World* getWorld();
         std::list<Object *> getObjects();
     private:
@@ -47,6 +46,13 @@ class World {
         std::list<Object *> objects_;
         std::list<Bird *> birds_;
         std::string name_;
+        // Helper functions for loading the level
+        std::vector<Bird::Type> readBirdList(std::ifstream &file); 
+        ObjectData readObjectData(std::ifstream &file) const;
+        b2Body* createBody(const ObjectData& data);
+        void readFixture(std::ifstream& file, b2FixtureDef& fixture_def, Object::Type &type, Shapes &shapes);
+        void createShape(int shape_type, std::stringstream& fixture, b2FixtureDef& fixtureDef, Shapes &shapes, Object::Type &type);
+        void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
 };
 
 #endif // WORLD_HPP
