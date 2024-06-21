@@ -21,3 +21,15 @@ RedBird::RedBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bi
 char RedBird::getTypeAsChar() const {
     return 'R';
 }
+
+BlueBird::BlueBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
+
+char BlueBird::getTypeAsChar() const {
+    return 'B';
+}
+
+GreenBird::GreenBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
+
+char GreenBird::getTypeAsChar() const {
+    return 'G';
+}

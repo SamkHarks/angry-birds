@@ -25,6 +25,18 @@ class RedBird : public Bird {
         virtual char getTypeAsChar() const override;
 };
 
+class BlueBird : public Bird {
+    public:
+        BlueBird(b2Body *body, float radius);
+        virtual char getTypeAsChar() const override;
+};
+
+class GreenBird : public Bird {
+    public:
+        GreenBird(b2Body *body, float radius);
+        virtual char getTypeAsChar() const override;
+};
+
 
 
 #endif // BIRD_HPP
