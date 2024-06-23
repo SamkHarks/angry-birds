@@ -5,7 +5,7 @@
 
 class Pig : public Object {
     public:
-        Pig(b2Body *body);
+        Pig(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
 };
 
