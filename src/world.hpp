@@ -5,6 +5,8 @@
 #include <list>
 #include "bird.hpp"
 #include "ground.hpp"
+#include "pig.hpp"
+#include "wall.hpp"
 
 struct ObjectData {
     Object::Type type; // Object type

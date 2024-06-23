@@ -67,7 +67,7 @@ std::vector<Bird::Type> World::readBirdList(std::ifstream &file) {
             case 'R':
                 birdList.push_back(Bird::Type::Red);
                 break;
-            case 'B':
+            case 'L':
                 birdList.push_back(Bird::Type::Blue);
                 break;
             case 'G':
@@ -212,10 +212,10 @@ void World::createObject(
                         bird = new RedBird(body, fixtureDef.shape->m_radius);                       
                         break;
                     case Bird::Type::Blue:
-                        // TODO: Implement Yellow bird
+                        bird = new BlueBird(body, fixtureDef.shape->m_radius);
                         break;
                     case Bird::Type::Green:
-                        // TODO: Implement Green bird
+                        bird = new GreenBird(body, fixtureDef.shape->m_radius);
                         break;
                 }
                 addObject(bird);
@@ -223,15 +223,16 @@ void World::createObject(
             }
             break;
         case Object::Type::Ground:
-            //TODO: Implement Ground object
             object = new Ground(body);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Pig:
-            //TODO: Implement Pig object
+            object = new Pig(body, fixtureDef.shape->m_radius);
+            fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Wall:
-            //TODO: Implement Wall object
+            object = new Wall(body);
+            fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         default:
             throw std::runtime_error("Invalid object type");
