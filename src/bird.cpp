@@ -25,7 +25,7 @@ char RedBird::getTypeAsChar() const {
 BlueBird::BlueBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
 
 char BlueBird::getTypeAsChar() const {
-    return 'B';
+    return 'L';
 }
 
 GreenBird::GreenBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
