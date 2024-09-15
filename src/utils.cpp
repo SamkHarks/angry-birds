@@ -29,6 +29,19 @@ std::istream &operator>>(std::istream &input, b2BodyType &type) {
     }
     return input;
 }
+
+std::istream &operator>>(std::istream &input, bool awake) {
+    int isAwake;
+    input >> isAwake;
+    if (isAwake == 0) {
+        awake = false;
+    } else if (isAwake == 1) {
+        awake = true;
+    } else {
+        input.setstate(std::ios::failbit);
+    }
+    return input;
+}
 namespace utils
 {
     std::string getExecutablePath() {
