@@ -4,7 +4,10 @@
 #include <iostream>
 #include <sstream>
 
-b2Vec2 GROUND_CENTER_POSITION = utils::SfToB2Coords(sf::Vector2f(VIEW_WIDTH / 2, VIEW_HEIGHT - 50));
+// half width and half height of the ground
+b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH / 2.f, 50.f));
+// half width and half height of the wall
+b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
 
 World::World() : gravity_(0.0f, -9.8f) {
     world_ = new b2World(gravity_);
@@ -123,7 +126,7 @@ ObjectData World::readObjectData(std::ifstream &file) const {
                 >>data.awake>>_;
             break;
         case Object::Type::Ground:
-            data.position = GROUND_CENTER_POSITION;
+            data.position = b2Vec2(GROUND_DIMENSIONS.x, 0);
             data.bodyType = b2BodyType::b2_staticBody;
             break;
         default:
@@ -158,7 +161,13 @@ b2Body* World::createBody(const ObjectData& data) {
     return body;
 }
 
-void World::createShape(int shapeType, std::stringstream& fixture, b2FixtureDef& fixtureDef, Shapes &shapes, Object::Type &type) {
+void World::createShape(
+    int shapeType,
+    std::stringstream& fixture,
+    b2FixtureDef& fixtureDef,
+    Shapes &shapes,
+    Object::Type &type
+) {
     char _; // Character to ignore
     switch (shapeType) {
         case b2Shape::Type::e_circle: {
@@ -169,10 +178,13 @@ void World::createShape(int shapeType, std::stringstream& fixture, b2FixtureDef&
         case b2Shape::Type::e_polygon:
             //TODO: Implement polygon shape
              if (type == Object::Type::Ground) {
-                // Define the ground shape
-                shapes.polygon.SetAsBox(GROUND_CENTER_POSITION.x, GROUND_CENTER_POSITION.y);
-                fixtureDef.shape = &shapes.polygon;
+                shapes.polygon.SetAsBox(GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
+             } else if (type == Object::Type::Wall) {
+                shapes.polygon.SetAsBox(WALL_DIMENSONS.x, WALL_DIMENSONS.y);
+             } else {
+                throw std::runtime_error("Invalid object type");
              }
+             fixtureDef.shape = &shapes.polygon;
             break;
         default:
             throw std::runtime_error("Unknown shape type");
@@ -225,7 +237,7 @@ void World::createObject(
             }
             break;
         case Object::Type::Ground:
-            object = new Ground(body, GROUND_CENTER_POSITION.x, GROUND_CENTER_POSITION.y);
+            object = new Ground(body, GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Pig:
@@ -233,7 +245,7 @@ void World::createObject(
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Wall:
-            object = new Wall(body);
+            object = new Wall(body, WALL_DIMENSONS.x, WALL_DIMENSONS.y);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         default:
