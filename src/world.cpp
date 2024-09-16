@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 
+b2Vec2 GROUND_CENTER_POSITION = utils::SfToB2Coords(sf::Vector2f(VIEW_WIDTH / 2, VIEW_HEIGHT - 50));
+
 World::World() : gravity_(0.0f, -9.8f) {
     world_ = new b2World(gravity_);
 }
@@ -121,7 +123,7 @@ ObjectData World::readObjectData(std::ifstream &file) const {
                 >>data.awake>>_;
             break;
         case Object::Type::Ground:
-            data.position = b2Vec2(0, 0);
+            data.position = GROUND_CENTER_POSITION;
             data.bodyType = b2BodyType::b2_staticBody;
             break;
         default:
@@ -168,7 +170,7 @@ void World::createShape(int shapeType, std::stringstream& fixture, b2FixtureDef&
             //TODO: Implement polygon shape
              if (type == Object::Type::Ground) {
                 // Define the ground shape
-                shapes.polygon.SetAsBox(5.1f, 0.5f);
+                shapes.polygon.SetAsBox(GROUND_CENTER_POSITION.x, GROUND_CENTER_POSITION.y);
                 fixtureDef.shape = &shapes.polygon;
              }
             break;
@@ -223,7 +225,7 @@ void World::createObject(
             }
             break;
         case Object::Type::Ground:
-            object = new Ground(body);
+            object = new Ground(body, GROUND_CENTER_POSITION.x, GROUND_CENTER_POSITION.y);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Pig:

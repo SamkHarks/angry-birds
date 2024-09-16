@@ -5,7 +5,7 @@
 
 class Ground : public Object {
     public:
-        Ground(b2Body *body);
+        Ground(b2Body *body, float hx, float hy);
         char getTypeAsChar() const override;
 };
 

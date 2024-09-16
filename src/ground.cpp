@@ -2,19 +2,16 @@
 #include "utils.hpp"
 
 
-Ground::Ground(b2Body *body) : Object(body, Type::Ground, "/assets/images/ground.jpg") {
+Ground::Ground(b2Body *body, float hx, float hy) : Object(body, Type::Ground, "/assets/images/ground.png") {
     float width = static_cast<float>(sprite_.getTextureRect().width);
     float height = static_cast<float>(sprite_.getTextureRect().height);
-    // Set the scale of the sprite
-    sprite_.setScale(5.1f * SCALE/width, 5.0f * SCALE/height);
-
+    float heightY = 2.f * hy * SCALE;
+    float scaleX = (2.f * hx * SCALE) / width;
+    float scaleY = (heightY + 30) / height;
+    sprite_.setScale(scaleX, scaleY);
     texture_.setRepeated(true);
-
-    // Set the texture rectangle
-    sprite_.setTextureRect({0, 0, static_cast<int>(5.1f * SCALE), static_cast<int>(0.5f * SCALE)});
-
-    // Set the origin of the sprite to its bottom-left corner
-    sprite_.setOrigin(0, -290);
+    sf::Vector2f centerPosition = utils::B2ToSfCoords(body->GetPosition());
+    sprite_.setPosition(0, centerPosition.y - (heightY - 20));
 }
 
 char Ground::getTypeAsChar() const {
