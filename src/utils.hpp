@@ -19,11 +19,11 @@
 
 #include <SFML/Graphics/Texture.hpp>
 
-const int VIEW_WIDTH = 1024;
-const int VIEW_HEIGHT = 720;
-const float SCALE = 100.0f;
-const int FRAME_RATE = 60;
-const float TIME_STEP = 1.0f / FRAME_RATE;
+const int VIEW_WIDTH = 1500;
+const int VIEW_HEIGHT = 900;
+const float SCALE = 100.f;
+const int FRAME_RATE = 60.f;
+const float TIME_STEP = (1.0f / FRAME_RATE) / 2;
 const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
 
@@ -40,9 +40,17 @@ namespace utils
         std::string executablePath = getExecutablePath();
         return object.loadFromFile(executablePath + FilePath);
     }
-    sf::Vector2f B2ToSfCoords(const b2Vec2 b2_vector);
+    float B2ToSf(float b2_coord);
 
-    b2Vec2 SfToB2Coords(const sf::Vector2f sf_vector);
+    float SfToB2(float sf_coord);
+
+    sf::Vector2f B2ToSf(const b2Vec2& b2_vector);
+
+    b2Vec2 SfToB2(const sf::Vector2f& sf_vector);
+
+    sf::Vector2f B2ToSfCoords(const b2Vec2& b2_vector);
+
+    b2Vec2 SfToB2Coords(const sf::Vector2f& sf_vector);
 
     float RadiansToDegrees(const float radians);
 

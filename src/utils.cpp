@@ -63,14 +63,28 @@ namespace utils
         return path.substr(0, path.find_last_of("/\\"));
     }
 
-
-
-    sf::Vector2f B2ToSfCoords(const b2Vec2 b2_vector) {
-        return sf::Vector2f(b2_vector.x * SCALE, VIEW_HEIGHT - ( b2_vector.y * SCALE ));
+    float B2ToSf(float b2_coord) {
+        return b2_coord * SCALE;
     }
 
-    b2Vec2 SfToB2Coords(const sf::Vector2f sf_vector) {
-        return b2Vec2(sf_vector.x / SCALE, ( VIEW_HEIGHT - sf_vector.y )/ SCALE);
+    float SfToB2(float sf_coord) {
+        return sf_coord / SCALE;
+    }
+
+    sf::Vector2f B2ToSf(const b2Vec2& b2_vector) {
+        return sf::Vector2f(B2ToSf(b2_vector.x), B2ToSf(b2_vector.y));
+    }
+
+    b2Vec2 SfToB2(const sf::Vector2f& sf_vector) {
+        return b2Vec2(SfToB2(sf_vector.x), SfToB2(sf_vector.y));
+    }
+
+    sf::Vector2f B2ToSfCoords(const b2Vec2& b2_vector) {
+        return sf::Vector2f(B2ToSf(b2_vector.x), VIEW_HEIGHT - ( B2ToSf(b2_vector.y) ));
+    }
+
+    b2Vec2 SfToB2Coords(const sf::Vector2f& sf_vector) {
+        return b2Vec2(SfToB2(sf_vector.x), SfToB2(VIEW_HEIGHT - sf_vector.y));
     }
 
     float RadiansToDegrees(const float radians) {
