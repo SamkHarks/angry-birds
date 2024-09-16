@@ -5,7 +5,7 @@
 
 class Wall : public Object {
     public:
-        Wall(b2Body *body);
+        Wall(b2Body *body, float hx, float hy);
         virtual char getTypeAsChar() const override;
 };
 
