@@ -7,6 +7,7 @@
 #include "ground.hpp"
 #include "pig.hpp"
 #include "wall.hpp"
+#include "sfml_debug_draw.hpp"
 
 struct ObjectData {
     Object::Type type; // Object type
@@ -42,6 +43,8 @@ class World {
         const Bird* GetBird() const;
         b2World* getWorld();
         std::list<Object *> getObjects();
+        void setDebugDraw(SFMLDebugDraw* debugDraw);
+        void debugDraw() const;
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -55,6 +58,8 @@ class World {
         void readFixture(std::ifstream& file, b2FixtureDef& fixture_def, Object::Type &type, Shapes &shapes);
         void createShape(int shape_type, std::stringstream& fixture, b2FixtureDef& fixtureDef, Shapes &shapes, Object::Type &type);
         void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
+        // Debug draw
+        SFMLDebugDraw* debugDraw_ = nullptr;
 };
 
 #endif // WORLD_HPP
