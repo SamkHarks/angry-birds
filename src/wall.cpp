@@ -1,7 +1,7 @@
 #include "wall.hpp"
 #include "utils.hpp"
 
-Wall::Wall(b2Body *body, float hx, float hy) : Object(body, Type::Wall, "/assets/images/box.png") {
+Wall::Wall(b2Body *body, float hx, float hy) : Object(body, Type::Wall, "/assets/images/box.png", 500, true) {
     float width = static_cast<float>(sprite_.getTextureRect().width);
     float height = static_cast<float>(sprite_.getTextureRect().height);
     float scaleY = (2.f * hy * SCALE) / height;

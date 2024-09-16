@@ -1,7 +1,7 @@
 #include "pig.hpp"
 #include "utils.hpp"
 
-Pig::Pig(b2Body *body, float radius) : Object(body, Object::Type::Pig, "/assets/images/pig.png") {
+Pig::Pig(b2Body *body, float radius) : Object(body, Object::Type::Pig, "/assets/images/pig.png", 100, true) {
     int width = sprite_.getTextureRect().width;
     int height = sprite_.getTextureRect().height;
 
