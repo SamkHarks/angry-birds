@@ -10,6 +10,22 @@ void GameModel::update() {
         case State::RUNNING:
             world_.step();
             // TODO: Update game objects
+            for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
+                b2Contact *c = ce;
+
+                Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
+                Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
+                
+                objA->handelCollision(objB->getBody()->GetLinearVelocity().Length());
+                objB->handelCollision(objA->getBody()->GetLinearVelocity().Length());
+            }
+
+            for (auto object : world_.getObjects()) {
+                if (object->isDestroyed()) {
+                    world_.removeObject(object);
+                }
+            }
+
             b2Body* bird_body = world_.GetBird()->getBody();
             b2Vec2 bird_position = world_.GetBird()->getBody()->GetPosition();
             sf::Sprite& sprite = world_.GetBird()->getSprite();

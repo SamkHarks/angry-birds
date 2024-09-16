@@ -339,3 +339,8 @@ void World::debugDraw() const {
 void World::setDebugDraw(SFMLDebugDraw* debugDraw) {
     this->debugDraw_ = debugDraw;
 };
+
+void World::removeObject(Object *object) {
+    objects_.remove(object);
+    delete object;
+}

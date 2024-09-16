@@ -45,6 +45,7 @@ class World {
         std::list<Object *> getObjects();
         void setDebugDraw(SFMLDebugDraw* debugDraw);
         void debugDraw() const;
+        void removeObject(Object *object);
     private:
         b2World *world_;
         b2Vec2 gravity_;
