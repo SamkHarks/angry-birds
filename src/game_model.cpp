@@ -25,6 +25,9 @@ void GameModel::update() {
                     sf::Sprite& sprite = object->getSprite();
                     sf::Vector2f position_pixels = utils::B2ToSfCoords(position);
                     sprite.setPosition(position_pixels.x, position_pixels.y);
+                    float radians = body->GetAngle();
+                    float deg = utils::RadiansToDegrees(radians);
+                    sprite.setRotation(deg);
                 }
             }
             break;
