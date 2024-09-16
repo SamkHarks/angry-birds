@@ -11,7 +11,7 @@ Menu::Menu(Type type) : type_(type) {
         std::cerr << "Failed to load image" << std::endl;
         std::exit(1);
     }
-    background_.setSize(sf::Vector2f(1024, 720));
+    background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
     background_.setTexture(&background_image_);
     background_.setPosition(0,0);
 }
