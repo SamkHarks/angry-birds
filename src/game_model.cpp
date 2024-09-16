@@ -1,5 +1,6 @@
 #include "game_model.hpp"
 #include "main_menu.hpp"
+#include "utils.hpp"
 
 GameModel::GameModel() : state_(State::MENU), main_menu_(0), world_() {}
 
@@ -8,10 +9,24 @@ void GameModel::update() {
     switch (state_) {
         case State::RUNNING:
             world_.step();
+            // TODO: Update game objects
             b2Body* bird_body = world_.GetBird()->getBody();
-            /*b2Vec2 bird_position = world_.GetBird()->getBody()->GetPosition();
+            b2Vec2 bird_position = world_.GetBird()->getBody()->GetPosition();
             sf::Sprite& sprite = world_.GetBird()->getSprite();
-            sprite.setPosition(bird_position.x, bird_position.y);*/
+            sf::Vector2f bird_position_pixels = utils::B2ToSfCoords(bird_position);
+            float radians = bird_body->GetAngle();
+            float deg = utils::RadiansToDegrees(radians);
+            sprite.setRotation(deg);
+            sprite.setPosition(bird_position_pixels.x, bird_position_pixels.y);
+            for (auto object : world_.getObjects()) {
+                if (object->getType() != Object::Type::Ground) {
+                    b2Body* body = object->getBody();
+                    b2Vec2 position = body->GetPosition();
+                    sf::Sprite& sprite = object->getSprite();
+                    sf::Vector2f position_pixels = utils::B2ToSfCoords(position);
+                    sprite.setPosition(position_pixels.x, position_pixels.y);
+                }
+            }
             break;
     }
 }
