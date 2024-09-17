@@ -20,13 +20,13 @@ char RedBird::getTypeAsChar() const {
     return 'R';
 }
 
-BlueBird::BlueBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
+BlueBird::BlueBird(b2Body *body, float radius) : Bird(body, "/assets/images/blue_bird.png", Bird::Type::Blue, radius) {}
 
 char BlueBird::getTypeAsChar() const {
     return 'L';
 }
 
-GreenBird::GreenBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Blue, radius) {}
+GreenBird::GreenBird(b2Body *body, float radius) : Bird(body, "/assets/images/green_bird.png", Bird::Type::Blue, radius) {}
 
 char GreenBird::getTypeAsChar() const {
     return 'G';
