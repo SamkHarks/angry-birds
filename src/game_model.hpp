@@ -35,6 +35,8 @@ class GameModel {
 
         const World &getWorld() const;
 
+        void launchBird(sf::Vector2f mousePosition);
+
     private:
         State state_;
         MainMenu main_menu_;

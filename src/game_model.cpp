@@ -131,3 +131,32 @@ World &GameModel::getWorld() {
 const World &GameModel::getWorld() const {
     return world_;
 }
+
+void GameModel::launchBird(sf::Vector2f mousePosition) {
+    std::cout << "Launching bird" << std::endl;
+    sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
+    sf::Vector2f difference = mousePosition - canonCenter;
+    std::cout<<"difference.x: "<<difference.x<<", difference.y"<<difference.y<<std::endl;
+    Bird* bird = world_.GetBird();
+    if (bird != nullptr) {
+        float direction = 0;
+        float length = sqrt(pow(difference.x, 2.0f) + pow(difference.y, 2.0f));
+        if (difference.x < 0) {
+            if (difference.y > 0) {
+                direction = 90 + utils::RadiansToDegrees(atan(difference.x / difference.y));
+            }
+            else if (difference.y == 0) {
+                direction = 0;
+            } else {
+                direction = 270 + utils::RadiansToDegrees(atan(difference.x / difference.y));
+            }
+
+        }
+        float power = std::min(length, 200.f) / 50;
+        float x = cos(utils::DegreesToRadians(direction)) * power;
+        float y = sin(utils::DegreesToRadians(direction)) * power;
+        std::cout<<"x: "<<x<<", y: "<<y<<std::endl;
+        bird->getBody()->ApplyLinearImpulseToCenter(b2Vec2(x,y), true);
+    }
+    
+}
