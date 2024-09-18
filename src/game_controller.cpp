@@ -92,6 +92,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     break;
                 case GameModel::State::RUNNING:
                     // TODO: Implement mouse actions in running state
+                    model_.launchBird(mousePosition);
                     break;
                 case GameModel::State::PAUSED:
                     // TODO: Implement mouse actions in Pause menu
