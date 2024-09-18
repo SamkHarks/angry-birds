@@ -20,7 +20,7 @@ class Object {
         const sf::Sprite& getSprite() const;
         virtual char getTypeAsChar() const = 0;
         Type getType() const;
-        virtual void handelCollision(float damage);
+        virtual void handleCollision(float damage);
         bool isDestroyed() const;
 
     protected:

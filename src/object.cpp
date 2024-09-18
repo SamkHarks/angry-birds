@@ -28,13 +28,12 @@ sf::Sprite& Object::getSprite() {
     return sprite_;
 }
 
-void Object::handelCollision(float damage) {
+void Object::handleCollision(float damage) {
     if (!isDestrucable_ || damage <= 0.01f) {
         return;
     }
     health_ -= damage;
     if (health_ <= 0) {
-        body_->GetWorld()->DestroyBody(body_);
         isDestroyed_ = true;
     }
 }
