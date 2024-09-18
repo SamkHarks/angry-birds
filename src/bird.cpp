@@ -3,7 +3,7 @@
 #include "utils.hpp"
 
 Bird::Bird(b2Body *body, std::string texture_file, Bird::Type bird_type, float radius) : 
-    Object(body, Object::Type::Bird, texture_file), bird_type_(bird_type) {
+    Object(body, Object::Type::Bird, texture_file, 100.f, true), bird_type_(bird_type) {
         int width = sprite_.getTextureRect().width;
         int height = sprite_.getTextureRect().height;
         sprite_.setScale(radius * SCALE * 2.f / (1.f * width), radius * SCALE * 2.f / (1.f * height));
