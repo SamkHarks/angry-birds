@@ -270,10 +270,16 @@ std::list<Object *> World::getObjects() {
 }
 
 Bird* World::GetBird() {
+    if (birds_.empty()) {
+        return nullptr;
+    }
     return birds_.front();
 }
 
 const Bird* World::GetBird() const {
+    if (birds_.empty()) {
+        return nullptr;
+    }
     return birds_.front();
 }
 
@@ -282,6 +288,9 @@ void World::draw(sf::RenderWindow &window) const {
         window.draw(object->getSprite());
     }
     const Bird* bird = GetBird();
+    if (bird == nullptr) {
+        return;
+    }
     const sf::Sprite& sprite = bird->getSprite();
     window.draw(sprite);
 }
@@ -341,6 +350,16 @@ void World::setDebugDraw(SFMLDebugDraw* debugDraw) {
 };
 
 void World::removeObject(Object *object) {
+    world_->DestroyBody(object->getBody());
     objects_.remove(object);
     delete object;
+}
+
+void World::removeBird() {
+    if (!birds_.empty()) {
+        Bird* bird = birds_.front();
+        world_->DestroyBody(bird->getBody());
+        birds_.pop_front();
+        delete bird;
+    }
 }

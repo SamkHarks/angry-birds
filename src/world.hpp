@@ -46,6 +46,7 @@ class World {
         void setDebugDraw(SFMLDebugDraw* debugDraw);
         void debugDraw() const;
         void removeObject(Object *object);
+        void removeBird();
     private:
         b2World *world_;
         b2Vec2 gravity_;

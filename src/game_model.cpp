@@ -1,6 +1,7 @@
 #include "game_model.hpp"
 #include "main_menu.hpp"
 #include "utils.hpp"
+#include <algorithm>
 
 GameModel::GameModel() : state_(State::MENU), main_menu_(0), world_() {}
 
@@ -16,8 +17,8 @@ void GameModel::update() {
                 Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
                 Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
                 
-                objA->handelCollision(objB->getBody()->GetLinearVelocity().Length());
-                objB->handelCollision(objA->getBody()->GetLinearVelocity().Length());
+                objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
+                objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
             }
 
             for (auto object : world_.getObjects()) {
@@ -25,15 +26,22 @@ void GameModel::update() {
                     world_.removeObject(object);
                 }
             }
+            Bird* bird = world_.GetBird();
+            if (bird != nullptr && bird->isDestroyed()) {
+                world_.removeBird();
+            }
+            bird = world_.GetBird();
+            if (bird != nullptr) {
+                b2Body* bird_body = bird->getBody();
+                b2Vec2 bird_position = bird_body->GetPosition();
+                sf::Sprite& sprite = bird->getSprite();
+                sf::Vector2f bird_position_pixels = utils::B2ToSfCoords(bird_position);
+                float radians = bird_body->GetAngle();
+                float deg = utils::RadiansToDegrees(radians);
+                sprite.setRotation(deg);
+                sprite.setPosition(bird_position_pixels.x, bird_position_pixels.y);
+            }
 
-            b2Body* bird_body = world_.GetBird()->getBody();
-            b2Vec2 bird_position = world_.GetBird()->getBody()->GetPosition();
-            sf::Sprite& sprite = world_.GetBird()->getSprite();
-            sf::Vector2f bird_position_pixels = utils::B2ToSfCoords(bird_position);
-            float radians = bird_body->GetAngle();
-            float deg = utils::RadiansToDegrees(radians);
-            sprite.setRotation(deg);
-            sprite.setPosition(bird_position_pixels.x, bird_position_pixels.y);
             for (auto object : world_.getObjects()) {
                 if (object->getType() != Object::Type::Ground) {
                     b2Body* body = object->getBody();
@@ -133,10 +141,8 @@ const World &GameModel::getWorld() const {
 }
 
 void GameModel::launchBird(sf::Vector2f mousePosition) {
-    std::cout << "Launching bird" << std::endl;
     sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
     sf::Vector2f difference = mousePosition - canonCenter;
-    std::cout<<"difference.x: "<<difference.x<<", difference.y"<<difference.y<<std::endl;
     Bird* bird = world_.GetBird();
     if (bird != nullptr) {
         float direction = 0;
@@ -155,7 +161,6 @@ void GameModel::launchBird(sf::Vector2f mousePosition) {
         float power = std::min(length, 200.f) / 50;
         float x = cos(utils::DegreesToRadians(direction)) * power;
         float y = sin(utils::DegreesToRadians(direction)) * power;
-        std::cout<<"x: "<<x<<", y: "<<y<<std::endl;
         bird->getBody()->ApplyLinearImpulseToCenter(b2Vec2(x,y), true);
     }
     
