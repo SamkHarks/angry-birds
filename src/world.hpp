@@ -8,6 +8,7 @@
 #include "pig.hpp"
 #include "wall.hpp"
 #include "sfml_debug_draw.hpp"
+#include "cannon.hpp"
 
 struct ObjectData {
     Object::Type type; // Object type
@@ -47,12 +48,14 @@ class World {
         void debugDraw() const;
         void removeObject(Object *object);
         void removeBird();
+        Cannon* getCannon();
     private:
         b2World *world_;
         b2Vec2 gravity_;
         std::list<Object *> objects_;
         std::list<Bird *> birds_;
         std::string name_;
+        Cannon *cannon_;
         // Helper functions for loading the level
         std::vector<Bird::Type> readBirdList(std::ifstream &file); 
         ObjectData readObjectData(std::ifstream &file) const;

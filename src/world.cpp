@@ -11,6 +11,11 @@ b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
 
 World::World() : gravity_(0.0f, -9.8f) {
     world_ = new b2World(gravity_);
+    cannon_ = new Cannon(
+            "/assets/images/cannon_barrel.png",
+            "/assets/images/cannon_wheel.png",
+            "/assets/fonts/BerkshireSwash-Regular.ttf"
+        );
 }
 
 World::~World() {
@@ -20,6 +25,7 @@ World::~World() {
     for (auto bird : birds_) {
         delete bird;
     }
+    delete cannon_;
     delete world_;
 }
 
@@ -288,11 +294,11 @@ void World::draw(sf::RenderWindow &window) const {
         window.draw(object->getSprite());
     }
     const Bird* bird = GetBird();
-    if (bird == nullptr) {
-        return;
+    if (bird != nullptr) {
+        const sf::Sprite& sprite = bird->getSprite();
+        window.draw(sprite);
     }
-    const sf::Sprite& sprite = bird->getSprite();
-    window.draw(sprite);
+    cannon_->draw(window);
 }
 
 void World::debugDraw() const {
@@ -362,4 +368,8 @@ void World::removeBird() {
         birds_.pop_front();
         delete bird;
     }
+}
+
+Cannon* World::getCannon() {
+    return cannon_;
 }
