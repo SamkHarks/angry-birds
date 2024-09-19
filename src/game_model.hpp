@@ -37,6 +37,8 @@ class GameModel {
 
         void launchBird(sf::Vector2f mousePosition);
 
+        void rotateCannon(sf::Vector2f mousePosition);
+
     private:
         State state_;
         MainMenu main_menu_;
