@@ -21,6 +21,9 @@ void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosit
         case sf::Event::MouseButtonPressed:
             handleMousePress(event.mouseButton.button, mousePosition);
             break;
+        case sf::Event::MouseMoved:
+            handleMouseMove(mousePosition);
+            break;
         default:
             break;
     }
@@ -106,6 +109,16 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions
+            break;
+        default:
+            break;
+    }
+}
+
+void GameController::handleMouseMove(sf::Vector2f mousePosition) {
+    switch(model_.getState()) {
+        case GameModel::State::RUNNING:
+            model_.rotateCannon(mousePosition);
             break;
         default:
             break;

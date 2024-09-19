@@ -11,6 +11,7 @@ class GameController {
         void handleEvents();
         void handleKeyPress(const sf::Keyboard::Key& code);
         void handleMousePress(const sf::Mouse::Button& mouseButton, sf::Vector2f mousePosition);
+        void handleMouseMove(sf::Vector2f mousePosition);
 
     private:
         GameModel& model_;
