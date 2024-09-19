@@ -56,6 +56,8 @@ namespace utils
     float RadiansToDegrees(const float radians);
 
     float DegreesToRadians(const float degrees);
+
+    float getDirection(const sf::Vector2f& difference);
 }
 
 #endif // UTILS_HPP

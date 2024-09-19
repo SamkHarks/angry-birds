@@ -94,4 +94,20 @@ namespace utils
     float DegreesToRadians(const float degrees) {
         return degrees * b2_pi / 180;
     }
+
+    float getDirection(const sf::Vector2f& difference) {
+        float direction = 0;
+        if (difference.x < 0) {
+            if (difference.y > 0) {
+                direction = RadiansToDegrees(atan(-difference.y/difference.x));
+            }
+            else if (difference.y == 0) {
+                direction = 0;
+            } else {
+                direction = 270 + RadiansToDegrees(atan(difference.x / difference.y));
+            }
+
+        }
+        return direction;
+    }
 }
