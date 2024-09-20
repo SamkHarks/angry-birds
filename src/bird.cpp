@@ -14,6 +14,14 @@ Bird::Type Bird::getBirdType() const {
     return bird_type_;
 }
 
+bool Bird::isLaunched() const {
+    return is_launched_;
+}
+
+void Bird::setLaunched(bool launched) {
+    is_launched_ = launched;
+}
+
 RedBird::RedBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Red, radius) {}
 
 char RedBird::getTypeAsChar() const {

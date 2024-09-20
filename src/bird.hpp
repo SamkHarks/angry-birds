@@ -15,8 +15,13 @@ class Bird : public Object {
 
         Type getBirdType() const;
 
+        bool isLaunched() const;
+
+        void setLaunched(bool launched);
+
         private:
             Type bird_type_;
+            bool is_launched_ = false;
 };
 
 class RedBird : public Bird {
