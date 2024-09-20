@@ -16,6 +16,13 @@ World::World() : gravity_(0.0f, -9.8f) {
             "/assets/images/cannon_wheel.png",
             "/assets/fonts/BerkshireSwash-Regular.ttf"
         );
+    if(!utils::loadFromFile(background_image_, "/assets/images/background.jpg")) {
+        std::cerr << "Failed to load image for the world" << std::endl;
+    } else {
+        background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
+        background_.setTexture(&background_image_);
+        background_.setPosition(0,0);
+    }
 }
 
 World::~World() {
@@ -290,11 +297,12 @@ const Bird* World::GetBird() const {
 }
 
 void World::draw(sf::RenderWindow &window) const {
+    window.draw(background_);
     for (auto object : objects_) {
         window.draw(object->getSprite());
     }
     const Bird* bird = GetBird();
-    if (bird != nullptr) {
+    if (bird != nullptr && bird->isLaunched()) {
         const sf::Sprite& sprite = bird->getSprite();
         window.draw(sprite);
     }
@@ -372,4 +380,16 @@ void World::removeBird() {
 
 Cannon* World::getCannon() {
     return cannon_;
+}
+
+void World::resetBird() {
+    Bird* bird = GetBird();
+    if (bird != nullptr) {
+        b2Body* body = bird->getBody();
+        body->SetTransform(BIRD_INITIAL_POSITION, 0);
+        body->SetLinearVelocity(b2Vec2_zero);
+        body->SetAngularVelocity(0);
+        body->SetAwake(false);
+        bird->setLaunched(false);
+    }
 }

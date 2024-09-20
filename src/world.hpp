@@ -48,6 +48,7 @@ class World {
         void debugDraw() const;
         void removeObject(Object *object);
         void removeBird();
+        void resetBird();
         Cannon* getCannon();
     private:
         b2World *world_;
@@ -56,6 +57,8 @@ class World {
         std::list<Bird *> birds_;
         std::string name_;
         Cannon *cannon_;
+        sf::RectangleShape background_;
+        sf::Texture background_image_;
         // Helper functions for loading the level
         std::vector<Bird::Type> readBirdList(std::ifstream &file); 
         ObjectData readObjectData(std::ifstream &file) const;
