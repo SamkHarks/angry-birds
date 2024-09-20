@@ -45,24 +45,40 @@ void Cannon::setAngle(float angle) {
     barrel_sprite_.setRotation(angle);
 }
 
-void Cannon::setPower(sf::Vector2f difference) {
-    float length = std::sqrt(pow(difference.x, 2.0f) + pow(difference.y, 2.0f));
-    power_ = std::min(length, 200.f) / 50.f;
-    auto power_ratio= 50 * power_  * 100 / 200;
+void Cannon::setPower(float duration) {
+    power_ = std::min(4 * duration, 4.f);
+    auto power_ratio= power_  * 100 / 4;
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(2) << power_ratio;
     std::string power_ratio_str = oss.str();
     power_text_.setString("Power: " + power_ratio_str + " %");
 }
 
+void Cannon::startLaunch() {
+    pressClock_.restart();
+    isLaunching_ = true;
+}
+
 void Cannon::launchBird(Bird* bird) {
+    isLaunching_ = false;
     if (bird == nullptr) {
         return;
     }
-    
     float direction = -barrel_sprite_.getRotation();
     float x = cos(utils::DegreesToRadians(direction)) * power_;
     float y = sin(utils::DegreesToRadians(direction)) * power_;
     bird->getBody()->ApplyLinearImpulseToCenter(b2Vec2(x, y), true);
+    bird->setLaunched(true);
+}
+
+void Cannon::update() {
+    if (isLaunching_) {
+        float duration = pressClock_.getElapsedTime().asSeconds();
+        setPower(duration);
+    }
+}
+
+bool Cannon::isLaunching() const {
+    return isLaunching_;
 }
 
