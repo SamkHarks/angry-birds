@@ -10,6 +10,7 @@ void GameModel::update() {
     switch (state_) {
         case State::RUNNING:
             world_.step();
+            world_.getCannon()->update();
             // TODO: Update game objects
             for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
                 b2Contact *c = ce;
@@ -140,9 +141,7 @@ const World &GameModel::getWorld() const {
     return world_;
 }
 
-void GameModel::launchBird(sf::Vector2f mousePosition) {
-    sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
-    sf::Vector2f difference = mousePosition - canonCenter;
+void GameModel::launchBird() {
     Bird* bird = world_.GetBird();
     world_.getCannon()->launchBird(bird);
 }
@@ -156,6 +155,5 @@ void GameModel::rotateCannon(sf::Vector2f mousePosition) {
 
     float direction = -utils::getDirection(difference);
     Cannon* cannon = world_.getCannon();
-    cannon->setPower(difference);
     cannon->setAngle(direction);
 }

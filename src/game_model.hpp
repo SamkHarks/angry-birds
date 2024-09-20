@@ -35,7 +35,7 @@ class GameModel {
 
         const World &getWorld() const;
 
-        void launchBird(sf::Vector2f mousePosition);
+        void launchBird();
 
         void rotateCannon(sf::Vector2f mousePosition);
 
