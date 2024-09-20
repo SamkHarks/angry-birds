@@ -21,6 +21,9 @@ void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosit
         case sf::Event::MouseButtonPressed:
             handleMousePress(event.mouseButton.button, mousePosition);
             break;
+        case sf::Event::MouseButtonReleased:
+            handleMouseRelease(event.mouseButton.button, mousePosition);
+            break;
         case sf::Event::MouseMoved:
             handleMouseMove(mousePosition);
             break;
@@ -95,7 +98,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     break;
                 case GameModel::State::RUNNING:
                     // TODO: Implement mouse actions in running state
-                    model_.launchBird(mousePosition);
+                    model_.getWorld().getCannon()->startLaunch();
                     break;
                 case GameModel::State::PAUSED:
                     // TODO: Implement mouse actions in Pause menu
@@ -109,9 +112,22 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions
+            if (model_.getState() == GameModel::State::RUNNING) {
+                model_.getWorld().resetBird();
+            }
             break;
         default:
             break;
+    }
+}
+
+void GameController::handleMouseRelease(sf::Mouse::Button button, sf::Vector2f mousePosition) {
+    if (
+        button == sf::Mouse::Button::Left
+        && model_.getState() == GameModel::State::RUNNING
+        && model_.getWorld().getCannon()->isLaunching()
+    ) {
+        model_.launchBird();
     }
 }
 
