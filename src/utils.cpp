@@ -96,17 +96,9 @@ namespace utils
     }
 
     float getDirection(const sf::Vector2f& difference) {
-        float direction = 0;
+        float direction = RadiansToDegrees(atan2(difference.y, difference.x));//RadiansToDegrees(-atan2(difference.y, difference.x));
         if (difference.x < 0) {
-            if (difference.y > 0) {
-                direction = RadiansToDegrees(atan(-difference.y/difference.x));
-            }
-            else if (difference.y == 0) {
-                direction = 0;
-            } else {
-                direction = 270 + RadiansToDegrees(atan(difference.x / difference.y));
-            }
-
+            direction += 180;
         }
         return direction;
     }
