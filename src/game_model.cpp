@@ -149,11 +149,7 @@ void GameModel::launchBird() {
 void GameModel::rotateCannon(sf::Vector2f mousePosition) {
     sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
     sf::Vector2f difference = mousePosition - canonCenter;
-    if (difference.x > 0) {
-        return;
-    }
-
-    float direction = -utils::getDirection(difference);
+    float direction = utils::getDirection(difference);
     Cannon* cannon = world_.getCannon();
     cannon->setAngle(direction);
 }
