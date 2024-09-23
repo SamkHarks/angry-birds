@@ -46,6 +46,9 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
                 case GameModel::State::MENU:
                     model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Up);
                     break;
+                case GameModel::State::GAME_OVER:
+                    model_.setMenuSelection(Menu::Type::GAME_OVER, sf::Keyboard::Key::Up);
+                    break;
                 default:
                     break;
             }
@@ -55,6 +58,9 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
             switch (model_.getState()) {
                 case GameModel::State::MENU:
                     model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Down);
+                    break;
+                case GameModel::State::GAME_OVER:
+                    model_.setMenuSelection(Menu::Type::GAME_OVER, sf::Keyboard::Key::Down);
                     break;
                 default:
                     break;
@@ -68,7 +74,11 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
                     model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
                     break;
                 }
-                case GameModel::State::GAME_OVER:
+                case GameModel::State::GAME_OVER: {
+                    const int selectedItem = model_.getMenu(Menu::Type::GAME_OVER).getSelectedItem();
+                    model_.setStateFromMenu(Menu::Type::GAME_OVER, selectedItem);
+                    break;
+                }
                 case GameModel::State::PAUSED:
                 case GameModel::State::SETTINGS:
                     // TODO: Handle other menus 

@@ -23,6 +23,9 @@ void GameView::draw(const GameModel& model) {
         case GameModel::State::PAUSED:
             // TODO: Draw pause menu
             break;
+        case GameModel::State::GAME_OVER:
+            model.getMenu(Menu::Type::GAME_OVER).draw(*this);
+            break;
         case GameModel::State::QUIT:
             this->close();
             break;

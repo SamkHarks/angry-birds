@@ -2,6 +2,7 @@
 #define GAME_MODEL_HPP
 
 #include "main_menu.hpp"
+#include "game_over.hpp"
 #include "world.hpp"
 
 class GameModel {
@@ -27,6 +28,8 @@ class GameModel {
 
         const Menu& getMenu(Menu::Type type) const;
 
+        Menu& getMenu(Menu::Type type);
+
         void setMenuSelection(Menu::Type type, sf::Keyboard::Key);
 
         void setStateFromMenu(Menu::Type type, int selectedItem);
@@ -42,6 +45,7 @@ class GameModel {
     private:
         State state_;
         MainMenu main_menu_;
+        GameOver gameOverMenu_;
         World world_;
 };
 

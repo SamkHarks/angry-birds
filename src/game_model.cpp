@@ -1,9 +1,10 @@
 #include "game_model.hpp"
 #include "main_menu.hpp"
+#include "game_over.hpp"
 #include "utils.hpp"
 #include <algorithm>
 
-GameModel::GameModel() : state_(State::MENU), main_menu_(0), world_() {}
+GameModel::GameModel() : state_(State::MENU), main_menu_(), world_(), gameOverMenu_() {}
 
 void GameModel::update() {
     // TODO: Update game logic here
@@ -82,34 +83,37 @@ const Menu& GameModel::getMenu(Menu::Type type) const {
             //TODO: return settings here
             break;
         case Menu::Type::GAME_OVER:
-            //TODO: return game over here
+            return gameOverMenu_;
             break;
         default:
             throw std::invalid_argument("Invalid menu type");
     }
 }
 
-void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
+Menu& GameModel::getMenu(Menu::Type type) {
     switch (type) {
-        case Menu::Type::MAIN: {
-            int currentItem = main_menu_.getSelectedItem();
-            main_menu_.setSelectedItem(key == sf::Keyboard::Key::Up
-                ? currentItem - 1
-                : currentItem + 1
-            );
-        }
+        case Menu::Type::MAIN:
+            return main_menu_;
         case Menu::Type::PAUSE:
-            // TODO: handle pause menu update
+            // TODO: return pause menu here
             break;
         case Menu::Type::SETTINGS:
-            // TODO: handle settings update
+            // TODO: return settings here
             break;
         case Menu::Type::GAME_OVER:
-            // TODO: handle game over update
-            break;
+            return gameOverMenu_;
         default:
-            break;
+            throw std::invalid_argument("Invalid menu type");
     }
+}
+
+void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
+    Menu &menu = getMenu(type);
+    int currentItem = menu.getSelectedItem();
+    menu.setSelectedItem(key == sf::Keyboard::Key::Up
+        ? currentItem - 1
+        : currentItem + 1
+    );
 }
 
 void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
@@ -130,7 +134,20 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
             // TODO: handle settings update
             break;
         case Menu::Type::GAME_OVER:
-            // TODO: handle game over update
+            // TODO: handle game over updates properly
+            if (selectedItem == 0) {
+                // Restart
+                state_ = State::RUNNING;
+            } else if (selectedItem == 1) {
+                // Next Level
+                state_ = State::MENU;
+            } else if (selectedItem == 2) {
+                // Main Menu
+                state_ = State::MENU;
+            } else {
+                // Exit
+                state_ = State::QUIT;
+            } 
             break;
         default:
             break;
