@@ -17,3 +17,11 @@ Ground::Ground(b2Body *body, float hx, float hy) : Object(body, Type::Ground, "/
 char Ground::getTypeAsChar() const {
     return 'G';
 }
+
+void Ground::update() {
+    // Do nothing
+}
+
+bool Ground::isMoving() const {
+    return false;
+}

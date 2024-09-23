@@ -7,6 +7,8 @@ class Ground : public Object {
     public:
         Ground(b2Body *body, float hx, float hy);
         char getTypeAsChar() const override;
+        void update() override;
+        bool isMoving() const override;
 };
 
 #endif // GROUND_HPP
