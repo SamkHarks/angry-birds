@@ -41,3 +41,20 @@ void Object::handleCollision(float damage) {
 bool Object::isDestroyed() const {
     return isDestroyed_;
 }
+
+void Object::update() {
+    b2Vec2 position = body_->GetPosition();
+    sf::Sprite& sprite = this->getSprite();
+    sf::Vector2f position_pixels = utils::B2ToSfCoords(position);
+    sprite.setPosition(position_pixels.x, position_pixels.y);
+    float radians = body_->GetAngle();
+    float deg = utils::RadiansToDegrees(radians);
+    sprite.setRotation(deg);
+}
+
+bool Object::isMoving() const {
+    return (
+        body_->GetLinearVelocity().LengthSquared() > IS_SETTLED_THRESHOLD
+        || fabs(body_->GetAngularVelocity()) > IS_SETTLED_THRESHOLD
+    );
+}

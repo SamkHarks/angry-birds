@@ -22,6 +22,8 @@ class Object {
         Type getType() const;
         virtual void handleCollision(float damage);
         bool isDestroyed() const;
+        virtual void update();
+        virtual bool isMoving() const;
 
     protected:
         sf::Texture texture_;
