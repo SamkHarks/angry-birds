@@ -19,6 +19,7 @@ bool Bird::isLaunched() const {
 }
 
 void Bird::setLaunched(bool launched) {
+    pressClock_.restart();
     is_launched_ = launched;
 }
 
@@ -38,4 +39,19 @@ GreenBird::GreenBird(b2Body *body, float radius) : Bird(body, "/assets/images/gr
 
 char GreenBird::getTypeAsChar() const {
     return 'G';
+}
+
+bool Bird::isMoving() const {
+    float duration = pressClock_.getElapsedTime().asSeconds();
+    if (duration > 5.f) {
+        return false;
+    }
+    sf::Vector2f position = utils::B2ToSfCoords(body_->GetPosition());
+    if (position.x < 0 || position.y < 0) {
+        return false;
+    }
+    return (
+        body_->GetLinearVelocity().LengthSquared() > IS_SETTLED_THRESHOLD
+        || fabs(body_->GetAngularVelocity()) > IS_SETTLED_THRESHOLD
+    );
 }

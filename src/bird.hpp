@@ -19,9 +19,12 @@ class Bird : public Object {
 
         void setLaunched(bool launched);
 
+        bool isMoving() const override;
+
         private:
             Type bird_type_;
             bool is_launched_ = false;
+            sf::Clock pressClock_;
 };
 
 class RedBird : public Bird {
