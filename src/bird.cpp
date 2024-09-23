@@ -47,7 +47,7 @@ bool Bird::isMoving() const {
         return false;
     }
     sf::Vector2f position = utils::B2ToSfCoords(body_->GetPosition());
-    if (position.x < 0 || position.y < 0) {
+    if (position.x < 0 || position.y > VIEW_HEIGHT) {
         return false;
     }
     return (
