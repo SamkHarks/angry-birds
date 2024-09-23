@@ -11,7 +11,13 @@ void GameModel::update() {
         case State::RUNNING:
             world_.step();
             world_.getCannon()->update();
-            // TODO: Update game objects
+            bool isSettled = world_.getIsSettled();
+            // TODO: handle game over logic here
+            if (isSettled && (world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0)) {
+                state_ = State::GAME_OVER;
+                std::tuple<int,float> results = world_.getScoreAndStars();
+            }
+            // Check for collisions
             for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
                 b2Contact *c = ce;
 
@@ -21,38 +27,36 @@ void GameModel::update() {
                 objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
                 objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
             }
-
+            // Check if any objects are destroyed
             for (auto object : world_.getObjects()) {
                 if (object->isDestroyed()) {
                     world_.removeObject(object);
                 }
             }
+            // Check if the bird is destroyed
             Bird* bird = world_.GetBird();
             if (bird != nullptr && bird->isDestroyed()) {
                 world_.removeBird();
             }
+            // Update the bird and objects
             bird = world_.GetBird();
             if (bird != nullptr) {
-                b2Body* bird_body = bird->getBody();
-                b2Vec2 bird_position = bird_body->GetPosition();
-                sf::Sprite& sprite = bird->getSprite();
-                sf::Vector2f bird_position_pixels = utils::B2ToSfCoords(bird_position);
-                float radians = bird_body->GetAngle();
-                float deg = utils::RadiansToDegrees(radians);
-                sprite.setRotation(deg);
-                sprite.setPosition(bird_position_pixels.x, bird_position_pixels.y);
+                bird->update();
             }
-
             for (auto object : world_.getObjects()) {
-                if (object->getType() != Object::Type::Ground) {
-                    b2Body* body = object->getBody();
-                    b2Vec2 position = body->GetPosition();
-                    sf::Sprite& sprite = object->getSprite();
-                    sf::Vector2f position_pixels = utils::B2ToSfCoords(position);
-                    sprite.setPosition(position_pixels.x, position_pixels.y);
-                    float radians = body->GetAngle();
-                    float deg = utils::RadiansToDegrees(radians);
-                    sprite.setRotation(deg);
+                object->update();
+            }
+            // Check if the world has settled
+            if (bird == nullptr || bird->isLaunched()) {
+                isSettled = true;
+                for (auto object : world_.getObjects()) {
+                    if (object->isMoving()) {
+                        isSettled = false;
+                        break;
+                    }
+                }
+                if (isSettled && (bird == nullptr || !bird->isMoving())) {
+                    world_.setIsSettled(true);
                 }
             }
             break;
