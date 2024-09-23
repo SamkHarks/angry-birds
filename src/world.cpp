@@ -65,6 +65,49 @@ void World::loadLevel(const std::string& filename) {
         body->CreateFixture(&fixtureDef);
         //file.get(); // Read the newline character
     }
+
+    totalBirdCount_ = getRemainingBirdCount();
+    totalPigCount_ = getRemainingPigCount();
+    file.close();
+}
+
+std::tuple<int, float> World::getScoreAndStars() const {
+    int pigsLeft = getRemainingPigCount();
+    int birdsLeft = getRemainingBirdCount();
+    float maxScore = (totalPigCount_ + totalBirdCount_) * 1000.f;
+    float score = 1000.f * ((totalPigCount_ - pigsLeft) + birdsLeft);
+    float scoreRatio = score / maxScore;
+    if (scoreRatio >= 0.9) {
+        return std::make_tuple(3, score);
+    } else if (scoreRatio >= 0.6) {
+        return std::make_tuple(2, score);
+    } else if (scoreRatio >= 0.5) {
+        return std::make_tuple(1, score);
+    } else {
+        return std::make_tuple(0, score);
+    }
+
+}
+
+int World::getRemainingPigCount() const {
+    int count = 0;
+    for (auto object : objects_) {
+        if (object->getType() == Object::Type::Pig) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int World::getRemainingBirdCount() const {
+    auto count = birds_.size();
+    if (count > 0) {
+        Bird *bird = birds_.front();
+        if (bird->isLaunched()) {
+            count--;
+        }
+    }
+    return count;
 }
 
 void World::setLevelName(std::ifstream &file) {
@@ -392,4 +435,12 @@ void World::resetBird() {
         body->SetAwake(false);
         bird->setLaunched(false);
     }
+}
+
+void World::setIsSettled(bool isSettled) {
+    isSettled_ = isSettled;
+}
+
+bool World::getIsSettled() const {
+    return isSettled_;
 }

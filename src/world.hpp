@@ -49,7 +49,12 @@ class World {
         void removeObject(Object *object);
         void removeBird();
         void resetBird();
+        int getRemainingBirdCount() const;
+        int getRemainingPigCount() const;
+        void setIsSettled(bool isSettled);
+        bool getIsSettled() const;
         Cannon* getCannon();
+        std::tuple<int,float> getScoreAndStars() const;
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -59,6 +64,9 @@ class World {
         Cannon *cannon_;
         sf::RectangleShape background_;
         sf::Texture background_image_;
+        int totalPigCount_ = 0;
+        int totalBirdCount_ = 0;
+        bool isSettled_ = false;
         // Helper functions for loading the level
         std::vector<Bird::Type> readBirdList(std::ifstream &file); 
         ObjectData readObjectData(std::ifstream &file) const;
