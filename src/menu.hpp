@@ -11,16 +11,21 @@ class Menu {
             SETTINGS,   // The settings menu.
             GAME_OVER,  // The game over menu.
         };
-        Menu(Type type);
-        virtual void draw(sf::RenderWindow& window) const = 0;
-        virtual const int getSelectedItem() const = 0;
+        Menu(Type type, int buttonAmount);
+        virtual void draw(sf::RenderWindow& window) const;
+        const int getSelectedItem() const;
+        void setSelectedItem(int nextItem);
         const Type getType() const;
     private:
         Type type_;
     protected:
         sf::Font font_;
         sf::RectangleShape background_;
-        sf::Texture background_image_;
+        sf::Texture backgroundImage_;
+        const int buttonAmount_;
+        std::vector<sf::Text> menuItems_;
+        int selectedItem_ = 0;
+        void updateItem(sf::Color color, int thickness);
 };
 
 #endif // MENU_HPP
