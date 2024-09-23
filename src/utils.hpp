@@ -27,6 +27,7 @@ const float TIME_STEP = (1.0f / FRAME_RATE) / 2;
 const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
 const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
+const float IS_SETTLED_THRESHOLD = 0.01f;
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
