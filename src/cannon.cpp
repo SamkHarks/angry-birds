@@ -82,3 +82,9 @@ bool Cannon::isLaunching() const {
     return isLaunching_;
 }
 
+void Cannon::reset() {
+    power_ = 0;
+    isLaunching_ = false;
+    power_text_.setString("Power: 0 %");
+}
+

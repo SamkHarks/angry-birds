@@ -14,6 +14,7 @@ class Cannon {
         void startLaunch();
         void update();
         bool isLaunching() const;
+        void reset();
 
     private:
         sf::Texture barrel_texture_;
