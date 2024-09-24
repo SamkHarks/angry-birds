@@ -37,6 +37,7 @@ class World {
         ~World();
         void loadLevel(const std::string& filename);
         void setLevelName(std::ifstream &file);
+        void resetLevel();
         void addObject(Object *object);
         void step();
         void draw(sf::RenderWindow &window) const;
@@ -60,7 +61,7 @@ class World {
         b2Vec2 gravity_;
         std::list<Object *> objects_;
         std::list<Bird *> birds_;
-        std::string name_;
+        std::string levelName_;
         Cannon *cannon_;
         sf::RectangleShape background_;
         sf::Texture background_image_;

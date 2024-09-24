@@ -114,7 +114,7 @@ void World::setLevelName(std::ifstream &file) {
     if (!file.eof()) {
         std::string name;
         std::getline(file, name);
-        name_ = name;
+        levelName_ = name;
     }
 }
 
@@ -443,4 +443,34 @@ void World::setIsSettled(bool isSettled) {
 
 bool World::getIsSettled() const {
     return isSettled_;
+}
+
+void World::resetLevel() {
+    // Destroy all bodies in the Box2D world
+    for (b2Body* body = world_->GetBodyList(); body != nullptr; ) {
+        b2Body* nextBody = body->GetNext();
+        world_->DestroyBody(body);
+        body = nextBody;
+    }
+
+    // Clear the objects
+    for (auto object : objects_) {
+        delete object;
+    }
+    objects_.clear();
+
+    // Clear the birds
+    for (auto bird : birds_) {
+        delete bird;
+    }
+    birds_.clear();
+
+    // Reset cannon
+    cannon_->reset();
+
+    // set world to not settled
+    isSettled_ = false;
+
+    // Reload the level
+    loadLevel("level1.txt");
 }
