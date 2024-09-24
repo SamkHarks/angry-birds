@@ -137,6 +137,8 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
             // TODO: handle game over updates properly
             if (selectedItem == 0) {
                 // Restart
+                state_ = State::LOADING;
+                world_.resetLevel();
                 state_ = State::RUNNING;
             } else if (selectedItem == 1) {
                 // Next Level
