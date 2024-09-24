@@ -1,103 +1,100 @@
-# CMake SFML Project Template
 
-This repository template should allow for a fast and hassle-free kick start of your next SFML project using CMake.
-Thanks to [GitHub's nature of templates](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template), you can fork this repository without inheriting its Git history.
+# Angry Birds Game
 
-The template starts out very basic, but might receive additional features over time:
+Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the original Angry Birds. This game is built using **SFML** (Simple and Fast Multimedia Library) for rendering and input handling, and **Box2D** for realistic physics simulation. Launch birds with a cannon to destroy structures and defeat the pigs!
 
-- Basic CMake script to build your project and link SFML on any operating system
-- Basic [GitHub Actions](https://github.com/features/actions) script for all major platforms
+## Features
+- **2D Physics Simulation** powered by **Box2D**
+- **Graphics Rendering** and **Input Handling** with **SFML**
+- Multiple levels with destructible environments - WIP
+- Sound effects and background music - WIP
+- Cross-platform support for Windows, Linux, and macOS
 
-## How to Use
+## Prerequisites
 
-1. Follow the above instructions about how to use GitHub's project template feature to create your own project.
-1. Open [CMakeLists.txt](CMakeLists.txt). Rename the project and the executable to whatever name you want. The project and executable names don't have to match.
-1. If you want to add or remove any .cpp files, change the source files listed in the [`add_executable`](CMakeLists.txt#L10) call in CMakeLists.txt to match the source files your project requires. If you plan on keeping the default main.cpp file then no changes are required.
-1. If you use Linux, install SFML's dependencies using your system package manager. On Ubuntu and other Debian-based distributions you can use the following commands:
-    ```
-    sudo apt update
-    sudo apt install \
-        libxrandr-dev \
-        libxcursor-dev \
-        libudev-dev \
-        libfreetype-dev \
-        libopenal-dev \
-        libflac-dev \
-        libvorbis-dev \
-        libgl1-mesa-dev \
-        libegl1-mesa-dev
-    ```
-1. Configure and build your project. Most popular IDEs support CMake projects with very little effort on your part.
-    - [VS Code](https://code.visualstudio.com) via the [CMake extension](https://code.visualstudio.com/docs/cpp/cmake-linux)
-    - [Visual Studio](https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170)
-    - [CLion](https://www.jetbrains.com/clion/features/cmake-support.html)
-    - [Qt Creator](https://doc.qt.io/qtcreator/creator-project-cmake.html)
+To build and run the game, ensure the following dependencies are installed:
 
-    Using CMake from the command line is straightforward as well.
+- **CMake** (minimum version 3.16)
+- **SFML** (Simple and Fast Multimedia Library)
+- **Box2D** (2D Physics Engine)
+- A **C++17** compatible compiler (GCC, Clang, MSVC, etc.)
 
-    For a single-configuration generator (typically the case on Linux and macOS):
-    ```
-    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-    cmake --build build
-    ```
+### Install Dependencies on Linux (Ubuntu Example)
+For Ubuntu and other Debian-based systems, install SFML dependencies using:
+```bash
+sudo apt update
+sudo apt install libxrandr-dev libxcursor-dev libudev-dev \
+                 libfreetype-dev libopenal-dev libflac-dev \
+                 libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
+```
 
-    For a multi-configuration generator (typically the case on Windows):
-    ```
-    cmake -S . -B build
-    cmake --build build --config Release
-    ```
-1. Enjoy!
+### Install Dependencies on Windows
+- **CMake**: Download and install from [CMake official site](https://cmake.org/download/).
+- **SFML** and **Box2D**: These are automatically fetched during the build process using CMake’s FetchContent.
 
-## Upgrading SFML
+## Build Instructions
 
-SFML is found via CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) module.
-FetchContent automatically downloads SFML from GitHub and builds it alongside your own code.
-Beyond the convenience of not having to install SFML yourself, this ensures ABI compatability and simplifies things like specifying static versus shared libraries.
+1. **Clone the repository:**
+   ```bash
+   git clone <repository_url>
+   cd angry-birds
+   ```
 
-Modifying what version of SFML you want is as easy as changing the [`GIT_TAG`](CMakeLists.txt#L7) argument.
-Currently it uses the latest in-development version of SFML 2 via the `2.6.x` tag.
-If you're feeling adventurous and want to give SFML 3 a try, use the `master` tag.
-Beware, this requires changing your code to suit the modified API!
-The nice folks in the [SFML community](https://github.com/SFML/SFML#community) can help you with that transition and the bugs you may encounter along the way.
+2. **Configure and Build the Project:**
+   ```bash
+   cmake -B build
+   cmake --build build
+   ```
 
-## But I want to...
+3. **Run the Game:**
+   After building, you can run the game executable:
+   ```bash
+   ./build/bin/AngryBirds
+   ```
 
-Modify CMake options by adding them as configuration parameters (with a `-D` flag) or by modifying the contents of CMakeCache.txt and rebuilding.
+   On Windows, the executable can be found in `build/bin/AngryBirds.exe`.
 
-### Use Static Libraries
+### Notes for Windows Users:
+- The build process automatically copies the necessary **OpenAL32.dll** to the output directory, ensuring audio support for SFML.
 
-By default SFML builds shared libraries and this default is inherited by your project.
-CMake's [`BUILD_SHARED_LIBS`](https://cmake.org/cmake/help/latest/variable/BUILD_SHARED_LIBS.html) option lets you pick static or shared libraries for the entire project.
+## How to Play
+1. Aim the cannon to control the angle, and hold down the mouse button to adjust the power of the bird launch.
+2. Use different bird powers to destroy pigs - WIP
+3. Release to fire the bird at the structures.
+4. Destroy all the pigs on each level to progress to the next. - WIP
 
-### Change Compilers
+The game features different levels with increasing difficulty and complex structures to destroy.
 
-See the variety of [`CMAKE_<LANG>_COMPILER`](https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER.html) options.
-In particular you'll want to modify `CMAKE_CXX_COMPILER` to point to the C++ compiler you wish to use.
+## Project Structure
+- **src/**: Contains all the C++ source files.
+- **assets/**: Stores the game's resources, including textures, sounds, and level data.
+- **CMakeLists.txt**: The build configuration file using CMake.
+- **build/**: Directory where compiled binaries are generated.
 
-### Change Compiler Optimizations
+## SFML and Box2D Integration
 
-CMake abstracts away specific optimizer flags through the [`CMAKE_BUILD_TYPE`](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html) option.
-By default this project recommends `Release` builds which enable optimizations.
-Other build types include `Debug` builds which enable debug symbols but disable optimizations.
-If you're using a multi-configuration generator (as is often the case on Windows), you can modify the [`CMAKE_CONFIGURATION_TYPES`](https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html#variable:CMAKE_CONFIGURATION_TYPES) option.
+- **SFML** is used for rendering, input handling, and window management.
+- **Box2D** handles all the game physics, including bird movement, collision detection, and the destruction of structures..
 
-### Change Generators
+## Cross-Platform Support
 
-While CMake will attempt to pick a suitable default generator, some systems offer a number of generators to choose from.
-Ubuntu, for example, offers Makefiles and Ninja as two potential options.
-For a list of generators, click [here](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
-To modify the generator you're using you must reconfigure your project providing a `-G` flag with a value corresponding to the generator you want.
-You can't simply modify an entry in the CMakeCache.txt file unlike the above options.
-Then you may rebuild your project with this new generator.
+This project should support Windows, macOS, and Linux. CMake automatically configures and builds the project on all these platforms.
 
-## More Reading
-
-Here are some useful resources if you want to learn more about CMake:
-
-- [How to Use CMake Without the Agonizing Pain - Part 1](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html)
-- [How to Use CMake Without the Agonizing Pain - Part 2](https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-2.html)
-- [Better CMake YouTube series by Jefferon Amstutz](https://www.youtube.com/playlist?list=PL8i3OhJb4FNV10aIZ8oF0AA46HgA2ed8g)
+### Build Options
+You can configure whether to build shared or static libraries by toggling the following option in `CMakeLists.txt`:
+```cmake
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+```
+Currently, static libraries are being used for both SFML and Box2D.
 
 ## License
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
-The source code is dual licensed under Public Domain and MIT -- choose whichever you prefer.
+---
+
+### Additional Resources
+- [SFML Documentation](https://www.sfml-dev.org/documentation/2.6.1/)
+- [Box2D Documentation](https://box2d.org/documentation/) (Note documentation is for version 3.x.x)
+- [CMake Documentation](https://cmake.org/documentation/)
+
+---
