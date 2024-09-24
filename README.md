@@ -6,7 +6,13 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 ## Features
 - **2D Physics Simulation** powered by **Box2D**
 - **Graphics Rendering** and **Input Handling** with **SFML**
+- Main menu
+- Settings - WIP
+- Level end menu - WIP
+- Pause menu - WIP
+- Three birds with different powers - WIP
 - Multiple levels with destructible environments - WIP
+- High score - WIP
 - Sound effects and background music - WIP
 - Cross-platform support for Windows, Linux, and macOS
 
