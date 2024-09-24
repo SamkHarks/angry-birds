@@ -1,8 +1,9 @@
 #include "main_menu.hpp"
+#include <vector>
 
 
 MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3) {
-    std::string button_texts[buttonAmount_] = { "Play", "Settings", "Exit" };
+    std::vector<std::string> button_texts = { "Play", "Settings", "Exit" };
     for (int i = 0; i < buttonAmount_; ++i) {
         menuItems_[i].setFont(font_);
         menuItems_[i].setString(button_texts[i]);

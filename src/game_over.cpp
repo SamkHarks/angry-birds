@@ -1,8 +1,9 @@
 #include "game_over.hpp"
 #include "utils.hpp"
+#include <vector>
 
 GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
-    std::string button_texts[buttonAmount_] = { "Restart", "Next Level", "Main Menu", "Exit" };
+    std::vector<std::string> button_texts = { "Restart", "Next Level", "Main Menu", "Exit" };
     for (int i = 0; i < buttonAmount_; ++i) {
         int itemWidth = button_texts[i].length() * 80;
         float x = (VIEW_WIDTH - itemWidth) / 2;
