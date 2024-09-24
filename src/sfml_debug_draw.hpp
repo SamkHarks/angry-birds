@@ -21,7 +21,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(polygon);
         }
 
-        void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
+        void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override {
             sf::ConvexShape polygon(vertexCount);
             for (int i = 0; i < vertexCount; ++i) {
                 sf::Vector2f transformedVec = Box2DToSFML(vertices[i]);
@@ -31,7 +31,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(polygon);
         }
 
-        void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) {
+        void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override {
             sf::CircleShape circle(radius);
             circle.setOrigin(radius / 2.0f, radius /2.0f);
             circle.setPosition(center.x, center.y);//Box2DToSFML(center));
@@ -41,7 +41,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(circle);
         }
 
-        void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) {
+        void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) override {
             sf::CircleShape circle(radius);
             circle.setOrigin(radius, radius);
             circle.setPosition(Box2DToSFML(center));
@@ -50,7 +50,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(circle);
         }
 
-        void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
+        void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override {
             sf::VertexArray lines(sf::Lines, 2);
             lines[0].position = Box2DToSFML(p1);
             lines[1].position = Box2DToSFML(p2);
@@ -58,7 +58,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(lines);
         }
 
-        void DrawTransform(const b2Transform& xf) {
+        void DrawTransform(const b2Transform& xf) override {
             float lineLength = 0.4;
             // Axis lines
             b2Vec2 p1 = xf.p, p2;
@@ -77,7 +77,7 @@ class SFMLDebugDraw : public b2Draw {
             window.draw(point);
         }
 
-        void DrawPoint(const b2Vec2& p, float size, const b2Color& color) {
+        void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override {
             mDrawPoint(p, size, color);
         }
 

@@ -11,7 +11,7 @@ class Bird : public Object {
             Green,
         };
         Bird(b2Body *body, std::string texture_file, Type bird_type, float radius);
-        virtual char getTypeAsChar() const = 0;
+        virtual char getTypeAsChar() const override = 0;
 
         Type getBirdType() const;
 
