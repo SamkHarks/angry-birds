@@ -5,20 +5,30 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 include(FetchContent)
+# Add SFML
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+# Add Box2D
 FetchContent_Declare(Box2d
     GIT_REPOSITORY https://github.com/erincatto/box2d.git
     GIT_TAG v2.4.1)
 FetchContent_MakeAvailable(Box2d)
 
+# Add nlohmann/json
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(json)
+
 file(GLOB SOURCES src/*.cpp)
 
 add_executable(AngryBirds ${SOURCES})
-target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d)
+target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d nlohmann_json::nlohmann_json)
 target_compile_features(AngryBirds PRIVATE cxx_std_17)
 
 # Copy assets directory to build directory
