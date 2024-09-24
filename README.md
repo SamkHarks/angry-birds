@@ -6,6 +6,7 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 ## Features
 - **2D Physics Simulation** powered by **Box2D**
 - **Graphics Rendering** and **Input Handling** with **SFML**
+- **JSON (nlohmann/json)** for data formatting when storing and reading data - WIP
 - Main menu
 - Settings - WIP
 - Level end menu - WIP
