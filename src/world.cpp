@@ -223,90 +223,9 @@ int World::getRemainingBirdCount() const {
     return count;
 }
 
-void World::setLevelName(std::ifstream &file) {
-    if (!file.eof()) {
-        std::string name;
-        std::getline(file, name);
-        levelName_ = name;
-    }
-}
-
 void World::setLevelName(json levelJson) {
     levelName_ = levelJson["name"];
     fileName_ = levelJson["file"];
-}
-
-std::vector<Bird::Type> World::readBirdList(std::ifstream &file) {
-    std::vector<Bird::Type> birdList;
-    char birdType;
-    std::string birdListStr;
-    std::getline(file, birdListStr);
-    for (auto birdType : birdListStr) {
-        switch (birdType) {
-            case 'R':
-                birdList.push_back(Bird::Type::Red);
-                break;
-            case 'L':
-                birdList.push_back(Bird::Type::Blue);
-                break;
-            case 'G':
-                birdList.push_back(Bird::Type::Green);
-                break;
-            default:
-                throw std::runtime_error("Invalid bird type");
-        }
-    }
-    return birdList;
-}
-
-ObjectData World::readObjectData(std::ifstream &file) const {
-    char _; // Character to ignore
-    char type;
-    file.get(type);
-    file.ignore();
-    std::cout<<type<<std::endl;
-    ObjectData data;
-    // Read the object type from the file
-    switch (type) {
-        case 'B':
-            data.type = Object::Type::Bird;
-            break;
-        case 'G':
-            data.type = Object::Type::Ground;
-            break;
-        case 'P':
-            data.type = Object::Type::Pig;
-            break;
-        case 'W':
-            data.type = Object::Type::Wall;
-            break;
-        default:
-            throw std::runtime_error("Invalid object type");
-            break;
-    }
-    // Read ObjectData fields from the file
-    switch (data.type) {
-        case Object::Type::Bird:
-        case Object::Type::Pig:
-        case Object::Type::Wall:
-            file>>data.position>>_
-                >>data.angle>>_
-                >>data.angularVelocity>>_
-                >>data.linearVelocity>>_
-                >>data.angularDamping>>_
-                >>data.linearDamping>>_
-                >>data.gravityScale>>_
-                >>data.bodyType>>_
-                >>data.awake>>_;
-            break;
-        case Object::Type::Ground:
-            data.position = b2Vec2(GROUND_DIMENSIONS.x, 0);
-            data.bodyType = b2BodyType::b2_staticBody;
-            break;
-        default:
-            throw std::runtime_error("Invalid object type");
-    }
-    return data;
 }
 
 b2Body* World::createBody(const ObjectData& data) {
@@ -363,55 +282,6 @@ void World::createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object:
         return;
     } else {
         fixtureDef.density = data.density;
-    }
-}
-
-void World::createShape(
-    int shapeType,
-    std::stringstream& fixture,
-    b2FixtureDef& fixtureDef,
-    Shapes &shapes,
-    Object::Type &type
-) {
-    char _; // Character to ignore
-    switch (shapeType) {
-        case b2Shape::Type::e_circle: {
-            fixture >> shapes.circle.m_p >> _ >> shapes.circle.m_radius >> _;
-            fixtureDef.shape = &shapes.circle;
-            break;
-        }
-        case b2Shape::Type::e_polygon:
-            //TODO: Implement polygon shape
-             if (type == Object::Type::Ground) {
-                shapes.polygon.SetAsBox(GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
-             } else if (type == Object::Type::Wall) {
-                shapes.polygon.SetAsBox(WALL_DIMENSONS.x, WALL_DIMENSONS.y);
-             } else {
-                throw std::runtime_error("Invalid object type");
-             }
-             fixtureDef.shape = &shapes.polygon;
-            break;
-        default:
-            throw std::runtime_error("Unknown shape type");
-    }
-}
-
-void World::readFixture(std::ifstream& file, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes) {
-    char _; // Character to ignore
-    std::string fixtureStr;
-    std::getline(file, fixtureStr, '\n');
-    std::stringstream fixture(fixtureStr);
-    // Read the shape type and create the shape
-    int shapeType;
-    fixture >> shapeType >> _;
-    createShape(shapeType, fixture, fixtureDef, shapes, type);
-    // Read the rest of the fixture data, density, friction, restitution
-    if (type == Object::Type::Ground) {
-        fixtureDef.friction = 0.2f;
-    } else {
-        fixture >> fixtureDef.density >> _
-                >> fixtureDef.friction >> _
-                >> fixtureDef.restitution >> _;
     }
 }
 

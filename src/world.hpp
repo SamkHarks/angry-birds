@@ -48,7 +48,6 @@ class World {
         World();
         ~World();
         void loadLevel(const std::string& filename);
-        void setLevelName(std::ifstream &file);
         void setLevelName(json levelJson);
         void resetLevel();
         void addObject(Object *object);
@@ -83,13 +82,9 @@ class World {
         bool isSettled_ = false;
         std::string fileName_;
         // Helper functions for loading the level
-        std::vector<Bird::Type> readBirdList(std::ifstream &file);
         std::vector<Bird::Type> readBirdList(json levelJson); 
-        ObjectData readObjectData(std::ifstream &file) const;
         b2Body* createBody(const ObjectData& data);
         void createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes);
-        void readFixture(std::ifstream& file, b2FixtureDef& fixture_def, Object::Type &type, Shapes &shapes);
-        void createShape(int shape_type, std::stringstream& fixture, b2FixtureDef& fixtureDef, Shapes &shapes, Object::Type &type);
         void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;
