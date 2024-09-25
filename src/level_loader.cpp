@@ -105,7 +105,6 @@ LevelLoader::LevelLoader(World& world) : level_(world) {}
 
 void LevelLoader::setLevelName(json levelJson) {
     level_.levelName_ = levelJson["name"];
-    level_.fileName_ = levelJson["file"];
 }
 
 
@@ -240,8 +239,9 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     json levelJson;
     file >> levelJson;
     file.close();
-    // Read and set level name
+    // Read and set level name and file name
     setLevelName(levelJson);
+    level_.fileName_ = fileName;
     // Read bird list
     std::vector<Bird::Type> birdList = readBirdList(levelJson);
     // Read objects and create Box2D bodies and fixtures
