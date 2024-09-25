@@ -9,6 +9,18 @@
 #include "wall.hpp"
 #include "sfml_debug_draw.hpp"
 #include "cannon.hpp"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+struct ShapeData {
+    int shapeType; // 0: Circle, 1: Polygon
+    b2Vec2 shapePosition; // Position of the shape
+    float radius; // Radius of the circle
+    float density; // Density of the object
+    float friction; // Friction of the object
+    float restitution; // Restitution of the object
+};
 
 struct ObjectData {
     Object::Type type; // Object type
@@ -37,6 +49,7 @@ class World {
         ~World();
         void loadLevel(const std::string& filename);
         void setLevelName(std::ifstream &file);
+        void setLevelName(json levelJson);
         void resetLevel();
         void addObject(Object *object);
         void step();
@@ -68,10 +81,13 @@ class World {
         int totalPigCount_ = 0;
         int totalBirdCount_ = 0;
         bool isSettled_ = false;
+        std::string fileName_;
         // Helper functions for loading the level
-        std::vector<Bird::Type> readBirdList(std::ifstream &file); 
+        std::vector<Bird::Type> readBirdList(std::ifstream &file);
+        std::vector<Bird::Type> readBirdList(json levelJson); 
         ObjectData readObjectData(std::ifstream &file) const;
         b2Body* createBody(const ObjectData& data);
+        void createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes);
         void readFixture(std::ifstream& file, b2FixtureDef& fixture_def, Object::Type &type, Shapes &shapes);
         void createShape(int shape_type, std::stringstream& fixture, b2FixtureDef& fixtureDef, Shapes &shapes, Object::Type &type);
         void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);

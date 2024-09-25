@@ -5,7 +5,7 @@
 Game::Game() : model_(), view_(), controller_(model_, view_) {}
 
 void Game::run() {
-    model_.getWorld().loadLevel("level1.txt");
+    model_.getWorld().loadLevel("level1.json");
     // TODO: Add possibility to load debug draw
     while (view_.isOpen()) {
         controller_.handleEvents();
