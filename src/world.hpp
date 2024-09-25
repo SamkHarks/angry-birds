@@ -9,10 +9,9 @@
 #include "wall.hpp"
 #include "sfml_debug_draw.hpp"
 #include "cannon.hpp"
-#include <nlohmann/json.hpp>
+#include "level_loader.hpp"
 
-using json = nlohmann::json;
-
+/*
 struct ShapeData {
     int shapeType; // 0: Circle, 1: Polygon
     b2Vec2 shapePosition; // Position of the shape
@@ -35,13 +34,13 @@ struct ObjectData {
     bool awake; // Whether the object is awake
 
     // Add more fields here as needed...
-};
-
+};*/
+/*
 // Define the shapes of the objects
 struct Shapes {
     b2CircleShape circle;
     b2PolygonShape polygon;
-};
+};*/
 
 class World {
     public:
@@ -82,12 +81,17 @@ class World {
         bool isSettled_ = false;
         std::string fileName_;
         // Helper functions for loading the level
-        std::vector<Bird::Type> readBirdList(json levelJson); 
+        /*std::vector<Bird::Type> readBirdList(json levelJson); 
         b2Body* createBody(const ObjectData& data);
         void createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes);
         void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
+        */
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;
+
+        LevelLoader levelLoader_;
+        
+        friend class LevelLoader;
 };
 
 #endif // WORLD_HPP

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-// half width and half height of the ground
+/*// half width and half height of the ground
 b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH / 2.f, 50.f));
 // half width and half height of the wall
 b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
@@ -100,8 +100,8 @@ void from_json(const json& j, ObjectData& data) {
     j.at("bodyType").get_to(data.bodyType);
     j.at("awake").get_to(data.awake);
 }
-
-World::World() : gravity_(0.0f, -9.8f) {
+*/
+World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this) {
     world_ = new b2World(gravity_);
     cannon_ = new Cannon(
             "/assets/images/cannon_barrel.png",
@@ -115,6 +115,7 @@ World::World() : gravity_(0.0f, -9.8f) {
         background_.setTexture(&background_image_);
         background_.setPosition(0,0);
     }
+    
 }
 
 World::~World() {
@@ -136,7 +137,7 @@ void World::addObject(Object *object) {
     }
 }
 
-std::vector<Bird::Type> World::readBirdList(json levelJson) {
+/*std::vector<Bird::Type> World::readBirdList(json levelJson) {
     std::vector<Bird::Type> birdList;
     for (const auto& birdType : levelJson["birds"]) {
         if (birdType == "R") {
@@ -150,10 +151,11 @@ std::vector<Bird::Type> World::readBirdList(json levelJson) {
         }
     }
     return birdList;
-}
+}*/
 
 void World::loadLevel(const std::string& filename) {
-    std::string path = utils::getExecutablePath() + "/assets/levels/";
+    levelLoader_.loadLevel(filename);
+    /*std::string path = utils::getExecutablePath() + "/assets/levels/";
     std::ifstream file(path + filename);
     if(!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + path + filename);
@@ -181,7 +183,7 @@ void World::loadLevel(const std::string& filename) {
     }
     // Set the total bird and pig count
     totalBirdCount_ = getRemainingBirdCount();
-    totalPigCount_ = getRemainingPigCount();
+    totalPigCount_ = getRemainingPigCount();*/
 }
 
 std::tuple<int, float> World::getScoreAndStars() const {
@@ -227,7 +229,7 @@ void World::setLevelName(json levelJson) {
     levelName_ = levelJson["name"];
     fileName_ = levelJson["file"];
 }
-
+/*
 b2Body* World::createBody(const ObjectData& data) {
     b2BodyDef body_def;
     switch (data.type) {
@@ -330,7 +332,7 @@ void World::createObject(
         addObject(object);
     }
 }
-
+*/
 
 void World::step() {
     world_->Step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
