@@ -94,9 +94,6 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 ```
 Currently, static libraries are being used for both SFML and Box2D.
 
-## License
-This project is licensed under the **MIT License**.
-
 ---
 
 ### Additional Resources
