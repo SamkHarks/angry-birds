@@ -1,5 +1,6 @@
 {
     "name": "Level 1",
+    "highScore": 0,
     "birds": ["R"],
     "objects": [
         {

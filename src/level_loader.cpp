@@ -242,6 +242,9 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     // Read and set level name and file name
     setLevelName(levelJson);
     level_.fileName_ = fileName;
+    // Read and set high score
+    int highScore = levelJson["highScore"];
+    level_.scoreManager_.updateHighScore(highScore);
     // Read bird list
     std::vector<Bird::Type> birdList = readBirdList(levelJson);
     // Read objects and create Box2D bodies and fixtures

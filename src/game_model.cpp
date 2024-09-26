@@ -16,6 +16,7 @@ void GameModel::update() {
             // TODO: handle game over logic here
             if (isSettled && (world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0)) {
                 state_ = State::GAME_OVER;
+                world_.updateScore(world_.getRemainingBirdCount() * 1000);
                 std::tuple<int,float> results = world_.getScoreAndStars();
             }
             // Check for collisions
@@ -28,9 +29,10 @@ void GameModel::update() {
                 objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
                 objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
             }
-            // Check if any objects are destroyed
+            // Check if any objects are destroyed & update score
             for (auto object : world_.getObjects()) {
                 if (object->isDestroyed()) {
+                    world_.updateScore(object->getDestructionScore());
                     world_.removeObject(object);
                 }
             }

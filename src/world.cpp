@@ -5,20 +5,13 @@
 #include <sstream>
 
 
-World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this) {
+World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this), scoreManager_() {
     world_ = new b2World(gravity_);
-    cannon_ = new Cannon(
-            "/assets/images/cannon_barrel.png",
-            "/assets/images/cannon_wheel.png",
-            "/assets/fonts/BerkshireSwash-Regular.ttf"
-        );
-    if(!utils::loadFromFile(background_image_, "/assets/images/background.jpg")) {
-        std::cerr << "Failed to load image for the world" << std::endl;
-    } else {
-        background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
-        background_.setTexture(&background_image_);
-        background_.setPosition(0,0);
-    }
+    cannon_ = new Cannon();
+    background_image_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
+    background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
+    background_.setTexture(&background_image_);
+    background_.setPosition(0,0);
     
 }
 
@@ -113,6 +106,7 @@ const Bird* World::GetBird() const {
 
 void World::draw(sf::RenderWindow &window) const {
     window.draw(background_);
+    scoreManager_.draw(window);
     for (auto object : objects_) {
         window.draw(object->getSprite());
     }
@@ -243,6 +237,13 @@ void World::resetLevel() {
     // set world to not settled
     isSettled_ = false;
 
+    // reset score
+    scoreManager_.reset();
+
     // Reload the level
     loadLevel(fileName_);
+}
+
+void World::updateScore(int score) {
+    scoreManager_.update(score);
 }

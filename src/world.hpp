@@ -10,7 +10,8 @@
 #include "sfml_debug_draw.hpp"
 #include "cannon.hpp"
 #include "level_loader.hpp"
-
+#include "resource_manager.hpp"
+#include "score.hpp"
 
 class World {
     public:
@@ -35,6 +36,7 @@ class World {
         void setIsSettled(bool isSettled);
         bool getIsSettled() const;
         Cannon* getCannon();
+        void updateScore(int score);
         std::tuple<int,float> getScoreAndStars() const;
     private:
         b2World *world_;
@@ -49,6 +51,7 @@ class World {
         int totalBirdCount_ = 0;
         bool isSettled_ = false;
         std::string fileName_;
+        Score scoreManager_;
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;
 
