@@ -24,6 +24,7 @@ class Object {
         bool isDestroyed() const;
         virtual void update();
         virtual bool isMoving() const;
+        virtual int getDestructionScore() const;
 
     protected:
         sf::Texture texture_;

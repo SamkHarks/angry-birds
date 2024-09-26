@@ -58,3 +58,7 @@ bool Object::isMoving() const {
         || fabs(body_->GetAngularVelocity()) > IS_SETTLED_THRESHOLD
     );
 }
+
+int Object::getDestructionScore() const {
+    return 0;
+}

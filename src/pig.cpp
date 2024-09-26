@@ -12,3 +12,7 @@ Pig::Pig(b2Body *body, float radius) : Object(body, Object::Type::Pig, "/assets/
 char Pig::getTypeAsChar() const {
     return 'P';
 }
+
+int Pig::getDestructionScore() const {
+    return PIG_DESTRUCTION_SCORE;
+}
