@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include "utils.hpp"
 
 class ResourceManager {
 public:
