@@ -2,17 +2,16 @@
 #include "utils.hpp"
 #include <iomanip>
 #include <sstream>
+#include "resource_manager.hpp"
 
-Cannon::Cannon(std::string barrel_texture_file, std::string wheels_texture_file, std::string font_file) {
-    if (!utils::loadFromFile(barrel_texture_, barrel_texture_file)) {
-        throw std::runtime_error("Failed to load texture file: " + barrel_texture_file);
+Cannon::Cannon() {
+    if (!utils::loadFromFile(barrel_texture_, "/assets/images/cannon_barrel.png")) {
+        throw std::runtime_error("Failed to load texture file: /assets/images/cannon_barrel.png");
     }
-    if (!utils::loadFromFile(wheels_texture_, wheels_texture_file)) {
-        throw std::runtime_error("Failed to load texture file: " + wheels_texture_file);
+    if (!utils::loadFromFile(wheels_texture_, "/assets/images/cannon_wheel.png")) {
+        throw std::runtime_error("Failed to load texture file: /assets/images/cannon_wheel.png");
     }
-    if (!utils::loadFromFile(font_, font_file)) {
-        throw std::runtime_error("Failed to load font");
-    }
+    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     barrel_sprite_.setTexture(barrel_texture_);
     int width = barrel_sprite_.getTextureRect().width;
     int height = barrel_sprite_.getTextureRect().height;

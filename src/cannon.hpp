@@ -6,7 +6,7 @@
 
 class Cannon {
     public:
-        Cannon(std::string barrel_texture_file, std::string wheels_texture_file, std::string font_file);
+        Cannon();
         void setAngle(float angle);
         void draw(sf::RenderWindow &window) const;
         void setPower(float duration);
