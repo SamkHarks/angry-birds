@@ -1,16 +1,11 @@
 #include "menu.hpp"
 #include "utils.hpp"
 #include <iostream>
+#include "resource_manager.hpp"
 
 Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmount), menuItems_(buttonAmount) {
-    if(!utils::loadFromFile(font_, "/assets/fonts/BerkshireSwash-Regular.ttf")) {
-        std::cerr << "Failed to load font" << std::endl;
-        std::exit(1);
-    }
-    if(!utils::loadFromFile(backgroundImage_, "/assets/images/background.jpg")) {
-        std::cerr << "Failed to load image" << std::endl;
-        std::exit(1);
-    }
+    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+    backgroundImage_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
     background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
     background_.setTexture(&backgroundImage_);
     background_.setPosition(0,0);
