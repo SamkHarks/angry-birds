@@ -60,7 +60,7 @@ void Cannon::startLaunch() {
 
 void Cannon::launchBird(Bird* bird) {
     isLaunching_ = false;
-    if (bird == nullptr) {
+    if (bird == nullptr || bird->isLaunched()) {
         return;
     }
     // Activate bird's body in b2World
