@@ -63,6 +63,8 @@ void Cannon::launchBird(Bird* bird) {
     if (bird == nullptr) {
         return;
     }
+    // Activate bird's body in b2World
+    bird->getBody()->SetEnabled(true);
     float direction = -barrel_sprite_.getRotation();
     float x = cos(utils::DegreesToRadians(direction)) * power_;
     float y = sin(utils::DegreesToRadians(direction)) * power_;
