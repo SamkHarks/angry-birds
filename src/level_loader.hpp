@@ -31,8 +31,6 @@ struct ObjectData {
     float gravityScale; // Gravity scale of the object
     b2BodyType bodyType; // Body type of the object, b2_staticBody, b2_kinematicBody, b2_dynamicBody
     bool awake; // Whether the object is awake
-
-    // Add more fields here as needed...
 };
 
 // Define the shapes of the objects
