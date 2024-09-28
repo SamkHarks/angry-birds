@@ -111,7 +111,7 @@ void LevelLoader::setLevelName(json levelJson) {
 
 std::vector<Bird::Type> LevelLoader::readBirdList(json levelJson) {
     std::vector<Bird::Type> birdList;
-    for (const auto& birdType : levelJson["birds"]) {
+    for (const auto& birdType : levelJson["birds"]["list"]) {
         if (birdType == "R") {
             birdList.push_back(Bird::Type::Red);
         } else if (birdType == "B") {
@@ -182,31 +182,38 @@ void LevelLoader::createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, O
     }
 }
 
+void LevelLoader::createBird(Bird::Type birdType, b2Body* body, b2FixtureDef& fixtureDef) {
+    Bird *bird;
+    switch (birdType) {
+        case Bird::Type::Red:
+            bird = new RedBird(body, fixtureDef.shape->m_radius);                       
+            break;
+        case Bird::Type::Blue:
+            bird = new BlueBird(body, fixtureDef.shape->m_radius);
+            break;
+        case Bird::Type::Green:
+            bird = new GreenBird(body, fixtureDef.shape->m_radius);
+            break;
+        default:
+            throw std::runtime_error("Invalid bird type, bird type is one of R, L, G");
+    }
+    if (bird) {
+        level_.addObject(bird);
+        // Disable the bird initially in b2World
+        body->SetEnabled(false);
+        fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(bird);
+    }
+}
+
 void LevelLoader::createObject(
     Object::Type objType,
-    std::vector<Bird::Type> birdList,
     b2Body* body,
     b2FixtureDef& fixtureDef
 ) {
     Object *object = nullptr;
     switch (objType) {
         case Object::Type::Bird:
-            for (auto birdType : birdList) {
-                Bird *bird;
-                switch (birdType) {
-                    case Bird::Type::Red:
-                        bird = new RedBird(body, fixtureDef.shape->m_radius);                       
-                        break;
-                    case Bird::Type::Blue:
-                        bird = new BlueBird(body, fixtureDef.shape->m_radius);
-                        break;
-                    case Bird::Type::Green:
-                        bird = new GreenBird(body, fixtureDef.shape->m_radius);
-                        break;
-                }
-                level_.addObject(bird);
-                fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(bird);
-            }
+            // Bird is created with createBird function
             break;
         case Object::Type::Ground:
             object = new Ground(body, GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
@@ -247,6 +254,22 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     level_.scoreManager_.updateHighScore(highScore);
     // Read bird list
     std::vector<Bird::Type> birdList = readBirdList(levelJson);
+
+    // Read birds and create Box2d bodies and fixtures
+    for(const auto& birdType : birdList) {
+        auto object = levelJson["birds"]["object"];
+        auto jsonBody = object["body"];
+        auto jsonShape = object["shape"];
+        ObjectData data = jsonBody.template get<ObjectData>();
+        b2Body *body = createBody(data);
+        b2FixtureDef fixtureDef;
+        Shapes shapes;
+        ShapeData shapeData = jsonShape.template get<ShapeData>();
+        createFixtureShape(shapeData, fixtureDef, data.type, shapes);
+        createBird(birdType, body, fixtureDef);
+        body->CreateFixture(&fixtureDef);
+    }
+
     // Read objects and create Box2D bodies and fixtures
     for (const auto& obj : levelJson["objects"]) {
         auto jsonBody = obj["body"];
@@ -257,7 +280,7 @@ void LevelLoader::loadLevel(const std::string& fileName) {
         Shapes shapes;
         ShapeData shapeData = jsonShape.template get<ShapeData>();
         createFixtureShape(shapeData, fixtureDef, data.type, shapes);
-        createObject(data.type, birdList, body, fixtureDef);
+        createObject(data.type, body, fixtureDef);
         body->CreateFixture(&fixtureDef);
     }
     // Set the total bird and pig count

@@ -50,7 +50,8 @@ class LevelLoader {
         std::vector<Bird::Type> readBirdList(json levelJson); 
         b2Body* createBody(const ObjectData& data);
         void createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes);
-        void createObject(Object::Type objType, std::vector<Bird::Type> birdList, b2Body* body, b2FixtureDef& fixtureDef);
+        void createObject(Object::Type objType, b2Body* body, b2FixtureDef& fixtureDef);
+        void createBird(Bird::Type birdType, b2Body* body, b2FixtureDef& fixtureDef);
         void setLevelName(json levelJson);
 };
 
