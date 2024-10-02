@@ -97,19 +97,41 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
         case sf::Mouse::Button::Left:
             // TODO: Implement mouse left actions
             switch(model_.getState()) {
-                case GameModel::State::MENU:
-                    if (mousePosition.x >= 400 && mousePosition.x <= 560 && mousePosition.y >= 220 && mousePosition.y <= 300) {
+                case GameModel::State::MENU: {
+                    auto buttonText = model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition);
+                    if (buttonText == "Play") {
+                        model_.setState(GameModel::State::LOADING);
+                        model_.getWorld().clearLevel();
+                        model_.getWorld().loadLevel("level1.json");
                         model_.setState(GameModel::State::RUNNING);
-                    } else if (mousePosition.x >= 400 && mousePosition.x <= 665 && mousePosition.y >= 320 && mousePosition.y <= 390) {
+                    } else if (buttonText == "Settings") {
                         model_.setState(GameModel::State::SETTINGS);
-                    } else if (mousePosition.x >= 400 && mousePosition.x <= 545 && mousePosition.y >= 420 && mousePosition.y <= 480) {
+                    } else if (buttonText == "Exit") {
                         model_.setState(GameModel::State::QUIT);
                     }
                     break;
+                }
                 case GameModel::State::RUNNING:
                     // TODO: Implement mouse actions in running state
                     model_.getWorld().getCannon()->startLaunch();
                     break;
+                case GameModel::State::GAME_OVER: {
+                    auto buttonText = model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition);
+                    if (buttonText == "Restart") {
+                        model_.setState(GameModel::State::LOADING);
+                        model_.getWorld().resetLevel();
+                        model_.setState(GameModel::State::RUNNING);
+                    } else if (buttonText == "Next Level") {
+                        // TODO: Implement next level, for go to main menu
+                        model_.setState(GameModel::State::MENU);
+                    } else if (buttonText == "Main Menu") {
+                        model_.setState(GameModel::State::MENU);
+                    } else if (buttonText == "Exit") {
+                        model_.setState(GameModel::State::QUIT);
+                    }
+                    break;
+                }
+
                 case GameModel::State::PAUSED:
                     // TODO: Implement mouse actions in Pause menu
                     break;
