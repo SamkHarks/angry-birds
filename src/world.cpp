@@ -9,9 +9,9 @@ World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this), scoreManager_() {
     world_ = new b2World(gravity_);
     cannon_ = new Cannon();
     background_image_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
-    background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
+    background_.setSize(sf::Vector2f(VIEW_WIDTH * 2, VIEW_HEIGHT * 1.8f));
     background_.setTexture(&background_image_);
-    background_.setPosition(0,0);
+    background_.setPosition(0,-VIEW_HEIGHT+200);
     
 }
 
@@ -246,4 +246,13 @@ void World::resetLevel() {
 
 void World::updateScore(int score) {
     scoreManager_.update(score);
+}
+
+Score& World::getScore() {
+    return scoreManager_;
+}
+
+// TODO: Implement the drawRemainingCounts method
+void World::drawRemainingCounts(sf::RenderWindow &window) const {
+
 }

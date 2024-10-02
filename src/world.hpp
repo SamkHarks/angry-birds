@@ -38,6 +38,7 @@ class World {
         Cannon* getCannon();
         void updateScore(int score);
         std::tuple<int,float> getScoreAndStars() const;
+        Score& getScore();
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -52,6 +53,7 @@ class World {
         bool isSettled_ = false;
         std::string fileName_;
         Score scoreManager_;
+        void drawRemainingCounts(sf::RenderWindow &window) const;
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;
 
