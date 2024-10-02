@@ -17,7 +17,7 @@ void GameModel::update() {
             if (isSettled && (world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0)) {
                 state_ = State::GAME_OVER;
                 world_.updateScore(world_.getRemainingBirdCount() * 1000);
-                std::tuple<int,float> results = world_.getScoreAndStars();
+                //std::tuple<int,float> results = world_.getScoreAndStars();
             }
             // Check for collisions
             for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
@@ -34,11 +34,13 @@ void GameModel::update() {
                 if (object->isDestroyed()) {
                     world_.updateScore(object->getDestructionScore());
                     world_.removeObject(object);
+                } else if (object->isOutOfBounds()) {
+                    world_.removeObject(object);
                 }
             }
             // Check if the bird is destroyed
             Bird* bird = world_.GetBird();
-            if (bird != nullptr && bird->isDestroyed()) {
+            if (bird != nullptr && (bird->isDestroyed() || bird->shouldDestroy())) {
                 world_.removeBird();
             }
             // Update the bird and objects
