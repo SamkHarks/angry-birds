@@ -41,17 +41,16 @@ char GreenBird::getTypeAsChar() const {
     return 'G';
 }
 
-bool Bird::isMoving() const {
+bool Bird::shouldDestroy() const {
+    if (!is_launched_) { 
+        return false;
+    }
+   	if (this->isOutOfBounds()) {
+		return true;
+	}
     float duration = pressClock_.getElapsedTime().asSeconds();
-    if (duration > 5.f) {
-        return false;
+    if (duration >= 5.f) {
+        return true;
     }
-    sf::Vector2f position = utils::B2ToSfCoords(body_->GetPosition());
-    if (position.x < 0 || position.y > VIEW_HEIGHT) {
-        return false;
-    }
-    return (
-        body_->GetLinearVelocity().LengthSquared() > IS_SETTLED_THRESHOLD
-        || fabs(body_->GetAngularVelocity()) > IS_SETTLED_THRESHOLD
-    );
+    return false;
 }
