@@ -211,7 +211,7 @@ bool World::getIsSettled() const {
     return isSettled_;
 }
 
-void World::resetLevel() {
+void World::clearLevel() {
     // Destroy all bodies in the Box2D world
     for (b2Body* body = world_->GetBodyList(); body != nullptr; ) {
         b2Body* nextBody = body->GetNext();
@@ -239,7 +239,11 @@ void World::resetLevel() {
 
     // reset score
     scoreManager_.reset();
+};
 
+void World::resetLevel() {
+    // Clear the level
+    clearLevel();
     // Reload the level
     loadLevel(fileName_);
 }

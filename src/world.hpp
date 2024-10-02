@@ -18,6 +18,7 @@ class World {
         World();
         ~World();
         void loadLevel(const std::string& filename);
+        void clearLevel();
         void resetLevel();
         void addObject(Object *object);
         void step();
