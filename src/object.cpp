@@ -42,6 +42,11 @@ bool Object::isDestroyed() const {
     return isDestroyed_;
 }
 
+bool Object::isOutOfBounds() const {
+    sf::Vector2f position = utils::B2ToSfCoords(body_->GetPosition());
+    return position.x < 0 || position.y > VIEW_HEIGHT || position.x > VIEW_WIDTH * 2;
+}
+
 void Object::update() {
     b2Vec2 position = body_->GetPosition();
     sf::Sprite& sprite = this->getSprite();
