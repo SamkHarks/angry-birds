@@ -28,6 +28,7 @@ const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
 const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
+const sf::Vector2f SCREEN_CENTER(VIEW_WIDTH / 2.f, VIEW_HEIGHT / 2.f);
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
