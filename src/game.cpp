@@ -9,7 +9,10 @@ void Game::run() {
     // TODO: Add possibility to load debug draw
     while (view_.isOpen()) {
         controller_.handleEvents();
+        view_.setGameView();
         model_.update();
+        view_.updateCamera(model_);
+        view_.updateUIElements(model_);
         view_.render(model_);
     }
 }
