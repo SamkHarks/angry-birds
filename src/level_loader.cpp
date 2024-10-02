@@ -3,7 +3,7 @@
 #include "world.hpp"
 
 // half width and half height of the ground
-b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH / 2.f, 50.f));
+b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH, 50.f));
 // half width and half height of the wall
 b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
 
@@ -114,7 +114,7 @@ std::vector<Bird::Type> LevelLoader::readBirdList(json levelJson) {
     for (const auto& birdType : levelJson["birds"]["list"]) {
         if (birdType == "R") {
             birdList.push_back(Bird::Type::Red);
-        } else if (birdType == "B") {
+        } else if (birdType == "L") {
             birdList.push_back(Bird::Type::Blue);
         } else if (birdType == "G") {
             birdList.push_back(Bird::Type::Green);
