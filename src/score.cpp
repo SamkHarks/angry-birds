@@ -7,9 +7,12 @@ Score::Score() {
     text_.setFont(font_);
     text_.setCharacterSize(30);
     text_.setFillColor(sf::Color::Black);
+    text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
+}
 
-    text_.setPosition(VIEW_WIDTH - 400, 10);
-    text_.setString("Score: 0 Hihg Score: " + std::to_string(highScore_));
+void Score::updatePosition(sf::RenderWindow& window) {
+    sf::Vector2i scorePosition(static_cast<int>(window.getSize().x * 0.7), 0);
+    text_.setPosition(window.mapPixelToCoords(scorePosition, window.getView()));
 }
 
 void Score::update(int score) {

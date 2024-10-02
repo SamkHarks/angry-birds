@@ -11,6 +11,7 @@ public:
     void reset();
     void draw(sf::RenderWindow& window) const;
     void updateHighScore(int highScore);
+    void updatePosition(sf::RenderWindow& window);
 
 private:
     int currentScore_ = 0;
