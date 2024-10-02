@@ -9,6 +9,13 @@ class GameView: public sf::RenderWindow {
         GameView();
         void draw(const GameModel& model);
         void render(const GameModel& model);
+        void updateCamera(const GameModel& model);
+        void updateUIElements(GameModel& model);
+        void setGameView();
+
+    private:
+        sf::Vector2f defaultCenter_;
+        sf::View gameView_;
 };
 
 #endif // GAME_VIEW_HPP
