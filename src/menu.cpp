@@ -44,3 +44,21 @@ void Menu::updateItem(sf::Color color, int thickness) {
     menuItems_[selectedItem_].setOutlineColor(color);
     menuItems_[selectedItem_].setOutlineThickness(thickness);
 }
+
+int Menu::getItemAtPosition(sf::Vector2f mousePosition) const {
+    for (int i = 0; i < buttonAmount_; i++) {
+        if (menuItems_[i].getGlobalBounds().contains(mousePosition)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+std::string Menu::handleMouseClick(sf::Vector2f mousePosition) {
+    int clickedItem = getItemAtPosition(mousePosition);
+    if (clickedItem == -1) {
+        return "";
+    }
+    std::string buttonText = menuItems_[clickedItem].getString().toAnsiString();
+    return buttonText;
+};
