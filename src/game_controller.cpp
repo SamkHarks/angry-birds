@@ -113,7 +113,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     auto menu = model_.getMenu(Menu::Type::GAME_OVER);
                     if (menu.handleMouseClick(mousePosition)) {
                         const int selectedItem = menu.getSelectedItem();
-                        model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
+                        model_.setStateFromMenu(Menu::Type::GAME_OVER, selectedItem);
                     }
                     break;
                 }
