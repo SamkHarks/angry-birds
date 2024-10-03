@@ -17,7 +17,8 @@ class Menu {
         void setSelectedItem(int nextItem);
         const Type getType() const;
         int getItemAtPosition(sf::Vector2f mousePosition) const;
-        std::string handleMouseClick(sf::Vector2f mousePosition);
+        bool handleMouseClick(sf::Vector2f mousePosition);
+        void handleMouseMove(sf::Vector2f mousePosition);
     private:
         Type type_;
     protected:

@@ -54,11 +54,16 @@ int Menu::getItemAtPosition(sf::Vector2f mousePosition) const {
     return -1;
 }
 
-std::string Menu::handleMouseClick(sf::Vector2f mousePosition) {
-    int clickedItem = getItemAtPosition(mousePosition);
-    if (clickedItem == -1) {
-        return "";
-    }
-    std::string buttonText = menuItems_[clickedItem].getString().toAnsiString();
-    return buttonText;
+bool Menu::handleMouseClick(sf::Vector2f mousePosition) {
+    return getItemAtPosition(mousePosition) >= 0;
 };
+
+void Menu::handleMouseMove(sf::Vector2f mousePosition) {
+    int hoveredItem = getItemAtPosition(mousePosition);
+    if (hoveredItem == -1) {
+        return;
+    }
+    updateItem(sf::Color::Black, 0);
+    selectedItem_ = hoveredItem;
+    updateItem(sf::Color::White, 5);
+}

@@ -98,16 +98,10 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
             // TODO: Implement mouse left actions
             switch(model_.getState()) {
                 case GameModel::State::MENU: {
-                    auto buttonText = model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition);
-                    if (buttonText == "Play") {
-                        model_.setState(GameModel::State::LOADING);
-                        model_.getWorld().clearLevel();
-                        model_.getWorld().loadLevel("level1.json");
-                        model_.setState(GameModel::State::RUNNING);
-                    } else if (buttonText == "Settings") {
-                        model_.setState(GameModel::State::SETTINGS);
-                    } else if (buttonText == "Exit") {
-                        model_.setState(GameModel::State::QUIT);
+                    auto menu = model_.getMenu(Menu::Type::MAIN);
+                    if (menu.handleMouseClick(mousePosition)) {
+                        const int selectedItem = model_.getMenu(Menu::Type::MAIN).getSelectedItem();
+                        model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
                     }
                     break;
                 }
@@ -116,18 +110,10 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     model_.getWorld().getCannon()->startLaunch();
                     break;
                 case GameModel::State::GAME_OVER: {
-                    auto buttonText = model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition);
-                    if (buttonText == "Restart") {
-                        model_.setState(GameModel::State::LOADING);
-                        model_.getWorld().resetLevel();
-                        model_.setState(GameModel::State::RUNNING);
-                    } else if (buttonText == "Next Level") {
-                        // TODO: Implement next level, for go to main menu
-                        model_.setState(GameModel::State::MENU);
-                    } else if (buttonText == "Main Menu") {
-                        model_.setState(GameModel::State::MENU);
-                    } else if (buttonText == "Exit") {
-                        model_.setState(GameModel::State::QUIT);
+                    auto menu = model_.getMenu(Menu::Type::GAME_OVER);
+                    if (menu.handleMouseClick(mousePosition)) {
+                        const int selectedItem = menu.getSelectedItem();
+                        model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
                     }
                     break;
                 }
@@ -167,6 +153,12 @@ void GameController::handleMouseMove(sf::Vector2f mousePosition) {
     switch(model_.getState()) {
         case GameModel::State::RUNNING:
             model_.rotateCannon(mousePosition);
+            break;
+        case GameModel::State::MENU:
+            model_.getMenu(Menu::Type::MAIN).handleMouseMove(mousePosition);
+            break;
+        case GameModel::State::GAME_OVER:
+            model_.getMenu(Menu::Type::GAME_OVER).handleMouseMove(mousePosition);
             break;
         default:
             break;
