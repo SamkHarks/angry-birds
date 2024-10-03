@@ -43,7 +43,6 @@ void GameView::draw(const GameModel& model) {
             model.getMenu(Menu::Type::MAIN).draw(*this);
             break;
         case GameModel::State::RUNNING:
-            // TODO: Draw game objects
             model.getWorld().draw(*this);
             break;
         case GameModel::State::PAUSED:
