@@ -81,10 +81,12 @@ const Menu& GameModel::getMenu(Menu::Type type) const {
         case Menu::Type::MAIN:
             return main_menu_;
         case Menu::Type::PAUSE:
-            //TODO: return pause menu here
+            //TODO: return pause menu here, for now return main_menu
+            return main_menu_;
             break;
         case Menu::Type::SETTINGS:
-            //TODO: return settings here
+            //TODO: return settings here, for now return main_menu
+            return main_menu_;
             break;
         case Menu::Type::GAME_OVER:
             return gameOverMenu_;
@@ -99,11 +101,11 @@ Menu& GameModel::getMenu(Menu::Type type) {
         case Menu::Type::MAIN:
             return main_menu_;
         case Menu::Type::PAUSE:
-            // TODO: return pause menu here
-            break;
+            // TODO: return pause menu here,  for now return main_menu
+            return main_menu_;
         case Menu::Type::SETTINGS:
-            // TODO: return settings here
-            break;
+            // TODO: return settings here,  for now return main_menu
+            return main_menu_;
         case Menu::Type::GAME_OVER:
             return gameOverMenu_;
         default:
@@ -124,6 +126,9 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
     switch (type) {
         case Menu::Type::MAIN:
             if (selectedItem == 0) {
+                state_ = State::LOADING;
+                world_.clearLevel();
+                world_.loadLevel("level1.json");
                 state_ = State::RUNNING;
             } else if (selectedItem == 1) {
                 state_ = State::SETTINGS;
