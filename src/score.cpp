@@ -5,7 +5,7 @@
 Score::Score() {
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     text_.setFont(font_);
-    text_.setCharacterSize(30);
+    text_.setCharacterSize(40);
     text_.setFillColor(sf::Color::Black);
     text_.setOutlineColor(sf::Color::White);
     text_.setOutlineThickness(2);
@@ -13,8 +13,10 @@ Score::Score() {
 }
 
 void Score::updatePosition(sf::RenderWindow& window) {
-    sf::Vector2i scorePosition(static_cast<int>(window.getSize().x * 0.7), 10);
-    text_.setPosition(window.mapPixelToCoords(scorePosition, window.getView()));
+    sf::FloatRect textBounds = text_.getGlobalBounds();
+    float viewWidth = window.getView().getSize().x;
+    float xPosition = viewWidth - textBounds.width - 20;
+    text_.setPosition(window.mapPixelToCoords(sf::Vector2i(xPosition, 10)));
 }
 
 void Score::setPosition(const sf::Vector2f& position) {

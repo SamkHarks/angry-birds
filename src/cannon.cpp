@@ -30,7 +30,7 @@ Cannon::Cannon() {
     powerText_.setString("Power: 0 %");   
     powerText_.setFillColor(sf::Color::Black);
     powerText_.setCharacterSize(40);
-    powerText_.setPosition(10, 10);
+    powerText_.setPosition(20, 10);
     powerText_.setOutlineColor(sf::Color::White);
     powerText_.setOutlineThickness(2);
 }
@@ -91,7 +91,7 @@ void Cannon::reset() {
 }
 
 void Cannon::updateTextPosition(sf::RenderWindow& window) {
-    sf::Vector2i scorePosition(10, 10);
-    powerText_.setPosition(window.mapPixelToCoords(scorePosition, window.getView()));
+    sf::Vector2i scorePosition(20, 10);
+    powerText_.setPosition(window.mapPixelToCoords(scorePosition));
 }
 
