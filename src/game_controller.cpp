@@ -100,7 +100,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                 case GameModel::State::MENU: {
                     auto menu = model_.getMenu(Menu::Type::MAIN);
                     if (menu.handleMouseClick(mousePosition)) {
-                        const int selectedItem = model_.getMenu(Menu::Type::MAIN).getSelectedItem();
+                        const int selectedItem = menu.getSelectedItem();
                         model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
                     }
                     break;
