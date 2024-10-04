@@ -23,12 +23,12 @@ void GameView::updateCamera(const GameModel& model) {
 
 // Update UI elements here that are not part of the game world (and require window coordinates)
 void GameView::updateUIElements(GameModel& model) {
-    // Update the position of the score
+    // Update the position of the score and power text
     if (model.getState() == GameModel::State::RUNNING) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
+        world.getCannon()->updateTextPosition(*this);
     }
-    // TODO: Update other UI elements
 }
 
 
