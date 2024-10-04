@@ -20,7 +20,9 @@ void Score::updatePosition(sf::RenderWindow& window) {
 }
 
 void Score::setPosition(const sf::Vector2f& position) {
-    text_.setPosition(position);
+    sf::FloatRect textBounds = text_.getGlobalBounds();
+    // Center the text
+    text_.setPosition(position.x - (textBounds.width / 2.f), position.y);
 }
 
 void Score::update(int score) {
