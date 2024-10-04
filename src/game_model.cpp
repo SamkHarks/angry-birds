@@ -11,12 +11,18 @@ void GameModel::update() {
     switch (state_) {
         case State::RUNNING:
             world_.step();
-            world_.getCannon()->update();
+            // Update the cannon if the bird is not launched
+            Bird* bird = world_.GetBird();
+            if (bird != nullptr && !bird->isLaunched()) {
+                world_.getCannon()->update();
+            }
+            // Check if the level is over
             bool isSettled = world_.getIsSettled();
-            // TODO: handle game over logic here
-            if (isSettled && (world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0)) {
+            bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0;
+            if (isLevelCleared && isSettled) {
                 state_ = State::GAME_OVER;
                 world_.updateScore(world_.getRemainingBirdCount() * 1000);
+                gameOverMenu_.setScoreManager(&world_.getScore());
                 //std::tuple<int,float> results = world_.getScoreAndStars();
             }
             // Check for collisions
@@ -29,7 +35,7 @@ void GameModel::update() {
                 objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
                 objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
             }
-            // Check if any objects are destroyed & update score
+            // Check if any objects are destroyed & update score or remove them if they are out of bounds
             for (auto object : world_.getObjects()) {
                 if (object->isDestroyed()) {
                     world_.updateScore(object->getDestructionScore());
@@ -39,7 +45,7 @@ void GameModel::update() {
                 }
             }
             // Check if the bird is destroyed
-            Bird* bird = world_.GetBird();
+            bird = world_.GetBird();
             if (bird != nullptr && (bird->isDestroyed() || bird->shouldDestroy())) {
                 world_.removeBird();
             }
@@ -52,7 +58,7 @@ void GameModel::update() {
                 object->update();
             }
             // Check if the world has settled
-            if (bird == nullptr || bird->isLaunched()) {
+            if (bird == nullptr || bird->isLaunched() || world_.getRemainingPigCount() == 0) {
                 isSettled = true;
                 for (auto object : world_.getObjects()) {
                     if (object->isMoving()) {
@@ -126,7 +132,6 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
     switch (type) {
         case Menu::Type::MAIN:
             if (selectedItem == 0) {
-                state_ = State::LOADING;
                 world_.clearLevel();
                 world_.loadLevel("level1.json");
                 state_ = State::RUNNING;
@@ -146,7 +151,6 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
             // TODO: handle game over updates properly
             if (selectedItem == 0) {
                 // Restart
-                state_ = State::LOADING;
                 world_.resetLevel();
                 state_ = State::RUNNING;
             } else if (selectedItem == 1) {
