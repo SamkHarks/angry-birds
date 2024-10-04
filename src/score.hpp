@@ -12,6 +12,7 @@ public:
     void draw(sf::RenderWindow& window) const;
     void updateHighScore(int highScore);
     void updatePosition(sf::RenderWindow& window);
+    void setPosition(const sf::Vector2f &position);
 
 private:
     int currentScore_ = 0;
