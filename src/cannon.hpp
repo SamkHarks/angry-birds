@@ -15,13 +15,14 @@ class Cannon {
         void update();
         bool isLaunching() const;
         void reset();
+        void updateTextPosition(sf::RenderWindow& window);
 
     private:
-        sf::Texture barrel_texture_;
-        sf::Texture wheels_texture_;
-        sf::Sprite wheels_sprite_;
-        sf::Sprite barrel_sprite_;
-        sf::Text power_text_;
+        sf::Texture barrelTexture_;
+        sf::Texture wheelsTexture_;
+        sf::Sprite wheelsSprite_;
+        sf::Sprite barrelSprite_;
+        sf::Text powerText_;
         sf::Font font_; 
         sf::Clock pressClock_;
         float power_ = 0;
