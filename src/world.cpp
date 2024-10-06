@@ -39,20 +39,20 @@ void World::loadLevel(const std::string& filename) {
     levelLoader_.loadLevel(filename);
 }
 
-std::tuple<int, float> World::getScoreAndStars() const {
+int World::getStars() const {
     int pigsLeft = getRemainingPigCount();
     int birdsLeft = getRemainingBirdCount();
-    float maxScore = (totalPigCount_ + totalBirdCount_) * 1000.f;
-    float score = 1000.f * ((totalPigCount_ - pigsLeft) + birdsLeft);
+    float maxScore = (totalPigCount_ + totalBirdCount_- 1) * 1000.f;
+    int score = scoreManager_.getCurrentScore();
     float scoreRatio = score / maxScore;
     if (scoreRatio >= 0.9) {
-        return std::make_tuple(3, score);
+        return 3;
     } else if (scoreRatio >= 0.6) {
-        return std::make_tuple(2, score);
+        return 2;
     } else if (scoreRatio >= 0.5) {
-        return std::make_tuple(1, score);
+        return 1;
     } else {
-        return std::make_tuple(0, score);
+        return 0;
     }
 
 }
@@ -259,4 +259,8 @@ Score& World::getScore() {
 // TODO: Implement the drawRemainingCounts method
 void World::drawRemainingCounts(sf::RenderWindow &window) const {
 
+}
+
+const std::string& World::getLevelName() const {
+    return levelName_;
 }

@@ -38,8 +38,9 @@ class World {
         bool getIsSettled() const;
         Cannon* getCannon();
         void updateScore(int score);
-        std::tuple<int,float> getScoreAndStars() const;
+        int getStars() const;
         Score& getScore();
+        const std::string& getLevelName() const;
     private:
         b2World *world_;
         b2Vec2 gravity_;
