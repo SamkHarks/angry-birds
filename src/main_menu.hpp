@@ -10,6 +10,7 @@ class MainMenu: public Menu {
     private:
         sf::RectangleShape woodenSign_;
         sf::Texture signImage_;
+        std::vector<sf::Text> title_;
 };
 
 #endif // MAIN_MENU_HPP

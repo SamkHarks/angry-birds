@@ -29,11 +29,61 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3) {
             menuItems_[i].setScale(1.1f, 1.1f);
         }
     }
+
+    // Define the circular path segment
+    float radius = 680.f;
+    sf::Vector2f center(SCREEN_CENTER.x, SCREEN_CENTER.y+340);
+    std::string title = "AngryBirds";
+    float startAngle = 270 - 20.f;
+    float endAngle = 270 + 20.f;
+
+    // Calculate the total width of the title
+    float totalWidth = 0.0f;
+    for (char c : title) {
+        sf::Text tempText;
+        tempText.setFont(font_);
+        tempText.setString(c);
+        tempText.setCharacterSize(80);
+        tempText.setOutlineThickness(5);
+        totalWidth += tempText.getGlobalBounds().width;
+    }
+
+    // Create title characters
+    title_.resize(title.size());
+    float currentAngle = startAngle;
+    for (size_t i = 0; i < title.size(); ++i) {
+        title_[i].setFont(font_);
+        title_[i].setString(title[i]);
+        title_[i].setFillColor(sf::Color::White);
+        title_[i].setOutlineColor(sf::Color::Black);
+        title_[i].setOutlineThickness(5);
+        title_[i].setCharacterSize(80);
+
+        // Calculate the width of the current character
+        float charWidth = title_[i].getGlobalBounds().width;
+
+        // Calculate the angle for the current character
+        
+        float angle = utils::DegreesToRadians(currentAngle);
+        float x = center.x + radius * std::cos(angle);
+        float y = center.y + radius * std::sin(angle);
+
+        // Set the position and rotation
+        title_[i].setPosition(x, y);
+        title_[i].setRotation(currentAngle + 90); // Adjust rotation
+
+        // Update the current angle based on the width of the character
+        currentAngle += (charWidth / totalWidth) * (endAngle - startAngle);
+    }
 };
 
 void MainMenu::draw(sf::RenderWindow& window) const {
     window.draw(background_);
     window.draw(woodenSign_);
+    // Draw the title characters
+    for (const auto& character : title_) {
+        window.draw(character);
+    }
     for (auto menuItem : menuItems_)
     {
         window.draw(menuItem);
