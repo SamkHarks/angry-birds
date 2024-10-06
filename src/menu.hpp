@@ -28,7 +28,7 @@ class Menu {
         const int buttonAmount_;
         std::vector<sf::Text> menuItems_;
         int selectedItem_ = 0;
-        void updateItem(sf::Color color, int thickness);
+        void updateItem(sf::Color fillColor, float scale);
 };
 
 #endif // MENU_HPP

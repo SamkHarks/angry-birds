@@ -25,7 +25,7 @@ const Menu::Type Menu::getType() const {
 
 
 void Menu::setSelectedItem(int nextItem) {
-    updateItem(sf::Color::Black, 0);
+    updateItem(sf::Color::White, 1.f);
     if (nextItem < 0) {
         selectedItem_ = buttonAmount_ - 1;
     } else if (nextItem >= buttonAmount_) {
@@ -33,16 +33,16 @@ void Menu::setSelectedItem(int nextItem) {
     } else {
         selectedItem_ = nextItem;
     }
-    updateItem(sf::Color::White, 5);
+    updateItem(LIME_GREEN, 1.1f);
 }
 
 const int Menu::getSelectedItem() const {
     return selectedItem_;
 }
 
-void Menu::updateItem(sf::Color color, int thickness) {
-    menuItems_[selectedItem_].setOutlineColor(color);
-    menuItems_[selectedItem_].setOutlineThickness(thickness);
+void Menu::updateItem(sf::Color fillColor, float scale) {
+    menuItems_[selectedItem_].setFillColor(fillColor);
+    menuItems_[selectedItem_].setScale(scale, scale);
 }
 
 int Menu::getItemAtPosition(sf::Vector2f mousePosition) const {
@@ -63,7 +63,7 @@ void Menu::handleMouseMove(sf::Vector2f mousePosition) {
     if (hoveredItem == -1) {
         return;
     }
-    updateItem(sf::Color::Black, 0);
+    updateItem(sf::Color::White, 1.f);
     selectedItem_ = hoveredItem;
-    updateItem(sf::Color::White, 5);
+    updateItem(LIME_GREEN, 1.1f);
 }
