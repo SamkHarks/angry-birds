@@ -6,8 +6,8 @@ Score::Score() {
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     text_.setFont(font_);
     text_.setCharacterSize(40);
-    text_.setFillColor(sf::Color::Black);
-    text_.setOutlineColor(sf::Color::White);
+    text_.setFillColor(sf::Color::White);
+    text_.setOutlineColor(sf::Color::Black);
     text_.setOutlineThickness(2);
     text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
 }

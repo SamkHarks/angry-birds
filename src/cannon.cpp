@@ -28,10 +28,10 @@ Cannon::Cannon() {
 
     powerText_.setFont(font_);
     powerText_.setString("Power: 0 %");   
-    powerText_.setFillColor(sf::Color::Black);
+    powerText_.setFillColor(sf::Color::White);
     powerText_.setCharacterSize(40);
     powerText_.setPosition(20, 10);
-    powerText_.setOutlineColor(sf::Color::White);
+    powerText_.setOutlineColor(sf::Color::Black);
     powerText_.setOutlineThickness(2);
 }
 
