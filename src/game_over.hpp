@@ -9,8 +9,14 @@ class GameOver: public Menu {
         GameOver();
         void setScoreManager(Score* score);
         void draw(sf::RenderWindow& window) const override;
+        void drawStars(int stars, sf::RenderWindow& window) const;
     private:
-       Score* scoreManager_;
+        Score* scoreManager_;
+        std::vector<sf::Texture> starTextures_;
+        std::vector<sf::Sprite> starSprites_;
+        sf::RectangleShape woodenSign_;
+        sf::Texture signImage_;
+        sf::Clock clock_;
 };
 
 #endif // GAME_OVER_HPP
