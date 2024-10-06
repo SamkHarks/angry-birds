@@ -25,15 +25,17 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
     for (int i = 0; i < buttonAmount_; ++i) {
         menuItems_[i].setFont(font_);
         menuItems_[i].setString(button_texts[i]);
-        menuItems_[i].setFillColor(sf::Color::Black);
-        menuItems_[i].setCharacterSize(80);
+        menuItems_[i].setFillColor(sf::Color::White);
+        menuItems_[i].setOutlineColor(sf::Color::Black);
+        menuItems_[i].setOutlineThickness(5);
+        menuItems_[i].setCharacterSize(75);
         // center the text
-        sf::FloatRect textBounds = menuItems_[i].getGlobalBounds();
-        menuItems_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        menuItems_[i].setPosition(SCREEN_CENTER.x , (starSprites_[0].getGlobalBounds().height + 160/*140*/) + i * 100);
+        float width = menuItems_[i].getGlobalBounds().width;
+        menuItems_[i].setOrigin(width / 2, 0);
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (starSprites_[0].getGlobalBounds().height + 130) + i * 100);
         if (i == selectedItem_) {
-            menuItems_[i].setOutlineColor(sf::Color::White);
-            menuItems_[i].setOutlineThickness(5);
+            menuItems_[i].setFillColor(LIME_GREEN);
+            menuItems_[i].setScale(1.1f, 1.1f);
         }
     }
     // Load wooden sign texture
