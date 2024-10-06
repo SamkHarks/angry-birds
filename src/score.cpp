@@ -33,6 +33,7 @@ void Score::update(int score) {
 void Score::reset() {
     currentScore_ = 0;
     stars_ = 0;
+    text_.setScale(1.f, 1.f);
     text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
 }
 
@@ -63,4 +64,5 @@ void Score::setStars(int stars) {
 
 void Score::setLevelEndText(const std::string& levelName) {
     text_.setString(levelName + ": Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
+    text_.setScale(1.2f, 1.2f);
 }
