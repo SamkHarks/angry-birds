@@ -22,8 +22,9 @@ void GameModel::update() {
             if (isLevelCleared && isSettled) {
                 state_ = State::GAME_OVER;
                 world_.updateScore(world_.getRemainingBirdCount() * 1000);
+                world_.getScore().setStars(world_.getStars());
+                world_.getScore().setLevelEndText(world_.getLevelName());
                 gameOverMenu_.setScoreManager(&world_.getScore());
-                //std::tuple<int,float> results = world_.getScoreAndStars();
             }
             // Check for collisions
             for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
