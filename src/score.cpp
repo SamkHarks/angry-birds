@@ -32,7 +32,8 @@ void Score::update(int score) {
 
 void Score::reset() {
     currentScore_ = 0;
-    text_.setString("Score: 0");
+    stars_ = 0;
+    text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
 }
 
 void Score::draw(sf::RenderWindow& window) const {
@@ -42,4 +43,24 @@ void Score::draw(sf::RenderWindow& window) const {
 void Score::updateHighScore(int highScore) {
     highScore_ = highScore;
     text_.setString("Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
+}
+
+int Score::getCurrentScore() const {
+    return currentScore_;
+}
+
+int Score::getHighScore() const {
+    return highScore_;
+}
+
+int Score::getStars() const {
+    return stars_;
+}
+
+void Score::setStars(int stars) {
+    stars_ = stars;
+}
+
+void Score::setLevelEndText(const std::string& levelName) {
+    text_.setString(levelName + ": Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
 }

@@ -13,10 +13,15 @@ public:
     void updateHighScore(int highScore);
     void updatePosition(sf::RenderWindow& window);
     void setPosition(const sf::Vector2f &position);
-
+    int getCurrentScore() const;
+    int getHighScore() const;
+    int getStars() const;
+    void setStars(int stars);
+    void setLevelEndText(const std::string& levelName);
 private:
     int currentScore_ = 0;
     int highScore_ = 0;
+    int stars_ = 0;
     sf::Text text_;
     sf::Font font_;
 };
