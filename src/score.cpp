@@ -41,9 +41,24 @@ void Score::draw(sf::RenderWindow& window) const {
     window.draw(text_);
 }
 
+void Score::setHighScores(const std::vector<HighScore>& highScores) {
+    highScores_ = highScores;
+}
+
 void Score::updateHighScore(int highScore) {
     highScore_ = highScore;
     text_.setString("Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
+}
+
+bool Score::updateHighScores(const HighScore& highScore) {
+    auto it = std::find_if(highScores_.begin(), highScores_.end(), [&highScore](const HighScore& hs){
+        return hs.player == highScore.player && hs.score == highScore.score;
+    });
+    if (it == highScores_.end()) {
+        highScores_.push_back(highScore);
+        return true;
+    }
+    return false;
 }
 
 int Score::getCurrentScore() const {
@@ -65,4 +80,8 @@ void Score::setStars(int stars) {
 void Score::setLevelEndText(const std::string& levelName) {
     text_.setString(levelName + ": Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
     text_.setScale(1.2f, 1.2f);
+}
+
+const std::vector<HighScore>& Score::getHighScores() const {
+    return highScores_;
 }
