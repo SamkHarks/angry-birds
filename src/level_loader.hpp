@@ -43,7 +43,7 @@ class LevelLoader {
     public:
         LevelLoader(World& level);
         void loadLevel(const std::string& fileName);
-
+        void saveHighScore(int score, const std::string& fileName);
     private:
         World& level_;
         // Helper functions for loading the level

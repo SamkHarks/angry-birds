@@ -39,6 +39,13 @@ void World::loadLevel(const std::string& filename) {
     levelLoader_.loadLevel(filename);
 }
 
+void World::saveHighScore(int score) {
+    if (score > scoreManager_.getHighScore()) {
+        scoreManager_.updateHighScore(score);
+        levelLoader_.saveHighScore(score, fileName_);
+    }
+}
+
 int World::getStars() const {
     int pigsLeft = getRemainingPigCount();
     int birdsLeft = getRemainingBirdCount();

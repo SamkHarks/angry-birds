@@ -24,6 +24,7 @@ void GameModel::update() {
                 world_.updateScore(world_.getRemainingBirdCount() * 1000);
                 world_.getScore().setStars(world_.getStars());
                 world_.getScore().setLevelEndText(world_.getLevelName());
+                world_.saveHighScore(world_.getScore().getCurrentScore());
                 gameOverMenu_.setScoreManager(&world_.getScore());
             }
             // Check for collisions

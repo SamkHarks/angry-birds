@@ -235,6 +235,24 @@ void LevelLoader::createObject(
     }
 }
 
+void LevelLoader::saveHighScore(int score, const std::string& fileName) {
+    std::string path = utils::getExecutablePath() + "/assets/levels/";
+    std::ifstream inFile(path + fileName);
+    if(!inFile.is_open()) {
+        throw std::runtime_error("Failed to open file: " + path + fileName);
+    }
+    json levelJson;
+    inFile >> levelJson;
+    inFile.close();
+
+    levelJson["highScore"] = score;
+    std::ofstream outFile(path + fileName);
+    if (!outFile.is_open()) {
+        throw std::runtime_error("Failed to open file: " + path + fileName);
+    }
+    outFile << levelJson.dump(4);
+    outFile.close();
+}
 
 void LevelLoader::loadLevel(const std::string& fileName) {
     std::string path = utils::getExecutablePath() + "/assets/levels/";

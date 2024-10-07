@@ -20,6 +20,7 @@ class World {
         void loadLevel(const std::string& filename);
         void clearLevel();
         void resetLevel();
+        void saveHighScore(int score);
         void addObject(Object *object);
         void step();
         void draw(sf::RenderWindow &window) const;
