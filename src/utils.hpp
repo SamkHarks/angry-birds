@@ -39,6 +39,8 @@ namespace utils
 {
     std::string getExecutablePath();
 
+    std::string getAssetsPath();
+
     template <typename T>
     bool loadFromFile(T& object, const std::string& FilePath) {
         std::string executablePath = getExecutablePath();

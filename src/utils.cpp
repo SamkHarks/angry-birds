@@ -63,6 +63,13 @@ namespace utils
         return path.substr(0, path.find_last_of("/\\"));
     }
 
+    std::string getAssetsPath() {
+        std::string execPath = getExecutablePath();
+        // Navigate up two directories to reach the root directory
+        std::string assetsPath = execPath + "/../../assets";
+        return assetsPath;
+    }
+
     float B2ToSf(float b2_coord) {
         return b2_coord * SCALE;
     }
