@@ -4,6 +4,7 @@
 #include "bird.hpp"
 #include <string>
 #include <fstream>
+#include "score.hpp"
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -43,7 +44,7 @@ class LevelLoader {
     public:
         LevelLoader(World& level);
         void loadLevel(const std::string& fileName);
-        void saveHighScore(int score, const std::string& fileName);
+        void saveHighScores(const std::vector<HighScore> &highScores, const std::string& fileName);
     private:
         World& level_;
         // Helper functions for loading the level

@@ -42,6 +42,7 @@ class World {
         int getStars() const;
         Score& getScore();
         const std::string& getLevelName() const;
+        void setPlayer(const std::string& player);
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -56,6 +57,7 @@ class World {
         bool isSettled_ = false;
         std::string fileName_;
         Score scoreManager_;
+        std::string player_ = "test";
         void drawRemainingCounts(sf::RenderWindow &window) const;
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;

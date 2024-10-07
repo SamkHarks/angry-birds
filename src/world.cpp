@@ -40,9 +40,17 @@ void World::loadLevel(const std::string& filename) {
 }
 
 void World::saveHighScore(int score) {
+    if (score == 0) {
+        return;
+    }
+    HighScore highScore;
+    highScore.player = player_;
+    highScore.score = score;
+    if (scoreManager_.updateHighScores(highScore)) {
+        levelLoader_.saveHighScores(scoreManager_.getHighScores(), fileName_);
+    }
     if (score > scoreManager_.getHighScore()) {
         scoreManager_.updateHighScore(score);
-        levelLoader_.saveHighScore(score, fileName_);
     }
 }
 
@@ -270,4 +278,8 @@ void World::drawRemainingCounts(sf::RenderWindow &window) const {
 
 const std::string& World::getLevelName() const {
     return levelName_;
+}
+
+void World::setPlayer(const std::string& player) {
+    player_ = player;
 }

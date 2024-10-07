@@ -235,7 +235,7 @@ void LevelLoader::createObject(
     }
 }
 
-void LevelLoader::saveHighScore(int score, const std::string& fileName) {
+void LevelLoader::saveHighScores(const std::vector<HighScore> &highScores, const std::string& fileName) {
     std::string path = utils::getExecutablePath() + "/assets/levels/";
     std::ifstream inFile(path + fileName);
     if(!inFile.is_open()) {
@@ -244,11 +244,17 @@ void LevelLoader::saveHighScore(int score, const std::string& fileName) {
     json levelJson;
     inFile >> levelJson;
     inFile.close();
-
-    levelJson["highScore"] = score;
+    // Convert the vector of high scores to a JSON array
+    json highScoresJson = json::array();
+    for (const auto& highScore : highScores) {
+        highScoresJson.push_back({{"player", highScore.player}, {"score", highScore.score}});
+    }
+    // Update the highScores field in the JSON object
+    levelJson["highScores"] = highScoresJson;
+    // Write updated JSON object back to the file
     std::ofstream outFile(path + fileName);
-    if (!outFile.is_open()) {
-        throw std::runtime_error("Failed to open file: " + path + fileName);
+    if(!outFile.is_open()) {
+        throw std::runtime_error("Failed to open file for writing: " + path + fileName);
     }
     outFile << levelJson.dump(4);
     outFile.close();
@@ -267,8 +273,20 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     // Read and set level name and file name
     setLevelName(levelJson);
     level_.fileName_ = fileName;
-    // Read and set high score
-    int highScore = levelJson["highScore"];
+    // Read and set high scores
+    int highScore = 0;
+    auto highScores = levelJson["highScores"];
+    std::vector<HighScore> highScoreList;
+    for (auto score : highScores) {
+        HighScore newHighScore;
+        newHighScore.player = score["player"];
+        newHighScore.score = score["score"];
+        if (newHighScore.score > highScore) {
+            highScore = newHighScore.score;
+        }
+        highScoreList.push_back(newHighScore);
+    }
+    level_.scoreManager_.setHighScores(highScoreList);
     level_.scoreManager_.updateHighScore(highScore);
     // Read bird list
     std::vector<Bird::Type> birdList = readBirdList(levelJson);
