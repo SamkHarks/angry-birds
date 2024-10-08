@@ -75,6 +75,37 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3) {
         // Update the current angle based on the width of the character
         currentAngle += (charWidth / totalWidth) * (endAngle - startAngle);
     }
+
+    // set prompt text
+    promptText_.setFont(font_);
+    promptText_.setString("Add player:");
+    promptText_.setFillColor(sf::Color::White);
+    promptText_.setOutlineColor(sf::Color::Black);
+    promptText_.setOutlineThickness(5);
+    promptText_.setCharacterSize(80);
+    sf::FloatRect textBounds = promptText_.getGlobalBounds();
+    promptText_.setOrigin(textBounds.width / 2, textBounds.height / 2);
+    promptText_.setPosition(SCREEN_CENTER.x, 400);
+    // set player text
+    playerText_.setFont(font_);
+    playerText_.setFillColor(sf::Color::White);
+    playerText_.setOutlineColor(sf::Color::Black);
+    playerText_.setOutlineThickness(5);
+    playerText_.setCharacterSize(70);
+    playerText_.setString("");
+    textBounds = playerText_.getGlobalBounds();
+    playerText_.setOrigin(textBounds.width / 2, 0);
+    playerText_.setPosition(SCREEN_CENTER.x, 470);
+
+    // Initialize caret
+    caret_.setSize(sf::Vector2f(3, playerText_.getCharacterSize()*1.3));
+    caret_.setFillColor(sf::Color::White);
+    caret_.setOutlineColor(sf::Color::Black);
+    caret_.setOutlineThickness(5);
+    caret_.setPosition(
+        SCREEN_CENTER.x,
+        playerText_.getPosition().y
+    );
 };
 
 void MainMenu::draw(sf::RenderWindow& window) const {
@@ -84,8 +115,66 @@ void MainMenu::draw(sf::RenderWindow& window) const {
     for (const auto& character : title_) {
         window.draw(character);
     }
-    for (auto menuItem : menuItems_)
-    {
-        window.draw(menuItem);
+    // Prompt player to enter their name
+    if (promptPlayer_) {
+        window.draw(promptText_);
+        window.draw(playerText_);
+        if (((int) caretClock_.getElapsedTime().asSeconds() % 2) == 1) {
+            window.draw(caret_);
+        }
+       
+    } else {
+        // Draw menu items
+        for (auto menuItem : menuItems_) {
+            window.draw(menuItem);
+        }
     }
+
 };
+
+bool MainMenu::setPlayer() {
+    std::string playerName = playerText_.getString();
+    if (playerName.length() >= 3) {
+        player_ = playerName;
+        return true;
+    }
+    return false;
+};
+
+bool MainMenu::isPlayerSet() const {
+    return !player_.empty();
+};
+
+void MainMenu::setPromptPlayer(bool promptPlayer) {
+    caretClock_.restart();
+    promptPlayer_ = promptPlayer;
+};
+
+std::string MainMenu::getPlayer() const {
+    return player_;
+};
+
+void MainMenu::setPromptText(const std::string& text) {
+    promptText_.setString(text);
+    sf::FloatRect textBounds = promptText_.getGlobalBounds();
+    promptText_.setOrigin(textBounds.width / 2, textBounds.height / 2);
+};
+
+void MainMenu::setPlayerText(const std::string& text) {
+    playerText_.setString(text);
+    sf::FloatRect textBounds = playerText_.getGlobalBounds();
+    playerText_.setOrigin(textBounds.width / 2, 0);
+    playerText_.setPosition(SCREEN_CENTER.x, 470);
+    caret_.setPosition(
+        playerText_.getPosition().x + textBounds.width / 2,
+        playerText_.getPosition().y
+    );
+};
+
+bool MainMenu::isPromptVisible() const {
+    return promptPlayer_;
+};
+
+std::string MainMenu::getPlayerText() const {
+    return playerText_.getString();
+}
