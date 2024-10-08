@@ -13,6 +13,7 @@ class GameController {
         void handleMousePress(const sf::Mouse::Button& mouseButton, sf::Vector2f mousePosition);
         void handleMouseRelease(sf::Mouse::Button button, sf::Vector2f mousePosition);
         void handleMouseMove(sf::Vector2f mousePosition);
+        void handleTextEntered(sf::Uint32 unicode);
 
     private:
         GameModel& model_;

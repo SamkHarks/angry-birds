@@ -27,6 +27,9 @@ void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosit
         case sf::Event::MouseMoved:
             handleMouseMove(mousePosition);
             break;
+        case sf::Event::TextEntered:
+            handleTextEntered(event.text.unicode);
+            break;
         default:
             break;
     }
@@ -163,4 +166,8 @@ void GameController::handleMouseMove(sf::Vector2f mousePosition) {
         default:
             break;
     }
+}
+
+void GameController::handleTextEntered(sf::Uint32 unicode) {
+    model_.handleTextEntered(unicode);
 }

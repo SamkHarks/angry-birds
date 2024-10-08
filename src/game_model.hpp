@@ -42,6 +42,8 @@ class GameModel {
 
         void rotateCannon(sf::Vector2f mousePosition);
 
+        void handleTextEntered(sf::Uint32 unicode);
+
     private:
         State state_;
         MainMenu main_menu_;

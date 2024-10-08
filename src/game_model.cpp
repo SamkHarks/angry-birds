@@ -16,7 +16,7 @@ void GameModel::update() {
             if (bird != nullptr && !bird->isLaunched()) {
                 world_.getCannon()->update();
             }
-            // Check if the level is over
+            // Check if the level is over, update and set Score for level end menu
             bool isSettled = world_.getIsSettled();
             bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0;
             if (isLevelCleared && isSettled) {
@@ -133,14 +133,30 @@ void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
 void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
     switch (type) {
         case Menu::Type::MAIN:
-            if (selectedItem == 0) {
-                world_.clearLevel();
-                world_.loadLevel("level1.json");
-                state_ = State::RUNNING;
-            } else if (selectedItem == 1) {
-                state_ = State::SETTINGS;
+            if (main_menu_.isPromptVisible()) {
+                if (main_menu_.setPlayer()) {
+                    main_menu_.setPromptPlayer(false);
+                    world_.setPlayer(main_menu_.getPlayer());
+                    world_.clearLevel();
+                    world_.loadLevel("level1.json");
+                    state_ = State::RUNNING;
+                }
             } else {
-                state_ = State::QUIT;
+                if (selectedItem == 0) {
+                    // Start the game if the player name is set
+                    if (main_menu_.isPlayerSet()) {
+                        world_.clearLevel();
+                        world_.loadLevel("level1.json");
+                        state_ = State::RUNNING;
+                    // Prompt the player to enter their name
+                    } else {
+                        main_menu_.setPromptPlayer(true);
+                    }
+                } else if (selectedItem == 1) {
+                    state_ = State::SETTINGS;
+                } else {
+                    state_ = State::QUIT;
+                }
             }
             break;
        case Menu::Type::PAUSE:
@@ -190,4 +206,26 @@ void GameModel::rotateCannon(sf::Vector2f mousePosition) {
     float direction = utils::getDirection(difference);
     Cannon* cannon = world_.getCannon();
     cannon->setAngle(direction);
+}
+
+void GameModel::handleTextEntered(sf::Uint32 unicode) {
+    if (state_ == State::MENU && main_menu_.isPromptVisible()) {
+        // Handle backspace
+        if (unicode == 8) {
+            std::string currentText = main_menu_.getPlayerText();
+            if (!currentText.empty()) {
+                currentText.pop_back();
+                main_menu_.setPlayerText(currentText);
+            }
+        // Handle printable characters
+        } else if (unicode >= 32 && unicode < 128) {
+            std::string currentText = main_menu_.getPlayerText();
+            // Max length of player name is 12
+            if (currentText.size() < 13) {
+                currentText += static_cast<char>(unicode);
+                main_menu_.setPlayerText(currentText);
+            }
+
+        }
+    }
 }
