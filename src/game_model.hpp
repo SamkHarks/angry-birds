@@ -26,13 +26,15 @@ class GameModel {
 
         void setState(State);
 
+        void setState();
+
         const Menu& getMenu(Menu::Type type) const;
 
         Menu& getMenu(Menu::Type type);
 
         void setMenuSelection(Menu::Type type, sf::Keyboard::Key);
 
-        void setStateFromMenu(Menu::Type type, int selectedItem);
+        void handleKeyPress(const sf::Keyboard::Key& code);
 
         World &getWorld();
 

@@ -38,57 +38,13 @@ void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosit
 void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (code) {
         case sf::Keyboard::Key::Left:
-            // TODO: Implement the moveLeft method in the GameModel class
-            break;
         case sf::Keyboard::Key::Right:
-            // TODO: Implement the moveRight method in the GameModel class
-            break;
         case sf::Keyboard::Key::Up:
-            // TODO: Implement the moveUp method in the GameModel class
-            switch (model_.getState()) {
-                case GameModel::State::MENU:
-                    model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Up);
-                    break;
-                case GameModel::State::GAME_OVER:
-                    model_.setMenuSelection(Menu::Type::GAME_OVER, sf::Keyboard::Key::Up);
-                    break;
-                default:
-                    break;
-            }
-            break;
         case sf::Keyboard::Key::Down:
-           // TODO: Implement the moveDown method in the GameModel class
-            switch (model_.getState()) {
-                case GameModel::State::MENU:
-                    model_.setMenuSelection(Menu::Type::MAIN, sf::Keyboard::Key::Down);
-                    break;
-                case GameModel::State::GAME_OVER:
-                    model_.setMenuSelection(Menu::Type::GAME_OVER, sf::Keyboard::Key::Down);
-                    break;
-                default:
-                    break;
-            }
+            model_.handleKeyPress(code);
             break;
         case sf::Keyboard::Key::Enter:
-            // TODO: Implement Enter actions for different states
-            switch (model_.getState()) {
-                case GameModel::State::MENU: {
-                    const int selectedItem = model_.getMenu(Menu::Type::MAIN).getSelectedItem();
-                    model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
-                    break;
-                }
-                case GameModel::State::GAME_OVER: {
-                    const int selectedItem = model_.getMenu(Menu::Type::GAME_OVER).getSelectedItem();
-                    model_.setStateFromMenu(Menu::Type::GAME_OVER, selectedItem);
-                    break;
-                }
-                case GameModel::State::PAUSED:
-                case GameModel::State::SETTINGS:
-                    // TODO: Handle other menus 
-                    break;
-                default:
-                    break;  
-            }
+            model_.setState();
             break;
         default:
             break;
@@ -101,10 +57,8 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
             // TODO: Implement mouse left actions
             switch(model_.getState()) {
                 case GameModel::State::MENU: {
-                    auto menu = model_.getMenu(Menu::Type::MAIN);
-                    if (menu.handleMouseClick(mousePosition)) {
-                        const int selectedItem = menu.getSelectedItem();
-                        model_.setStateFromMenu(Menu::Type::MAIN, selectedItem);
+                    if (model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition)) {
+                        model_.setState();
                     }
                     break;
                 }
@@ -113,14 +67,11 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     model_.getWorld().getCannon()->startLaunch();
                     break;
                 case GameModel::State::GAME_OVER: {
-                    auto menu = model_.getMenu(Menu::Type::GAME_OVER);
-                    if (menu.handleMouseClick(mousePosition)) {
-                        const int selectedItem = menu.getSelectedItem();
-                        model_.setStateFromMenu(Menu::Type::GAME_OVER, selectedItem);
+                    if (model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition)) {
+                        model_.setState();
                     }
                     break;
                 }
-
                 case GameModel::State::PAUSED:
                     // TODO: Implement mouse actions in Pause menu
                     break;

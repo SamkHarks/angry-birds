@@ -121,51 +121,86 @@ Menu& GameModel::getMenu(Menu::Type type) {
     }
 }
 
+void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
+    switch (state_) {
+        case State::MENU:
+            main_menu_.handleMenuSelection(code);
+            break;
+        case State::GAME_OVER:
+            setMenuSelection(Menu::Type::GAME_OVER, code);
+            break;
+        case State::SETTINGS:
+        case State::PAUSED:
+            break;
+        default:
+            break;
+    }
+}
+
 void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
     Menu &menu = getMenu(type);
     int currentItem = menu.getSelectedItem();
-    menu.setSelectedItem(key == sf::Keyboard::Key::Up
-        ? currentItem - 1
-        : currentItem + 1
-    );
+    if (key == sf::Keyboard::Key::Up) {
+        menu.setSelectedItem(currentItem - 1);
+    } else if (key == sf::Keyboard::Key::Down) {
+        menu.setSelectedItem(currentItem + 1);
+    }
 }
 
-void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
-    switch (type) {
-        case Menu::Type::MAIN:
-            if (main_menu_.isPromptVisible()) {
-                if (main_menu_.setPlayer()) {
-                    main_menu_.setPromptPlayer(false);
-                    world_.setPlayer(main_menu_.getPlayer());
-                    world_.clearLevel();
-                    world_.loadLevel("level1.json");
-                    state_ = State::RUNNING;
+void GameModel::setState() {
+    switch (state_) {
+        case State::MENU: {
+            // Handle main menus different screens
+            switch (main_menu_.getScreen()) {
+                // Handle the main menu screen
+                case MainMenu::Screen::MAIN: {
+                    auto selectedItem = main_menu_.getSelectedItem();
+                     if (selectedItem == 0) {
+                        main_menu_.setScreen(MainMenu::Screen::LEVEL_SELECTOR);
+                    } else if (selectedItem == 1) {
+                        state_ = State::SETTINGS;
+                    } else {
+                        state_ = State::QUIT;
+                    }
+                    break;
                 }
-            } else {
-                if (selectedItem == 0) {
-                    // Start the game if the player name is set
-                    if (main_menu_.isPlayerSet()) {
+                // Handle the user selector screen
+                case MainMenu::Screen::USER_SELECTOR:
+                    if (main_menu_.setPlayer()) {
                         world_.clearLevel();
                         world_.loadLevel("level1.json");
                         state_ = State::RUNNING;
-                    // Prompt the player to enter their name
-                    } else {
-                        main_menu_.setPromptPlayer(true);
                     }
-                } else if (selectedItem == 1) {
-                    state_ = State::SETTINGS;
-                } else {
-                    state_ = State::QUIT;
+                    break;
+                // Handle the level selector screen
+                case MainMenu::Screen::LEVEL_SELECTOR: {
+                    LevelSelector::Item item = main_menu_.getLevelSelector().getSelectedItem();
+                    switch (item) {
+                        case LevelSelector::Item::BACK:
+                            main_menu_.setScreen(MainMenu::Screen::MAIN);
+                            break;
+                        case LevelSelector::Item::LEVEL:
+                        case LevelSelector::Item::LEVEL_IMAGE:
+                            if (main_menu_.isPlayerSet()) {
+                                world_.clearLevel();
+                                world_.loadLevel("level1.json");
+                                state_ = State::RUNNING;
+                            } else {
+                                main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
+                            }
+                            break;
+                        case LevelSelector::Item::NEXT:
+                        case LevelSelector::Item::PREV:
+                            //TODO: handle next and prev buttons
+                            break;
+                    }
+
                 }
             }
             break;
-       case Menu::Type::PAUSE:
-            // TODO: handle pause menu update
-            break;
-        case Menu::Type::SETTINGS:
-            // TODO: handle settings update
-            break;
-        case Menu::Type::GAME_OVER:
+        }
+        case State::GAME_OVER: {
+            auto selectedItem = gameOverMenu_.getSelectedItem();
             // TODO: handle game over updates properly
             if (selectedItem == 0) {
                 // Restart
@@ -174,13 +209,20 @@ void GameModel::setStateFromMenu(Menu::Type type, int selectedItem) {
             } else if (selectedItem == 1) {
                 // Next Level
                 state_ = State::MENU;
+                main_menu_.setScreen(MainMenu::Screen::MAIN); 
             } else if (selectedItem == 2) {
                 // Main Menu
                 state_ = State::MENU;
+                main_menu_.setScreen(MainMenu::Screen::MAIN);
             } else {
                 // Exit
                 state_ = State::QUIT;
             } 
+            break;
+        }
+        // TODO: handle other states
+        case State::SETTINGS:
+        case State::PAUSED:
             break;
         default:
             break;
@@ -209,7 +251,7 @@ void GameModel::rotateCannon(sf::Vector2f mousePosition) {
 }
 
 void GameModel::handleTextEntered(sf::Uint32 unicode) {
-    if (state_ == State::MENU && main_menu_.isPromptVisible()) {
+    if (state_ == State::MENU && main_menu_.getScreen() == MainMenu::Screen::USER_SELECTOR) {
         // Handle backspace
         if (unicode == 8) {
             std::string currentText = main_menu_.getPlayerText();
