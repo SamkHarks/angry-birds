@@ -10,7 +10,6 @@ class LevelSelector {
             BACK,
             PREV,
             NEXT,
-            LEVEL_IMAGE,
             UNDEFINED
         };
         LevelSelector();

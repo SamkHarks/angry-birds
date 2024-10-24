@@ -78,7 +78,7 @@ LevelSelector::Item LevelSelector::getItemAtPosition(sf::Vector2f mousePosition)
         }
     }
     if (level_.getGlobalBounds().contains(mousePosition)) {
-        return Item::LEVEL_IMAGE;
+        return Item::LEVEL;
     }
     return Item::UNDEFINED;
 }
@@ -116,11 +116,6 @@ void LevelSelector::updateItem(bool isSelected) {
             const int index = selectedItem_ == Item::PREV ? 0 : 1;
             const float scale = isSelected ? 1.1f : 1.f;
             buttons_[index].setScale(scale, scale);
-            break;
-        }
-        case Item::LEVEL_IMAGE: {
-            const float scale = isSelected ? 0.29f : 0.27f;
-            level_.setScale(scale, scale);
             break;
         }
     }

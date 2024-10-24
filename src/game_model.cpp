@@ -201,7 +201,6 @@ void GameModel::setState() {
                             main_menu_.setScreen(MainMenu::Screen::MAIN);
                             break;
                         case LevelSelector::Item::LEVEL:
-                        case LevelSelector::Item::LEVEL_IMAGE:
                             if (main_menu_.isPlayerSet()) {
                                 world_.clearLevel();
                                 world_.loadLevel("level1.json");
