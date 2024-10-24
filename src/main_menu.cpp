@@ -187,32 +187,6 @@ LevelSelector& MainMenu::getLevelSelector() {
     return levelSelector_;
 };
 
-void MainMenu::handleMenuSelection(sf::Keyboard::Key key) {
-    switch (screen_) {
-        case MainMenu::Screen::MAIN:
-            if (key == sf::Keyboard::Key::Up) {
-                setSelectedItem(selectedItem_ - 1);
-            } else if (key == sf::Keyboard::Key::Down) {
-                setSelectedItem(selectedItem_ + 1);
-            }
-            break;
-        case MainMenu::Screen::USER_SELECTOR:
-            break;
-        case MainMenu::Screen::LEVEL_SELECTOR:
-            if (key == sf::Keyboard::Key::Left || key == sf::Keyboard::Key::Right) {
-                levelSelector_.setSelectedItem(getLevelSelector().getSelectedItem() == LevelSelector::Item::PREV
-                    ? LevelSelector::Item::NEXT
-                    : LevelSelector::Item::PREV
-                );
-            } else if (key == sf::Keyboard::Key::Up || key == sf::Keyboard::Key::Down) {
-                levelSelector_.setSelectedItem(getLevelSelector().getSelectedItem() == LevelSelector::Item::LEVEL
-                    ? LevelSelector::Item::BACK
-                    : LevelSelector::Item::LEVEL
-                );
-            }
-    }
-};
-
 void MainMenu::handleMouseMove(sf::Vector2f mousePosition) {
     switch (screen_) {
         case MainMenu::Screen::MAIN: {

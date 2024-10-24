@@ -19,7 +19,6 @@ class MainMenu: public Menu {
         void setPromptText(const std::string& text);
         void setPlayerText(const std::string& text);
         std::string getPlayerText() const;
-        void handleMenuSelection(sf::Keyboard::Key key);
         LevelSelector& getLevelSelector();
         void setScreen(Screen screen);
         Screen getScreen() const;

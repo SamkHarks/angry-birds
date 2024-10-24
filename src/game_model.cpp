@@ -124,7 +124,28 @@ Menu& GameModel::getMenu(Menu::Type type) {
 void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (state_) {
         case State::MENU:
-            main_menu_.handleMenuSelection(code);
+            switch (main_menu_.getScreen()) {
+                case MainMenu::Screen::MAIN:
+                    setMenuSelection(Menu::Type::MAIN, code);
+                    break;
+                case MainMenu::Screen::LEVEL_SELECTOR: {
+                    LevelSelector& levelSelector = main_menu_.getLevelSelector();
+                    if (code == sf::Keyboard::Key::Left || code == sf::Keyboard::Key::Right) {
+                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::PREV
+                            ? LevelSelector::Item::NEXT
+                            : LevelSelector::Item::PREV
+                        );
+                    } else if (code == sf::Keyboard::Key::Up || code == sf::Keyboard::Key::Down) {
+                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::LEVEL
+                            ? LevelSelector::Item::BACK
+                            : LevelSelector::Item::LEVEL
+                        );
+                    }
+                    break;
+                }
+                case MainMenu::Screen::USER_SELECTOR:
+                    break;
+            }
             break;
         case State::GAME_OVER:
             setMenuSelection(Menu::Type::GAME_OVER, code);
