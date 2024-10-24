@@ -4,7 +4,7 @@
 #include "resource_manager.hpp"
 
 
-MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3) {
+MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_() {
     // Load wooden sign texture
     signImage_ = ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png");
     woodenSign_.setSize(sf::Vector2f(860, 860));
@@ -115,14 +115,17 @@ void MainMenu::draw(sf::RenderWindow& window) const {
     for (const auto& character : title_) {
         window.draw(character);
     }
-    // Prompt player to enter their name
-    if (promptPlayer_) {
+    // Draw player selection screen
+    if (screen_ == MainMenu::Screen::USER_SELECTOR) {
         window.draw(promptText_);
         window.draw(playerText_);
         if (((int) caretClock_.getElapsedTime().asSeconds() % 2) == 1) {
             window.draw(caret_);
         }
-       
+    // Draw level selector screen
+    } else if (screen_ == MainMenu::Screen::LEVEL_SELECTOR) {
+       levelSelector_.draw(window);
+    // Draw main menu screen
     } else {
         // Draw menu items
         for (auto menuItem : menuItems_) {
@@ -145,10 +148,6 @@ bool MainMenu::isPlayerSet() const {
     return !player_.empty();
 };
 
-void MainMenu::setPromptPlayer(bool promptPlayer) {
-    caretClock_.restart();
-    promptPlayer_ = promptPlayer;
-};
 
 std::string MainMenu::getPlayer() const {
     return player_;
@@ -171,10 +170,71 @@ void MainMenu::setPlayerText(const std::string& text) {
     );
 };
 
-bool MainMenu::isPromptVisible() const {
-    return promptPlayer_;
-};
 
 std::string MainMenu::getPlayerText() const {
     return playerText_.getString();
 }
+
+MainMenu::Screen MainMenu::getScreen() const {
+    return screen_;
+};
+
+void MainMenu::setScreen(MainMenu::Screen screen) {
+    screen_ = screen;
+};
+
+LevelSelector& MainMenu::getLevelSelector() {
+    return levelSelector_;
+};
+
+void MainMenu::handleMenuSelection(sf::Keyboard::Key key) {
+    switch (screen_) {
+        case MainMenu::Screen::MAIN:
+            if (key == sf::Keyboard::Key::Up) {
+                setSelectedItem(selectedItem_ - 1);
+            } else if (key == sf::Keyboard::Key::Down) {
+                setSelectedItem(selectedItem_ + 1);
+            }
+            break;
+        case MainMenu::Screen::USER_SELECTOR:
+            break;
+        case MainMenu::Screen::LEVEL_SELECTOR:
+            if (key == sf::Keyboard::Key::Left || key == sf::Keyboard::Key::Right) {
+                levelSelector_.setSelectedItem(getLevelSelector().getSelectedItem() == LevelSelector::Item::PREV
+                    ? LevelSelector::Item::NEXT
+                    : LevelSelector::Item::PREV
+                );
+            } else if (key == sf::Keyboard::Key::Up || key == sf::Keyboard::Key::Down) {
+                levelSelector_.setSelectedItem(getLevelSelector().getSelectedItem() == LevelSelector::Item::LEVEL
+                    ? LevelSelector::Item::BACK
+                    : LevelSelector::Item::LEVEL
+                );
+            }
+    }
+};
+
+void MainMenu::handleMouseMove(sf::Vector2f mousePosition) {
+    switch (screen_) {
+        case MainMenu::Screen::MAIN: {
+            this->Menu::handleMouseMove(mousePosition);
+            break;
+        }
+        case MainMenu::Screen::LEVEL_SELECTOR:
+            levelSelector_.handleMouseMove(mousePosition);
+            break;
+        default:
+            break;
+    }
+};
+
+bool MainMenu::handleMouseClick(sf::Vector2f mousePosition) {
+    switch (screen_) {
+        case MainMenu::Screen::MAIN:
+            return this->Menu::handleMouseClick(mousePosition);
+        case MainMenu::Screen::LEVEL_SELECTOR:
+            return levelSelector_.handleMouseClick(mousePosition);
+        default:
+            break;
+    }
+    return false;
+};
