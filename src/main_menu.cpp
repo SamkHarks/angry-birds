@@ -4,7 +4,7 @@
 #include "resource_manager.hpp"
 
 
-MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_() {
+MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector_() {
     // Load wooden sign texture
     signImage_ = ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png");
     woodenSign_.setSize(sf::Vector2f(860, 860));
@@ -75,37 +75,6 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_() {
         // Update the current angle based on the width of the character
         currentAngle += (charWidth / totalWidth) * (endAngle - startAngle);
     }
-
-    // set prompt text
-    promptText_.setFont(font_);
-    promptText_.setString("Add player:");
-    promptText_.setFillColor(sf::Color::White);
-    promptText_.setOutlineColor(sf::Color::Black);
-    promptText_.setOutlineThickness(5);
-    promptText_.setCharacterSize(80);
-    sf::FloatRect textBounds = promptText_.getGlobalBounds();
-    promptText_.setOrigin(textBounds.width / 2, textBounds.height / 2);
-    promptText_.setPosition(SCREEN_CENTER.x, 400);
-    // set player text
-    playerText_.setFont(font_);
-    playerText_.setFillColor(sf::Color::White);
-    playerText_.setOutlineColor(sf::Color::Black);
-    playerText_.setOutlineThickness(5);
-    playerText_.setCharacterSize(70);
-    playerText_.setString("");
-    textBounds = playerText_.getGlobalBounds();
-    playerText_.setOrigin(textBounds.width / 2, 0);
-    playerText_.setPosition(SCREEN_CENTER.x, 470);
-
-    // Initialize caret
-    caret_.setSize(sf::Vector2f(3, playerText_.getCharacterSize()*1.3));
-    caret_.setFillColor(sf::Color::White);
-    caret_.setOutlineColor(sf::Color::Black);
-    caret_.setOutlineThickness(5);
-    caret_.setPosition(
-        SCREEN_CENTER.x,
-        playerText_.getPosition().y
-    );
 };
 
 void MainMenu::draw(sf::RenderWindow& window) const {
@@ -117,11 +86,7 @@ void MainMenu::draw(sf::RenderWindow& window) const {
     }
     // Draw player selection screen
     if (screen_ == MainMenu::Screen::USER_SELECTOR) {
-        window.draw(promptText_);
-        window.draw(playerText_);
-        if (((int) caretClock_.getElapsedTime().asSeconds() % 2) == 1) {
-            window.draw(caret_);
-        }
+       userSelector_.draw(window);
     // Draw level selector screen
     } else if (screen_ == MainMenu::Screen::LEVEL_SELECTOR) {
        levelSelector_.draw(window);
@@ -134,46 +99,6 @@ void MainMenu::draw(sf::RenderWindow& window) const {
     }
 
 };
-
-bool MainMenu::setPlayer() {
-    std::string playerName = playerText_.getString();
-    if (playerName.length() >= 3) {
-        player_ = playerName;
-        return true;
-    }
-    return false;
-};
-
-bool MainMenu::isPlayerSet() const {
-    return !player_.empty();
-};
-
-
-std::string MainMenu::getPlayer() const {
-    return player_;
-};
-
-void MainMenu::setPromptText(const std::string& text) {
-    promptText_.setString(text);
-    sf::FloatRect textBounds = promptText_.getGlobalBounds();
-    promptText_.setOrigin(textBounds.width / 2, textBounds.height / 2);
-};
-
-void MainMenu::setPlayerText(const std::string& text) {
-    playerText_.setString(text);
-    sf::FloatRect textBounds = playerText_.getGlobalBounds();
-    playerText_.setOrigin(textBounds.width / 2, 0);
-    playerText_.setPosition(SCREEN_CENTER.x, 470);
-    caret_.setPosition(
-        playerText_.getPosition().x + textBounds.width / 2,
-        playerText_.getPosition().y
-    );
-};
-
-
-std::string MainMenu::getPlayerText() const {
-    return playerText_.getString();
-}
 
 MainMenu::Screen MainMenu::getScreen() const {
     return screen_;
@@ -196,6 +121,10 @@ void MainMenu::handleMouseMove(sf::Vector2f mousePosition) {
         case MainMenu::Screen::LEVEL_SELECTOR:
             levelSelector_.handleMouseMove(mousePosition);
             break;
+        case MainMenu::Screen::USER_SELECTOR: {
+            userSelector_.handleMouseMove(mousePosition);
+            break;
+        }
         default:
             break;
     }
@@ -207,8 +136,14 @@ bool MainMenu::handleMouseClick(sf::Vector2f mousePosition) {
             return this->Menu::handleMouseClick(mousePosition);
         case MainMenu::Screen::LEVEL_SELECTOR:
             return levelSelector_.handleMouseClick(mousePosition);
+        case MainMenu::Screen::USER_SELECTOR:
+            return userSelector_.handleMouseClick(mousePosition);
         default:
             break;
     }
     return false;
+};
+
+UserSelector& MainMenu::getUserSelector() {
+    return userSelector_;
 };

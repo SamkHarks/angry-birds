@@ -3,6 +3,7 @@
 
 #include "menu.hpp"
 #include "level_selector.hpp"
+#include "user_selector.hpp"
 
 class MainMenu: public Menu {
     public:
@@ -13,13 +14,8 @@ class MainMenu: public Menu {
         };
         MainMenu();
         void draw(sf::RenderWindow& window) const override;
-        bool setPlayer();
-        bool isPlayerSet() const;
-        std::string getPlayer() const;
-        void setPromptText(const std::string& text);
-        void setPlayerText(const std::string& text);
-        std::string getPlayerText() const;
         LevelSelector& getLevelSelector();
+        UserSelector& getUserSelector();
         void setScreen(Screen screen);
         Screen getScreen() const;
         void handleMouseMove(sf::Vector2f mousePosition) override;
@@ -28,14 +24,8 @@ class MainMenu: public Menu {
         sf::RectangleShape woodenSign_;
         sf::Texture signImage_;
         std::vector<sf::Text> title_;
-        std::string player_;
-        sf::Text promptText_;
-        sf::Text playerText_;
-        sf::RectangleShape caret_;
-        mutable sf::Clock caretClock_;
-        mutable bool caretVisible_ = false;
-        bool promptPlayer_ = false;
         LevelSelector levelSelector_;
+        UserSelector userSelector_;
         Screen screen_ = Screen::MAIN;
 };
 
