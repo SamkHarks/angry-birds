@@ -44,6 +44,9 @@ LevelSelector::LevelSelector() {
             buttons_[i].setRotation(180);
         }
     }
+
+    // Load levels
+    levels_.push_back({"Level 1", "level1.json"});
 }
 
 void LevelSelector::draw(sf::RenderWindow& window) const {
@@ -119,4 +122,12 @@ void LevelSelector::updateItem(bool isSelected) {
             break;
         }
     }
+}
+
+Level& LevelSelector::getSelectedLevel() {
+    return levels_[levelIndex_];
+}
+
+void LevelSelector::setLevelIndex(int index) {
+    levelIndex_ = index;
 }
