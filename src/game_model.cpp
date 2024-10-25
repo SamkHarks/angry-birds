@@ -130,20 +130,33 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                     break;
                 case MainMenu::Screen::LEVEL_SELECTOR: {
                     LevelSelector& levelSelector = main_menu_.getLevelSelector();
-                    if (code == sf::Keyboard::Key::Left || code == sf::Keyboard::Key::Right) {
+                    if (code == sf::Keyboard::Key::Left) {
                         levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::PREV
                             ? LevelSelector::Item::NEXT
                             : LevelSelector::Item::PREV
                         );
-                    } else if (code == sf::Keyboard::Key::Up || code == sf::Keyboard::Key::Down) {
+                    } else if (code == sf::Keyboard::Key::Right) {
+                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::NEXT
+                            ? LevelSelector::Item::PREV
+                            : LevelSelector::Item::NEXT
+                        );
+                    } else if (code == sf::Keyboard::Key::Up) {
                         levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::LEVEL
                             ? LevelSelector::Item::BACK
                             : LevelSelector::Item::LEVEL
+                        );
+                    } else if (code == sf::Keyboard::Key::Down) {
+                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::BACK
+                            ? LevelSelector::Item::LEVEL
+                            : LevelSelector::Item::BACK
                         );
                     }
                     break;
                 }
                 case MainMenu::Screen::USER_SELECTOR:
+                    if (code == sf::Keyboard::Key::Left || code == sf::Keyboard::Key::Right) {
+                        main_menu_.getUserSelector().setSelectedItem(main_menu_.getUserSelector().getSelectedItem() == 0 ? 1 : 0);
+                    }
                     break;
             }
             break;
@@ -186,13 +199,28 @@ void GameModel::setState() {
                     break;
                 }
                 // Handle the user selector screen
-                case MainMenu::Screen::USER_SELECTOR:
-                    if (main_menu_.setPlayer()) {
+                case MainMenu::Screen::USER_SELECTOR: {
+                    UserSelector& userSelector = main_menu_.getUserSelector();
+                    // Check if the player is set or not
+                    if (userSelector.isPlayerSet()) {
+                        if (userSelector.getSelectedItem() == 0) {
+                            userSelector.setPlayerAccepted(true);
+                        } else {
+                            userSelector.clearPlayer();
+                        }
+                    // If the player is not set, set the player
+                    } else {
+                        userSelector.setPlayer();
+                    }
+                    // If the player is accepted, load the level
+                    if (userSelector.isPlayerAccepted()) {
                         world_.clearLevel();
-                        world_.loadLevel("level1.json");
+                        world_.loadLevel(main_menu_.getLevelSelector().getSelectedLevel().filename);
+                        world_.setPlayer(userSelector.getPlayer());
                         state_ = State::RUNNING;
                     }
                     break;
+                }
                 // Handle the level selector screen
                 case MainMenu::Screen::LEVEL_SELECTOR: {
                     LevelSelector::Item item = main_menu_.getLevelSelector().getSelectedItem();
@@ -201,13 +229,7 @@ void GameModel::setState() {
                             main_menu_.setScreen(MainMenu::Screen::MAIN);
                             break;
                         case LevelSelector::Item::LEVEL:
-                            if (main_menu_.isPlayerSet()) {
-                                world_.clearLevel();
-                                world_.loadLevel("level1.json");
-                                state_ = State::RUNNING;
-                            } else {
-                                main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
-                            }
+                            main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
                             break;
                         case LevelSelector::Item::NEXT:
                         case LevelSelector::Item::PREV:
@@ -229,10 +251,12 @@ void GameModel::setState() {
             } else if (selectedItem == 1) {
                 // Next Level
                 state_ = State::MENU;
+                main_menu_.getUserSelector().setPlayerAccepted(false);
                 main_menu_.setScreen(MainMenu::Screen::MAIN); 
             } else if (selectedItem == 2) {
                 // Main Menu
                 state_ = State::MENU;
+                main_menu_.getUserSelector().setPlayerAccepted(false);
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
             } else {
                 // Exit
@@ -274,18 +298,18 @@ void GameModel::handleTextEntered(sf::Uint32 unicode) {
     if (state_ == State::MENU && main_menu_.getScreen() == MainMenu::Screen::USER_SELECTOR) {
         // Handle backspace
         if (unicode == 8) {
-            std::string currentText = main_menu_.getPlayerText();
+            std::string currentText = main_menu_.getUserSelector().getPlayerText();
             if (!currentText.empty()) {
                 currentText.pop_back();
-                main_menu_.setPlayerText(currentText);
+                main_menu_.getUserSelector().setPlayerText(currentText);
             }
         // Handle printable characters
         } else if (unicode >= 32 && unicode < 128) {
-            std::string currentText = main_menu_.getPlayerText();
+            std::string currentText = main_menu_.getUserSelector().getPlayerText();
             // Max length of player name is 12
             if (currentText.size() < 13) {
                 currentText += static_cast<char>(unicode);
-                main_menu_.setPlayerText(currentText);
+                main_menu_.getUserSelector().setPlayerText(currentText);
             }
 
         }
