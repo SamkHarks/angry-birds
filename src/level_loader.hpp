@@ -54,6 +54,7 @@ class LevelLoader {
         void createObject(Object::Type objType, b2Body* body, b2FixtureDef& fixtureDef);
         void createBird(Bird::Type birdType, b2Body* body, b2FixtureDef& fixtureDef);
         void setLevelName(json levelJson);
+        void loadSfmlObjects(std::vector<Bird::Type>& birdList);
 };
 
 #endif

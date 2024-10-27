@@ -13,6 +13,13 @@
 #include "resource_manager.hpp"
 #include "score.hpp"
 
+struct SfObject {
+    sf::Sprite sprite;
+    sf::Text text;
+    char type;
+    int count;
+};
+
 class World {
     public:
         World();
@@ -43,6 +50,8 @@ class World {
         Score& getScore();
         const std::string& getLevelName() const;
         void setPlayer(const std::string& player);
+        void updateRemainingCountPositions(sf::RenderWindow& window);
+        void updateRemainingCounts(char type);
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -59,6 +68,7 @@ class World {
         Score scoreManager_;
         std::string player_ = "test";
         void drawRemainingCounts(sf::RenderWindow &window) const;
+        std::list<SfObject> sfObjects_;
         // Debug draw
         SFMLDebugDraw* debugDraw_ = nullptr;
 

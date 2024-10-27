@@ -1,6 +1,7 @@
 #include "level_loader.hpp"
 #include "utils.hpp"
 #include "world.hpp"
+#include "resource_manager.hpp"
 
 // half width and half height of the ground
 b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH, 50.f));
@@ -119,7 +120,7 @@ std::vector<Bird::Type> LevelLoader::readBirdList(json levelJson) {
         } else if (birdType == "G") {
             birdList.push_back(Bird::Type::Green);
         } else {
-            throw std::runtime_error("Invalid bird type. Should be one of R, B, G");
+            throw std::runtime_error("Invalid bird type. Should be one of R, L, G");
         }
     }
     return birdList;
@@ -260,6 +261,99 @@ void LevelLoader::saveHighScores(const std::vector<HighScore> &highScores, const
     outFile.close();
 }
 
+void LevelLoader::loadSfmlObjects(std::vector<Bird::Type>& birdList) {
+    std::list<SfObject> sfObjects;
+    ResourceManager& resourceManager = ResourceManager::getInstance();
+    sf::Font& font = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+    // create pig sprite and text
+    int offset = level_.cannon_->getTextWidth() + 40;
+    SfObject pigObject;
+    sf::Texture& pig = resourceManager.getTexture("/assets/images/pig.png");
+    sf::Sprite pigSprite;
+    pigSprite.setTexture(pig);
+    pigSprite.setScale(0.09f, 0.09f);
+    pigSprite.setPosition(offset, 10);
+    sf::Text pigText;
+    pigText.setFont(font);
+    pigText.setCharacterSize(40);
+    pigText.setFillColor(sf::Color::White);
+    pigText.setOutlineColor(sf::Color::Black);
+    pigText.setOutlineThickness(2);
+    pigText.setString(std::to_string(level_.totalPigCount_));
+    sf::FloatRect pigBounds = pigSprite.getLocalBounds();
+    pigText.setPosition(offset + 20,45);
+    // set the pig object
+    pigObject.sprite = pigSprite;
+    pigObject.text = pigText;
+    pigObject.type = 'P';
+    pigObject.count = level_.totalPigCount_;
+    // add the pig object to the list
+    sfObjects.push_back(pigObject);
+    // get the bird counts
+    std::vector<int> birdsLeft = {0,0,0};
+    for(auto bird : birdList) {
+        switch (bird)
+        {
+        case Bird::Type::Red:
+            birdsLeft[0]++;
+            break;
+        case Bird::Type::Blue:
+            birdsLeft[1]++;
+            break;
+        case Bird::Type::Green:
+            birdsLeft[2]++;
+            break;
+        default:
+            break;
+        }
+    }
+    // use the lambda function to get the bird file path
+    auto getFilePath = [&](int i) {
+        switch (i) {
+            case 0:
+                return "/assets/images/red_bird.png";
+            case 1:
+                return "/assets/images/blue_bird.png";
+            case 2:
+                return "/assets/images/green_bird.png";
+            default:
+                return "";
+        }
+    };
+    // create bird sprites and texts
+    offset += 60;
+    for(int i = 0; i < 3; i++) {
+        int count = birdsLeft[i];
+        if (count == 0) {
+            continue;
+        }
+        sf::Texture& bird = resourceManager.getTexture(getFilePath(i));
+        sf::Sprite birdSprite;
+        birdSprite.setTexture(bird);
+        birdSprite.setScale(0.1f, 0.1f);
+        birdSprite.setPosition(offset, 10);
+        sf::Text birdText;
+        birdText.setFont(font);
+        birdText.setCharacterSize(40);
+        birdText.setFillColor(sf::Color::White);
+        birdText.setOutlineColor(sf::Color::Black);
+        birdText.setOutlineThickness(2);
+        birdText.setString(std::to_string(count));
+        birdText.setPosition(offset + 20, 45);
+        offset += 60;
+        // set the bird object
+        SfObject birdObject;
+        birdObject.sprite = birdSprite;
+        birdObject.text = birdText;
+        birdObject.type = i == 0 ? 'R' : i == 1 ? 'L' : 'G';
+        birdObject.count = count;
+        // add the bird object to the list
+        sfObjects.push_back(birdObject);
+    }
+    // set the sf objects
+    level_.sfObjects_ = sfObjects;
+}
+
 void LevelLoader::loadLevel(const std::string& fileName) {
     std::string path = utils::getExecutablePath() + "/assets/levels/";
     std::ifstream file(path + fileName);
@@ -322,4 +416,6 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     // Set the total bird and pig count
     level_.totalBirdCount_ = level_.getRemainingBirdCount();
     level_.totalPigCount_ = level_.getRemainingPigCount();
+    // Load resources
+    loadSfmlObjects(birdList);
 }

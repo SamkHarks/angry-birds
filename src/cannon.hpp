@@ -16,6 +16,7 @@ class Cannon {
         bool isLaunching() const;
         void reset();
         void updateTextPosition(sf::RenderWindow& window);
+        int getTextWidth() const;
 
     private:
         sf::Texture barrelTexture_;

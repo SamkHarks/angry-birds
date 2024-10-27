@@ -95,3 +95,6 @@ void Cannon::updateTextPosition(sf::RenderWindow& window) {
     powerText_.setPosition(window.mapPixelToCoords(scorePosition));
 }
 
+int Cannon::getTextWidth() const {
+    return powerText_.getGlobalBounds().width;
+}

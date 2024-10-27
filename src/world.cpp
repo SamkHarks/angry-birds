@@ -122,13 +122,13 @@ const Bird* World::GetBird() const {
 void World::draw(sf::RenderWindow &window) const {
     window.draw(background_);
     scoreManager_.draw(window);
+    drawRemainingCounts(window);
     for (auto object : objects_) {
         window.draw(object->getSprite());
     }
     const Bird* bird = GetBird();
     if (bird != nullptr && bird->isLaunched()) {
-        const sf::Sprite& sprite = bird->getSprite();
-        window.draw(sprite);
+        window.draw(bird->getSprite());
     }
     cannon_->draw(window);
 }
@@ -271,9 +271,30 @@ Score& World::getScore() {
     return scoreManager_;
 }
 
-// TODO: Implement the drawRemainingCounts method
 void World::drawRemainingCounts(sf::RenderWindow &window) const {
+    for (const auto& sfObject : sfObjects_) {
+        window.draw(sfObject.sprite);
+        window.draw(sfObject.text);
+    }
+}
 
+void World::updateRemainingCountPositions(sf::RenderWindow& window) {
+    int offset = cannon_->getTextWidth() + 40;
+    for (auto& sfObject : sfObjects_) {
+        sfObject.sprite.setPosition(window.mapPixelToCoords(sf::Vector2i(offset, 10)));
+        sfObject.text.setPosition(window.mapPixelToCoords(sf::Vector2i(offset + 20, 45)));
+        offset += 60;
+    }
+}
+
+void World::updateRemainingCounts(char type) {
+    for (auto& sfObject : sfObjects_) {
+        if (sfObject.type == type) {
+            sfObject.count--;
+            sfObject.text.setString(std::to_string(sfObject.count));
+            break;
+        }
+    }
 }
 
 const std::string& World::getLevelName() const {

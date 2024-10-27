@@ -40,15 +40,23 @@ void GameModel::update() {
             // Check if any objects are destroyed & update score or remove them if they are out of bounds
             for (auto object : world_.getObjects()) {
                 if (object->isDestroyed()) {
+                    if (object->getType() == Object::Type::Pig) {
+                        world_.updateRemainingCounts(object->getTypeAsChar());
+                    }
                     world_.updateScore(object->getDestructionScore());
                     world_.removeObject(object);
                 } else if (object->isOutOfBounds()) {
+                    if (object->getType() == Object::Type::Pig) {
+                        world_.updateRemainingCounts(object->getTypeAsChar());
+                    }
+                    world_.updateScore(object->getDestructionScore());
                     world_.removeObject(object);
                 }
             }
             // Check if the bird is destroyed
             bird = world_.GetBird();
             if (bird != nullptr && (bird->isDestroyed() || bird->shouldDestroy())) {
+                world_.updateRemainingCounts(bird->getTypeAsChar());
                 world_.removeBird();
             }
             // Update the bird and objects

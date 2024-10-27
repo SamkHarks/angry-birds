@@ -28,6 +28,7 @@ void GameView::updateUIElements(GameModel& model) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
         world.getCannon()->updateTextPosition(*this);
+        world.updateRemainingCountPositions(*this);
     }
 }
 
