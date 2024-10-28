@@ -28,7 +28,7 @@ FetchContent_MakeAvailable(json)
 file(GLOB SOURCES src/*.cpp)
 
 add_executable(AngryBirds ${SOURCES})
-target_link_libraries(AngryBirds PRIVATE sfml-graphics box2d nlohmann_json::nlohmann_json)
+target_link_libraries(AngryBirds PRIVATE sfml-graphics sfml-audio box2d nlohmann_json::nlohmann_json)
 target_compile_features(AngryBirds PRIVATE cxx_std_17)
 
 # Copy assets directory to build directory
