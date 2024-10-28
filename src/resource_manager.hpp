@@ -24,10 +24,10 @@ public:
     sf::Texture& getTexture(const std::string& texturePath) {
         return getResource<sf::Texture>(texturePath, textures_);
     }
-    // TODO: add method to get sound buffer once sound is implemented
-    /*sf::SoundBuffer& getSoundBuffer(const std::string& soundPath) {
+
+    sf::SoundBuffer& getSoundBuffer(const std::string& soundPath) {
         return getResource<sf::SoundBuffer>(soundPath, soundBuffers_);
-    }*/
+    }
 
 private:
     // Private constructor to prevent instantiation
@@ -58,8 +58,7 @@ private:
     // Maps to store resources
     std::unordered_map<std::string, std::unique_ptr<sf::Font>> fonts_;
     std::unordered_map<std::string, std::unique_ptr<sf::Texture>> textures_;
-    // TODO: add sound buffer map once sound is implemented
-    //std::unordered_map<std::string, std::unique_ptr<sf::SoundBuffer>> soundBuffers_;
+    std::unordered_map<std::string, std::unique_ptr<sf::SoundBuffer>> soundBuffers_;
 };
 
 #endif // RESOURCE_MANAGER_HPP
