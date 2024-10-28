@@ -225,6 +225,7 @@ void GameModel::setState() {
                         world_.clearLevel();
                         world_.loadLevel(main_menu_.getLevelSelector().getSelectedLevel().filename);
                         world_.setPlayer(userSelector.getPlayer());
+                        main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
                         state_ = State::RUNNING;
                     }
                     break;
@@ -260,12 +261,14 @@ void GameModel::setState() {
                 // Next Level
                 state_ = State::MENU;
                 main_menu_.getUserSelector().setPlayerAccepted(false);
-                main_menu_.setScreen(MainMenu::Screen::MAIN); 
+                main_menu_.setScreen(MainMenu::Screen::MAIN);
+                main_menu_.updateMusic(sf::SoundSource::Status::Playing); 
             } else if (selectedItem == 2) {
                 // Main Menu
                 state_ = State::MENU;
                 main_menu_.getUserSelector().setPlayerAccepted(false);
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
+                main_menu_.updateMusic(sf::SoundSource::Status::Playing);
             } else {
                 // Exit
                 state_ = State::QUIT;

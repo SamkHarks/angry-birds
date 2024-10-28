@@ -75,6 +75,7 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector
         // Update the current angle based on the width of the character
         currentAngle += (charWidth / totalWidth) * (endAngle - startAngle);
     }
+    backgroundMusic_.play();
 };
 
 void MainMenu::draw(sf::RenderWindow& window) const {

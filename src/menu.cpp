@@ -6,9 +6,13 @@
 Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmount), menuItems_(buttonAmount) {
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     backgroundImage_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
+    backgroundMusicBuffer_ = ResourceManager::getInstance().getSoundBuffer("/assets/sounds/menu_2.wav");
     background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
     background_.setTexture(&backgroundImage_);
     background_.setPosition(0,0);
+    backgroundMusic_.setBuffer(backgroundMusicBuffer_);
+    backgroundMusic_.setVolume(10);
+    backgroundMusic_.setLoop(true);
 }
 
 void Menu::draw(sf::RenderWindow &window) const {
@@ -66,4 +70,20 @@ void Menu::handleMouseMove(sf::Vector2f mousePosition) {
     updateItem(sf::Color::White, 1.f);
     selectedItem_ = hoveredItem;
     updateItem(LIME_GREEN, 1.1f);
+}
+
+void Menu::updateMusic(sf::SoundSource::Status newStatus) {
+    switch (newStatus) {
+        case sf::SoundSource::Status::Playing:
+            backgroundMusic_.play();
+            break;
+        case sf::SoundSource::Status::Paused:
+            backgroundMusic_.pause();
+            break;
+        case sf::SoundSource::Status::Stopped:
+            backgroundMusic_.stop();
+            break;
+        default:
+            break;
+    }
 }

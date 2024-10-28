@@ -2,6 +2,7 @@
 #define MENU_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class Menu {
     public:
@@ -19,12 +20,15 @@ class Menu {
         int getItemAtPosition(sf::Vector2f mousePosition) const;
         virtual bool handleMouseClick(sf::Vector2f mousePosition);
         virtual void handleMouseMove(sf::Vector2f mousePosition);
+        void updateMusic(sf::SoundSource::Status status);
     private:
         Type type_;
     protected:
         sf::Font font_;
         sf::RectangleShape background_;
         sf::Texture backgroundImage_;
+        sf::SoundBuffer backgroundMusicBuffer_;
+        sf::Sound backgroundMusic_;
         const int buttonAmount_;
         std::vector<sf::Text> menuItems_;
         int selectedItem_ = 0;
