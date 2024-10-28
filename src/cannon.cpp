@@ -11,7 +11,8 @@ Cannon::Cannon() {
     if (!utils::loadFromFile(wheelsTexture_, "/assets/images/cannon_wheel.png")) {
         throw std::runtime_error("Failed to load texture file: /assets/images/cannon_wheel.png");
     }
-    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+    ResourceManager& resourceManager = ResourceManager::getInstance();
+    font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     barrelSprite_.setTexture(barrelTexture_);
     int width = barrelSprite_.getTextureRect().width;
     int height = barrelSprite_.getTextureRect().height;
@@ -33,6 +34,10 @@ Cannon::Cannon() {
     powerText_.setPosition(20, 10);
     powerText_.setOutlineColor(sf::Color::Black);
     powerText_.setOutlineThickness(2);
+
+    launchSound_.setBuffer(resourceManager.getSoundBuffer("/assets/sounds/cannon_fire.ogg"));
+    launchSound_.setVolume(50);
+
 }
 
 void Cannon::draw(sf::RenderWindow &window) const {
@@ -64,6 +69,7 @@ void Cannon::launchBird(Bird* bird) {
     if (bird == nullptr || bird->isLaunched()) {
         return;
     }
+    launchSound_.play();
     // Activate bird's body in b2World
     bird->getBody()->SetEnabled(true);
     float direction = -barrelSprite_.getRotation();

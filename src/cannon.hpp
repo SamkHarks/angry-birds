@@ -2,6 +2,7 @@
 #define CANNON_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "bird.hpp"
 
 class Cannon {
@@ -24,7 +25,8 @@ class Cannon {
         sf::Sprite wheelsSprite_;
         sf::Sprite barrelSprite_;
         sf::Text powerText_;
-        sf::Font font_; 
+        sf::Font font_;
+        sf::Sound launchSound_;
         sf::Clock pressClock_;
         float power_ = 0;
         bool isLaunching_ = false;
