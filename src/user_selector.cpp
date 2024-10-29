@@ -22,10 +22,10 @@ UserSelector::UserSelector() {
         acceptText_[i].setFillColor(sf::Color::White);
         acceptText_[i].setOutlineColor(sf::Color::Black);
         acceptText_[i].setOutlineThickness(5);
-        acceptText_[i].setCharacterSize(80);
+        acceptText_[i].setCharacterSize(65);
         textBounds = acceptText_[i].getGlobalBounds();
         acceptText_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        acceptText_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -100 : 100), 470);
+        acceptText_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -80 : 80), 480);
     }
     // set player text
     playerText_.setFont(font_);
@@ -47,7 +47,9 @@ UserSelector::UserSelector() {
         SCREEN_CENTER.x,
         playerText_.getPosition().y
     );
-
+    // Set initial selected item to Yes
+    selectedItem_ = 0;
+    updateItem(true);
 }
 
 void UserSelector::draw(sf::RenderWindow& window) const {
@@ -71,7 +73,7 @@ void UserSelector::setPlayer() {
     std::string playerName = playerText_.getString();
     if (playerName.length() >= 3) {
         player_ = playerName;
-        setPromptText("Are you sure you want to play as " + playerName + "?", 40);
+        setPromptText("Are you sure you want to play as " + playerName + "?");
     }
 }
 
@@ -86,9 +88,14 @@ void UserSelector::clearPlayer() {
     isPlayerAccepted_ = false;
 }
 
-void UserSelector::setPromptText(const std::string& text, int characterSize) {
+void UserSelector::setPromptText(const std::string& text) {
+    int characterSize = 80;
     promptText_.setString(text);
     promptText_.setCharacterSize(characterSize);
+    while (promptText_.getGlobalBounds().width > 685 && characterSize > 10) {
+        characterSize--;
+        promptText_.setCharacterSize(characterSize);
+    }
     sf::FloatRect textBounds = promptText_.getGlobalBounds();
     promptText_.setOrigin(textBounds.width / 2, textBounds.height / 2);
 }

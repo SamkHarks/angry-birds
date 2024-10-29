@@ -10,7 +10,7 @@ class UserSelector {
         void handleMouseMove(sf::Vector2f mousePosition);
         bool handleMouseClick(sf::Vector2f mousePosition);
         void handleTextEntered(sf::Uint32 unicode);
-        void setPromptText(const std::string& text, int characterSize = 80);
+        void setPromptText(const std::string& text);
         void setPlayerText(const std::string& text);
         void setPlayer();
         void clearPlayer();
