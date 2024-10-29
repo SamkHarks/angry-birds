@@ -38,13 +38,6 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
             menuItems_[i].setScale(1.1f, 1.1f);
         }
     }
-    // Load wooden sign texture
-    signImage_ = ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png");
-    woodenSign_.setSize(sf::Vector2f(860, 860));
-    woodenSign_.setTexture(&signImage_);
-    woodenSign_.setOrigin(woodenSign_.getGlobalBounds().width / 2, woodenSign_.getGlobalBounds().height / 2);
-    woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
-
 }
 
 void GameOver::setScoreManager(Score* scoreManager) {

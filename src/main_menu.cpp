@@ -5,12 +5,6 @@
 
 
 MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector_() {
-    // Load wooden sign texture
-    signImage_ = ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png");
-    woodenSign_.setSize(sf::Vector2f(860, 860));
-    woodenSign_.setTexture(&signImage_);
-    woodenSign_.setOrigin(woodenSign_.getGlobalBounds().width / 2, woodenSign_.getGlobalBounds().height / 2);
-    woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
     // Create menu items
     std::vector<std::string> button_texts = { "Play", "Settings", "Exit" };
     for (int i = 0; i < buttonAmount_; ++i) {

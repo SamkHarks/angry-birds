@@ -14,8 +14,6 @@ class GameOver: public Menu {
         Score* scoreManager_;
         std::vector<sf::Texture> starTextures_;
         std::vector<sf::Sprite> starSprites_;
-        sf::RectangleShape woodenSign_;
-        sf::Texture signImage_;
         sf::Clock clock_;
 };
 

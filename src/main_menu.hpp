@@ -21,8 +21,6 @@ class MainMenu: public Menu {
         void handleMouseMove(sf::Vector2f mousePosition) override;
         bool handleMouseClick(sf::Vector2f mousePosition) override;
     private:
-        sf::RectangleShape woodenSign_;
-        sf::Texture signImage_;
         std::vector<sf::Text> title_;
         LevelSelector levelSelector_;
         UserSelector userSelector_;

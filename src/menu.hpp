@@ -25,6 +25,7 @@ class Menu {
         Type type_;
     protected:
         sf::Font font_;
+        sf::RectangleShape woodenSign_;
         sf::RectangleShape background_;
         sf::Texture backgroundImage_;
         sf::SoundBuffer backgroundMusicBuffer_;
