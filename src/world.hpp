@@ -49,6 +49,7 @@ class World {
         void setPlayer(const std::string& player);
         void updateRemainingCountPositions(sf::RenderWindow& window);
         void updateRemainingCounts(char type);
+        int getAliveBirdCount() const;
     private:
         b2World *world_;
         b2Vec2 gravity_;

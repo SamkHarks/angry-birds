@@ -250,3 +250,7 @@ const std::string& World::getLevelName() const {
 void World::setPlayer(const std::string& player) {
     player_ = player;
 }
+
+int World::getAliveBirdCount() const {
+    return birds_.size();
+}

@@ -18,7 +18,7 @@ void GameModel::update() {
             }
             // Check if the level is over, update and set Score for level end menu
             bool isSettled = world_.getIsSettled();
-            bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getRemainingBirdCount() == 0;
+            bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getAliveBirdCount() == 0;
             if (isLevelCleared && isSettled) {
                 state_ = State::GAME_OVER;
                 world_.updateScore(world_.getRemainingBirdCount() * 1000);
