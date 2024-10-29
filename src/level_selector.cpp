@@ -21,9 +21,7 @@ LevelSelector::LevelSelector() {
     }
 
     // Load level image
-    if (!utils::loadFromFile(levelImage_, "/assets/images/level1.png")) {
-        throw std::runtime_error("Failed to load texture file: /assets/images/level1.png");
-    }
+    levelImage_ = ResourceManager::getInstance().getTexture("/assets/images/level1.png");
     level_.setSize(sf::Vector2f(VIEW_WIDTH,VIEW_HEIGHT));
     level_.setTexture(&levelImage_);
     level_.setOrigin(level_.getGlobalBounds().width / 2, level_.getGlobalBounds().height / 2);
@@ -46,7 +44,8 @@ LevelSelector::LevelSelector() {
     }
 
     // Load levels
-    levels_.push_back({"Level 1", "level1.json"});
+    levels_.push_back({"Level 1", "level1.json", "level1.png"});
+    levels_.push_back({"Level 2", "level2.json", "level2.png"});
 
     // Set initial selected item to level
     selectedItem_ = Item::LEVEL;
@@ -133,5 +132,25 @@ Level& LevelSelector::getSelectedLevel() {
 }
 
 void LevelSelector::setLevelIndex(int index) {
-    levelIndex_ = index;
+    levelIndex_ = index % levels_.size();
+}
+
+void LevelSelector::setLevelText() {
+    menuItems_[0].setString(levels_[levelIndex_].name);
+}
+
+void LevelSelector::setLevelImage() {
+    levelImage_ = ResourceManager::getInstance().getTexture("/assets/images/" + levels_[levelIndex_].image);
+    level_.setTexture(&levelImage_);
+}
+
+void LevelSelector::setLevel(Item item) {
+    assert(item == Item::PREV || item == Item::NEXT);
+    if (item == Item::PREV) {
+        setLevelIndex(levelIndex_ - 1);
+    } else {
+        setLevelIndex(levelIndex_ + 1);
+    }
+    setLevelText();
+    setLevelImage();
 }

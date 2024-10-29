@@ -232,7 +232,8 @@ void GameModel::setState() {
                 }
                 // Handle the level selector screen
                 case MainMenu::Screen::LEVEL_SELECTOR: {
-                    LevelSelector::Item item = main_menu_.getLevelSelector().getSelectedItem();
+                    LevelSelector& levelSelector = main_menu_.getLevelSelector();
+                    LevelSelector::Item item = levelSelector.getSelectedItem();
                     switch (item) {
                         case LevelSelector::Item::BACK:
                             main_menu_.setScreen(MainMenu::Screen::MAIN);
@@ -240,9 +241,11 @@ void GameModel::setState() {
                         case LevelSelector::Item::LEVEL:
                             main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
                             break;
-                        case LevelSelector::Item::NEXT:
+                        case LevelSelector::Item::NEXT: 
+                            levelSelector.setLevel(LevelSelector::Item::NEXT);
+                            break;
                         case LevelSelector::Item::PREV:
-                            //TODO: handle next and prev buttons
+                            levelSelector.setLevel(LevelSelector::Item::PREV);
                             break;
                     }
 

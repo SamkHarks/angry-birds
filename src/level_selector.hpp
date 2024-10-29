@@ -6,6 +6,7 @@
 struct Level {
     std::string name;
     std::string filename;
+    std::string image;
 };
 
 class LevelSelector {
@@ -25,7 +26,7 @@ class LevelSelector {
         bool handleMouseClick(sf::Vector2f mousePosition);
         void handleMouseMove(sf::Vector2f mousePosition);
         Level& getSelectedLevel();
-        void setLevelIndex(int index);
+        void setLevel(Item item);
     private:
         void updateItem(bool isSelected);
         sf::RectangleShape level_;
@@ -38,6 +39,9 @@ class LevelSelector {
         Item selectedItem_ = Item::LEVEL;
         std::vector<Level> levels_;
         int levelIndex_ = 0;
+        void setLevelText();
+        void setLevelImage();
+        void setLevelIndex(int index);
 };
 
 #endif // LEVEL_SELECTOR_HPP
