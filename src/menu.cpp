@@ -15,14 +15,6 @@ Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmoun
     backgroundMusic_.setLoop(true);
 }
 
-void Menu::draw(sf::RenderWindow &window) const {
-    window.draw(background_);
-    for (auto menuItem : menuItems_)
-    {
-        window.draw(menuItem);
-    }
-};
-
 const Menu::Type Menu::getType() const {
     return type_;
 }

@@ -13,7 +13,7 @@ class Menu {
             GAME_OVER,  // The game over menu.
         };
         Menu(Type type, int buttonAmount);
-        virtual void draw(sf::RenderWindow& window) const;
+        virtual void draw(sf::RenderWindow& window) const = 0;
         const int getSelectedItem() const;
         void setSelectedItem(int nextItem);
         const Type getType() const;
