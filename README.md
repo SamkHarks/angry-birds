@@ -6,7 +6,7 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 ## Features
 - **2D Physics Simulation** powered by **Box2D**
 - **Graphics Rendering** and **Input Handling** with **SFML**
-- **JSON (nlohmann/json)** for data formatting when storing and reading data - WIP
+- **JSON (nlohmann/json)** for data formatting when storing and reading data
 - Main menu
 - Settings - WIP
 - Level end menu - WIP
@@ -22,8 +22,6 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 To build and run the game, ensure the following dependencies are installed:
 
 - **CMake** (minimum version 3.16)
-- **SFML** (Simple and Fast Multimedia Library)
-- **Box2D** (2D Physics Engine)
 - A **C++17** compatible compiler (GCC, Clang, MSVC, etc.)
 
 ### Install Dependencies on Linux (Ubuntu Example)
@@ -58,8 +56,12 @@ sudo apt install libxrandr-dev libxcursor-dev libudev-dev \
    ```bash
    ./build/bin/AngryBirds
    ```
-
    On Windows, the executable can be found in `build/bin/AngryBirds.exe`.
+
+**OR Building with Visual Studio Code:** If you prefer using **VSCode**, you can take advantage of the **CMake Tools** extension:
+- Open the project folder in VSCode.
+- The extension will automatically detect the CMakeLists.txt file.
+- Use the VSCode commands to configure (CMake: Configure), build (CMake: Build), and run (CMake: Run Without Debugging) the project directly within the editor.
 
 ### Notes for Windows Users:
 - The build process automatically copies the necessary **OpenAL32.dll** to the output directory, ensuring audio support for SFML.
