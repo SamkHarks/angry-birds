@@ -3,6 +3,7 @@
 
 #include "main_menu.hpp"
 #include "game_over.hpp"
+#include "settings.hpp"
 #include "world.hpp"
 
 class GameModel {
@@ -50,6 +51,7 @@ class GameModel {
         State state_;
         MainMenu main_menu_;
         GameOver gameOverMenu_;
+        Settings settings_;
         World world_;
 };
 

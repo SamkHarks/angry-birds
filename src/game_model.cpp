@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include <algorithm>
 
-GameModel::GameModel() : state_(State::MENU), main_menu_(), world_(), gameOverMenu_() {}
+GameModel::GameModel() : state_(State::MENU), main_menu_(), world_(), gameOverMenu_(), settings_() {}
 
 void GameModel::update() {
     // TODO: Update game logic here
@@ -102,7 +102,7 @@ const Menu& GameModel::getMenu(Menu::Type type) const {
             break;
         case Menu::Type::SETTINGS:
             //TODO: return settings here, for now return main_menu
-            return main_menu_;
+            return settings_;
             break;
         case Menu::Type::GAME_OVER:
             return gameOverMenu_;
@@ -121,7 +121,7 @@ Menu& GameModel::getMenu(Menu::Type type) {
             return main_menu_;
         case Menu::Type::SETTINGS:
             // TODO: return settings here,  for now return main_menu
-            return main_menu_;
+            return settings_;
         case Menu::Type::GAME_OVER:
             return gameOverMenu_;
         default:
@@ -277,6 +277,9 @@ void GameModel::setState() {
         }
         // TODO: handle other states
         case State::SETTINGS:
+            if (settings_.getSelectedItem() == 0) {
+                state_ = State::MENU;
+            }
         case State::PAUSED:
             break;
         default:

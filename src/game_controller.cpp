@@ -76,7 +76,9 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     // TODO: Implement mouse actions in Pause menu
                     break;
                 case GameModel::State::SETTINGS:
-                    // TODO: Implement mouse actions in settings
+                    if (model_.getMenu(Menu::Type::SETTINGS).handleMouseClick(mousePosition)) {
+                        model_.setState();
+                    }
                     break;
                 default:
                     break;
