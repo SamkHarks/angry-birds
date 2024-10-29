@@ -47,6 +47,10 @@ LevelSelector::LevelSelector() {
 
     // Load levels
     levels_.push_back({"Level 1", "level1.json"});
+
+    // Set initial selected item to level
+    selectedItem_ = Item::LEVEL;
+    updateItem(true);
 }
 
 void LevelSelector::draw(sf::RenderWindow& window) const {
