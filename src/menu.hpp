@@ -32,8 +32,10 @@ class Menu {
         sf::Sound backgroundMusic_;
         const int buttonAmount_;
         std::vector<sf::Text> menuItems_;
+        std::vector<sf::Text> title_;
         int selectedItem_ = 0;
         void updateItem(sf::Color fillColor, float scale);
+        void setTitle(const std::string& title, float radius, int y);
 };
 
 #endif // MENU_HPP
