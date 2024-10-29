@@ -7,7 +7,6 @@
 #include "ground.hpp"
 #include "pig.hpp"
 #include "wall.hpp"
-#include "sfml_debug_draw.hpp"
 #include "cannon.hpp"
 #include "level_loader.hpp"
 #include "resource_manager.hpp"
@@ -35,8 +34,6 @@ class World {
         const Bird* GetBird() const;
         b2World* getWorld();
         std::list<Object *> getObjects();
-        void setDebugDraw(SFMLDebugDraw* debugDraw);
-        void debugDraw() const;
         void removeObject(Object *object);
         void removeBird();
         void resetBird();
@@ -69,11 +66,7 @@ class World {
         std::string player_ = "test";
         void drawRemainingCounts(sf::RenderWindow &window) const;
         std::list<SfObject> sfObjects_;
-        // Debug draw
-        SFMLDebugDraw* debugDraw_ = nullptr;
-
         LevelLoader levelLoader_;
-        
         friend class LevelLoader;
 };
 

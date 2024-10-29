@@ -133,60 +133,6 @@ void World::draw(sf::RenderWindow &window) const {
     cannon_->draw(window);
 }
 
-void World::debugDraw() const {
-    // Loop through all objects and draw their Box2D shapes
-    sf::Color sfmlRed = sf::Color::Red;
-    sf::Color sfmlGreen = sf::Color::Green;
-    b2Color box2DRed(sfmlRed.r / 255.0f, sfmlRed.g / 255.0f, sfmlRed.b / 255.0f);
-    b2Color box2DGreen(sfmlGreen.r / 255.0f, sfmlGreen.g / 255.0f, sfmlGreen.b / 255.0f);
-    for (auto object : objects_) {
-        auto body = object->getBody(); // Assuming this method exists and returns a b2Body*
-        for (b2Fixture* f = body->GetFixtureList(); f; f = f->GetNext()) {
-            
-            // Depending on the type of the fixture, call the appropriate SFMLDebugDraw method
-            if (f->GetType() == b2Shape::e_polygon) {
-                // Cast the shape to a polygon shape to access vertices
-                b2PolygonShape* polygonShape = static_cast<b2PolygonShape*>(f->GetShape());
-                debugDraw_->DrawPolygon(polygonShape->m_vertices, polygonShape->m_count, box2DRed);
-            } else if (f->GetType() == b2Shape::e_circle) {
-                // Cast the shape to a circle shape to access center and radius
-                b2CircleShape* circleShape = static_cast<b2CircleShape*>(f->GetShape());
-                // Calculate the global position of the circle's center
-                b2Vec2 center = body->GetWorldPoint(circleShape->m_p);
-                debugDraw_->DrawCircle(center, circleShape->m_radius, box2DRed);
-            }
-            // Add handling for other shape types (e.g., circle) as needed
-        }
-    }
-
-    // Loop through birds if they are handled separately
-    for (auto bird : birds_) {
-    //const Bird* bird = GetBird(); // Assuming this method exists and returns a single bird for simplicity
-        const auto birdBody = bird->getBody(); // Assuming getBody() returns a b2Body*
-        for (const b2Fixture* f = birdBody->GetFixtureList(); f; f = f->GetNext()) {
-            // Assuming birds are represented with a different color or shape
-                if (f->GetType() == b2Shape::e_circle) {
-                    const b2CircleShape* circleShape = static_cast<const b2CircleShape*>(f->GetShape());
-                    // Get the radius of the circle
-                    float radius = circleShape->m_radius;
-                    // Calculate the global position of the circle's center
-                    b2Vec2 center = birdBody->GetWorldPoint(circleShape->m_p);
-                    // Convert Box2D position to SFML position (if necessary, depending on your coordinate system)
-                    sf::Vector2f sfCenter(center.x, center.y);
-                    // Convert Box2D radius to SFML radius (if necessary, depending on your scale factor)
-                    float sfRadius = radius;
-                    // Draw the circle with SFMLDebugDraw
-                    debugDraw_->DrawCircle(center, sfRadius, box2DGreen);
-                }
-        }
-    }
-   
-}
-
-void World::setDebugDraw(SFMLDebugDraw* debugDraw) {
-    this->debugDraw_ = debugDraw;
-};
-
 void World::removeObject(Object *object) {
     world_->DestroyBody(object->getBody());
     objects_.remove(object);

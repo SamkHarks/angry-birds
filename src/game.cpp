@@ -1,6 +1,5 @@
 #include "game.hpp"
 #include "world.hpp"
-#include "sfml_debug_draw.hpp"
 
 Game::Game() : model_(), view_(), controller_(model_, view_) {}
 
