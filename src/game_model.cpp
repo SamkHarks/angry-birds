@@ -25,7 +25,9 @@ void GameModel::update() {
                 world_.getScore().setStars(world_.getStars());
                 world_.getScore().setLevelEndText(world_.getLevelName());
                 world_.saveHighScore(world_.getScore().getCurrentScore());
-                //main_menu_.getUserSelector().savePlayer(false);
+                if (world_.updatePlayer()) {
+                    main_menu_.getUserSelector().savePlayer(world_.getPlayer(), true);
+                }
                 gameOverMenu_.setScoreManager(&world_.getScore());
             }
             // Check for collisions

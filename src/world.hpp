@@ -52,6 +52,8 @@ class World {
         void updateRemainingCountPositions(sf::RenderWindow& window);
         void updateRemainingCounts(char type);
         int getAliveBirdCount() const;
+        int getLevelIndex() const;
+        bool updatePlayer();
     private:
         b2World *world_;
         b2Vec2 gravity_;

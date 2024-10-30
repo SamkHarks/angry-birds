@@ -254,3 +254,36 @@ void World::setPlayer(const Player& player) {
 int World::getAliveBirdCount() const {
     return birds_.size();
 }
+
+int World::getLevelIndex() const {
+    return levelIndex_;
+}
+
+const Player& World::getPlayer() const {
+    return player_;
+}
+
+bool World::updatePlayer() {
+    int score = scoreManager_.getCurrentScore();
+    int stars = scoreManager_.getStars();
+    bool hasUpdated = false;
+    // push new score if score doesn't exist or if new score is higher
+    if (player_.highScores.size() <= levelIndex_) {
+        player_.highScores.resize(levelIndex_ + 1, 0);
+        player_.highScores[levelIndex_] = score;
+        hasUpdated = true;
+    } else if (player_.highScores[levelIndex_] < score) {
+        player_.highScores[levelIndex_] = score;
+        hasUpdated = true;
+    }
+    // push new stars if stars doesn't exist or if new stars is higher
+    if (player_.stars.size() <= levelIndex_) {
+        player_.stars.resize(levelIndex_ + 1, 0);
+        player_.stars[levelIndex_] = stars;
+        hasUpdated = true;
+    } else if (player_.stars[levelIndex_] < stars) {
+        player_.stars[levelIndex_] = stars;
+        hasUpdated = true;
+    }
+    return hasUpdated;
+}
