@@ -105,7 +105,8 @@ LevelLoader::LevelLoader(World& world) : level_(world) {}
 
 
 void LevelLoader::setLevelName(json levelJson) {
-    level_.levelName_ = levelJson["name"];
+    level_.levelIndex_ = levelJson["id"];
+    level_.levelName_ = "Level " + std::to_string(level_.levelIndex_ + 1);
 }
 
 

@@ -1,5 +1,5 @@
 {
-    "name": "Level 1",
+    "id": 0,
     "highScores": [],
     "birds": {
         "list": ["R", "G"],
