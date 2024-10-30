@@ -54,7 +54,7 @@ void UserLoader::loadPlayer(const std::string& playerName) {
     }
 }
 
-void UserLoader::savePlayer(bool isNewPlayer) {
+void UserLoader::savePlayer(const Player& player) {
     std::string path = utils::getExecutablePath() + "/assets/data/players.json";
     std::ifstream inFile(path);
     if(!inFile.is_open()) {
@@ -63,10 +63,17 @@ void UserLoader::savePlayer(bool isNewPlayer) {
     json playersJson;
     inFile >> playersJson;
     inFile.close();
-    // Add the new player to the list of players
-    if (isNewPlayer) {
-        players_.push_back(userSelector_.player_);
+
+    // Add or update the player in the players_ vector
+    auto it = std::find_if(players_.begin(), players_.end(), [&player](const Player& p){
+        return p.name == player.name;
+    });
+    if (it == players_.end()) {
+        players_.push_back(player);
+    } else {
+        *it = player;
     }
+
     // Create a JSON array to store player data
     json playersArray = json::array();
     for (const auto& player : players_) {

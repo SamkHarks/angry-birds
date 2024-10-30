@@ -227,7 +227,7 @@ void GameModel::setState() {
                         world_.loadLevel(main_menu_.getLevelSelector().getSelectedLevel().filename);
                         world_.setPlayer(userSelector.getPlayer());
                         if (userSelector.isNewPlayer()) {
-                            userSelector.savePlayer(true);
+                            userSelector.savePlayer(userSelector.getPlayer());
                         }
                         main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
                         state_ = State::RUNNING;

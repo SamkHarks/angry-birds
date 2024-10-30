@@ -31,7 +31,7 @@ class UserSelector {
         Screen getScreen() const;
         void setScreen(Screen screen);
         bool isNewPlayer() const;
-        void savePlayer(bool isNewPlayer);
+        void savePlayer(const Player& player, bool updatePlayer = false);
     private:
         sf::Font font_;
         sf::Text promptText_;

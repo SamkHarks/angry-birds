@@ -193,6 +193,9 @@ bool UserSelector::isNewPlayer() const {
     return userLoader_.isPlayerNameAvailable(player_.name);
 }
 
-void UserSelector::savePlayer(bool isNewPlayer) {
-    userLoader_.savePlayer(isNewPlayer);
+void UserSelector::savePlayer(const Player& player, bool updatePlayer) {
+    userLoader_.savePlayer(player);
+    if (updatePlayer) {
+        player_ = player;
+    }
 }
