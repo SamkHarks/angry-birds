@@ -44,7 +44,7 @@ void World::saveHighScore(int score) {
         return;
     }
     HighScore highScore;
-    highScore.player = player_;
+    highScore.player = player_.name;
     highScore.score = score;
     if (scoreManager_.updateHighScores(highScore)) {
         levelLoader_.saveHighScores(scoreManager_.getHighScores(), fileName_);
@@ -247,7 +247,7 @@ const std::string& World::getLevelName() const {
     return levelName_;
 }
 
-void World::setPlayer(const std::string& player) {
+void World::setPlayer(const Player& player) {
     player_ = player;
 }
 

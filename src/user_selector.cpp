@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "resource_manager.hpp"
 
-UserSelector::UserSelector() {
+UserSelector::UserSelector() : userLoader_(*this) {
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     // set prompt text
     promptText_.setFont(font_);
@@ -50,6 +50,9 @@ UserSelector::UserSelector() {
     // Set initial selected item to Yes
     selectedItem_ = 0;
     updateItem(true);
+
+    // load players
+    userLoader_.loadPlayers();
 }
 
 void UserSelector::draw(sf::RenderWindow& window) const {
@@ -66,23 +69,33 @@ void UserSelector::draw(sf::RenderWindow& window) const {
 }
 
 bool UserSelector::isPlayerSet() const {
-    return !player_.empty();
+    return !player_.name.empty();
 }
 
 void UserSelector::setPlayer() {
     std::string playerName = playerText_.getString();
     if (playerName.length() >= 3) {
-        player_ = playerName;
-        setPromptText("Are you sure you want to play as " + playerName + "?");
+        if (userLoader_.isPlayerNameAvailable(playerName)) {
+            player_.name = playerName;
+            player_.stars = std::vector<int>();
+            player_.highScores = std::vector<int>();
+            setPromptText("Create new player: " + playerName + "?");
+        } else {
+            userLoader_.loadPlayer(playerName);
+            setPromptText("Player: " + playerName + " already exists. Load player?");
+        }
+        
     }
 }
 
-std::string UserSelector::getPlayer() const {
+const Player& UserSelector::getPlayer() const {
     return player_;
 }
 
 void UserSelector::clearPlayer() {
-    player_ = "";
+    player_.name = "";
+    player_.highScores.clear();
+    player_.stars.clear();
     setPromptText("Add player:");
     setPlayerText("");
     isPlayerAccepted_ = false;
@@ -166,4 +179,20 @@ void UserSelector::handleMouseMove(sf::Vector2f mousePosition) {
     updateItem(false);
     selectedItem_ = hoveredItem;
     updateItem(true);
+}
+
+UserSelector::Screen UserSelector::getScreen() const {
+    return screen_;
+}
+
+void UserSelector::setScreen(UserSelector::Screen screen) {
+    screen_ = screen;
+}
+
+bool UserSelector::isNewPlayer() const {
+    return userLoader_.isPlayerNameAvailable(player_.name);
+}
+
+void UserSelector::savePlayer(bool isNewPlayer) {
+    userLoader_.savePlayer(isNewPlayer);
 }

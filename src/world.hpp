@@ -11,6 +11,7 @@
 #include "level_loader.hpp"
 #include "resource_manager.hpp"
 #include "score.hpp"
+#include "user_loader.hpp"
 
 struct SfObject {
     sf::Sprite sprite;
@@ -46,7 +47,8 @@ class World {
         int getStars() const;
         Score& getScore();
         const std::string& getLevelName() const;
-        void setPlayer(const std::string& player);
+        void setPlayer(const Player& player);
+        const Player& getPlayer() const;
         void updateRemainingCountPositions(sf::RenderWindow& window);
         void updateRemainingCounts(char type);
         int getAliveBirdCount() const;
@@ -56,6 +58,7 @@ class World {
         std::list<Object *> objects_;
         std::list<Bird *> birds_;
         std::string levelName_;
+        int levelIndex_ = 0;
         Cannon *cannon_;
         sf::RectangleShape background_;
         sf::Texture background_image_;
@@ -64,7 +67,7 @@ class World {
         bool isSettled_ = false;
         std::string fileName_;
         Score scoreManager_;
-        std::string player_ = "test";
+        Player player_ = {"", std::vector<int>(), std::vector<int>()};
         void drawRemainingCounts(sf::RenderWindow &window) const;
         std::list<SfObject> sfObjects_;
         LevelLoader levelLoader_;
