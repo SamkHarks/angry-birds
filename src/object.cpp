@@ -1,10 +1,9 @@
 #include "object.hpp"
 #include "utils.hpp"
+#include "resource_manager.hpp"
 
 Object::Object(b2Body *body, Type type, std::string texture_file, float health, bool isDestrucable) : body_(body), type_(type), health_(health), isDestrucable_(isDestrucable) {
-    if (!utils::loadFromFile(texture_, texture_file)) {
-        throw std::runtime_error("Failed to load texture file: " + texture_file);
-    }
+    texture_ = ResourceManager::getInstance().getTexture(texture_file);
     sprite_.setTexture(texture_);
 }
 
