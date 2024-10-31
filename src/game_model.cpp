@@ -18,7 +18,7 @@ void GameModel::update() {
             }
 
             // Check if level is ended and handle level ending
-            if (world_.isWorldSettled()) {
+            if (world_.isSettled()) {
                 handleLevelEnd();
             }
             // Handle collisions

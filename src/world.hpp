@@ -52,7 +52,7 @@ class World {
         int getAliveBirdCount() const;
         int getLevelIndex() const;
         bool updatePlayer();
-        bool isWorldSettled () const;
+        bool isSettled () const;
     private:
         b2World *world_;
         b2Vec2 gravity_;

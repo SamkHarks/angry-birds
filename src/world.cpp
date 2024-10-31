@@ -277,7 +277,7 @@ bool World::updatePlayer() {
     return hasUpdated;
 }
 
-bool World::isWorldSettled() const {
+bool World::isSettled() const {
     bool isLevelCleared = getRemainingPigCount() == 0 || getAliveBirdCount() == 0;
     bool isSettled = false;
     if (isLevelCleared) {
