@@ -61,7 +61,7 @@ void GameModel::handleCollisions() {
 void GameModel::handleObjectState() {
     // Check if any objects are destroyed or out of bounds otherwise update them
     for (auto object : world_.getObjects()) {
-        if (object->isDestroyed() || object->isOutOfBounds()) {
+        if (object->shouldRemove()) {
             if (object->getType() == Object::Type::Pig) {
                 world_.updateRemainingCounts(object->getTypeAsChar());
             }
@@ -77,7 +77,7 @@ void GameModel::handleBirdState() {
     // Check if the bird is destroyed or out of bounds otherwise update it
     Bird *bird = world_.GetBird();
     if (bird != nullptr) {
-        if (bird->isDestroyed() || bird->shouldDestroy()) {
+        if (bird->shouldRemove()) {
             world_.updateRemainingCounts(bird->getTypeAsChar());
             world_.removeBird();
         } else {

@@ -16,3 +16,7 @@ Wall::Wall(b2Body *body, float hx, float hy) : Object(body, Type::Wall, "/assets
 char Wall::getTypeAsChar() const {
     return 'W';
 }
+
+bool Wall::shouldRemove() const {
+    return isDestroyed() || isOutOfBounds();
+}

@@ -19,7 +19,7 @@ class Bird : public Object {
 
         void setLaunched(bool launched);
 
-        bool shouldDestroy() const;
+        bool shouldRemove() const override;
 
         private:
             Type bird_type_;

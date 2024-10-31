@@ -41,7 +41,10 @@ char GreenBird::getTypeAsChar() const {
     return 'G';
 }
 
-bool Bird::shouldDestroy() const {
+bool Bird::shouldRemove() const {
+    if (isDestroyed()) {
+        return true;
+    }
     if (!is_launched_) { 
         return false;
     }

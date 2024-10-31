@@ -16,3 +16,7 @@ char Pig::getTypeAsChar() const {
 int Pig::getDestructionScore() const {
     return PIG_DESTRUCTION_SCORE;
 }
+
+bool Pig::shouldRemove() const {
+    return isDestroyed() || isOutOfBounds();
+}

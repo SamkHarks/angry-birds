@@ -26,6 +26,7 @@ class Object {
         virtual bool isMoving() const;
         virtual int getDestructionScore() const;
         bool isOutOfBounds() const;
+        virtual bool shouldRemove() const;
 
     protected:
         sf::Texture texture_;

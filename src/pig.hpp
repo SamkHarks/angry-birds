@@ -10,6 +10,7 @@ class Pig : public Object {
         Pig(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
         virtual int getDestructionScore() const override;
+        virtual bool shouldRemove() const override;
 };
 
 #endif //PIG_HPP

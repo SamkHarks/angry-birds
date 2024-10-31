@@ -66,3 +66,7 @@ bool Object::isMoving() const {
 int Object::getDestructionScore() const {
     return 0;
 }
+
+bool Object::shouldRemove() const {
+    return false;
+}
