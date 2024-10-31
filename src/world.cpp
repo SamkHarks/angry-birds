@@ -164,14 +164,6 @@ void World::resetBird() {
     }
 }
 
-void World::setIsSettled(bool isSettled) {
-    isSettled_ = isSettled;
-}
-
-bool World::getIsSettled() const {
-    return isSettled_;
-}
-
 void World::clearLevel() {
     // Destroy all bodies in the Box2D world
     for (b2Body* body = world_->GetBodyList(); body != nullptr; ) {
@@ -194,9 +186,6 @@ void World::clearLevel() {
 
     // Reset cannon
     cannon_->reset();
-
-    // set world to not settled
-    isSettled_ = false;
 
     // reset score
     scoreManager_.reset();
@@ -286,4 +275,22 @@ bool World::updatePlayer() {
         hasUpdated = true;
     }
     return hasUpdated;
+}
+
+bool World::isWorldSettled() const {
+    const Bird *bird = GetBird();
+    // initial check
+    bool isSettled = bird == nullptr || bird->isLaunched() || getRemainingPigCount() == 0;
+    if (isSettled) {
+        // check if all objects are settled
+        for (auto object : objects_) {
+            if (object->isMoving()) {
+                isSettled = false;
+                break;
+            }
+        }
+        // Make sure that launched bird is settled
+        isSettled = isSettled && (bird == nullptr || !bird->isMoving());
+    }
+    return isSettled;
 }

@@ -40,8 +40,6 @@ class World {
         void resetBird();
         int getRemainingBirdCount() const;
         int getRemainingPigCount() const;
-        void setIsSettled(bool isSettled);
-        bool getIsSettled() const;
         Cannon* getCannon();
         void updateScore(int score);
         int getStars() const;
@@ -54,6 +52,7 @@ class World {
         int getAliveBirdCount() const;
         int getLevelIndex() const;
         bool updatePlayer();
+        bool isWorldSettled () const;
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -66,7 +65,6 @@ class World {
         sf::Texture background_image_;
         int totalPigCount_ = 0;
         int totalBirdCount_ = 0;
-        bool isSettled_ = false;
         std::string fileName_;
         Score scoreManager_;
         Player player_ = {"", std::vector<int>(), std::vector<int>()};

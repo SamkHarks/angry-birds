@@ -53,6 +53,11 @@ class GameModel {
         GameOver gameOverMenu_;
         Settings settings_;
         World world_;
+        bool checkLevelEndConditions();
+        void handleLevelEnd();
+        void handleCollisions();
+        void handleObjectState();
+        void handleBirdState();
 };
 
 #endif // GAME_MODEL_HPP

@@ -11,72 +11,85 @@ void GameModel::update() {
     switch (state_) {
         case State::RUNNING:
             world_.step();
+
             // Update the cannon if the bird is not launched
             Bird* bird = world_.GetBird();
             if (bird != nullptr && !bird->isLaunched()) {
                 world_.getCannon()->update();
             }
-            // Check if the level is over, update and set Score for level end menu
-            bool isSettled = world_.getIsSettled();
-            bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getAliveBirdCount() == 0;
-            if (isLevelCleared && isSettled) {
-                state_ = State::GAME_OVER;
-                world_.updateScore(world_.getRemainingBirdCount() * 1000);
-                world_.getScore().setStars(world_.getStars());
-                world_.getScore().setLevelEndText(world_.getLevelName());
-                world_.saveHighScore(world_.getScore().getCurrentScore());
-                if (world_.updatePlayer()) {
-                    main_menu_.getUserSelector().savePlayer(world_.getPlayer(), true);
-                }
-                gameOverMenu_.setScoreManager(&world_.getScore());
-            }
-            // Check for collisions
-            for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
-                b2Contact *c = ce;
 
-                Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
-                Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
-                
-                objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
-                objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
+            // Check if level is ended and handle level ending
+            if (checkLevelEndConditions()) {
+                handleLevelEnd();
             }
-            // Check if any objects are destroyed or out of bounds otherwise update them
-            for (auto object : world_.getObjects()) {
-                if (object->isDestroyed() || object->isOutOfBounds()) {
-                    if (object->getType() == Object::Type::Pig) {
-                        world_.updateRemainingCounts(object->getTypeAsChar());
-                    }
-                    world_.updateScore(object->getDestructionScore());
-                    world_.removeObject(object);
-                } else {
-                    object->update();
-                }
-            }
-            // Check if the bird is destroyed or out of bounds otherwise update it
-            bird = world_.GetBird();
-            if (bird != nullptr) {
-                if (bird->isDestroyed() || bird->shouldDestroy()) {
-                    world_.updateRemainingCounts(bird->getTypeAsChar());
-                    world_.removeBird();
-                } else {
-                    bird->update();
-                }
-            }
-            // Check if the world has settled
-            bird = world_.GetBird();
-            if (bird == nullptr || bird->isLaunched() || world_.getRemainingPigCount() == 0) {
-                isSettled = true;
-                for (auto object : world_.getObjects()) {
-                    if (object->isMoving()) {
-                        isSettled = false;
-                        break;
-                    }
-                }
-                if (isSettled && (bird == nullptr || !bird->isMoving())) {
-                    world_.setIsSettled(true);
-                }
-            }
+            // Handle collisions
+            handleCollisions();
+
+            // Handle object state and bird state
+            handleObjectState();
+            handleBirdState();
+
             break;
+    }
+}
+
+bool GameModel::checkLevelEndConditions() {
+    bool isSettled = world_.isWorldSettled();
+    bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getAliveBirdCount() == 0;
+    return isLevelCleared && isSettled;
+}
+
+void GameModel::handleLevelEnd() {
+    // Set state, update score and player, and set Score for level end menu
+    state_ = State::GAME_OVER;
+    world_.updateScore(world_.getRemainingBirdCount() * 1000);
+    world_.getScore().setStars(world_.getStars());
+    world_.getScore().setLevelEndText(world_.getLevelName());
+    world_.saveHighScore(world_.getScore().getCurrentScore());
+    if (world_.updatePlayer()) {
+        main_menu_.getUserSelector().savePlayer(world_.getPlayer(), true);
+    }
+    gameOverMenu_.setScoreManager(&world_.getScore());
+}
+
+void GameModel::handleCollisions() {
+    // Check for collisions
+    for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
+        b2Contact *c = ce;
+
+        Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
+        Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
+        
+        objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
+        objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
+    }
+}
+
+void GameModel::handleObjectState() {
+    // Check if any objects are destroyed or out of bounds otherwise update them
+    for (auto object : world_.getObjects()) {
+        if (object->isDestroyed() || object->isOutOfBounds()) {
+            if (object->getType() == Object::Type::Pig) {
+                world_.updateRemainingCounts(object->getTypeAsChar());
+            }
+            world_.updateScore(object->getDestructionScore());
+            world_.removeObject(object);
+        } else {
+            object->update();
+        }
+    }
+}
+
+void GameModel::handleBirdState() {
+    // Check if the bird is destroyed or out of bounds otherwise update it
+    Bird *bird = world_.GetBird();
+    if (bird != nullptr) {
+        if (bird->isDestroyed() || bird->shouldDestroy()) {
+            world_.updateRemainingCounts(bird->getTypeAsChar());
+            world_.removeBird();
+        } else {
+            bird->update();
+        }
     }
 }
 
