@@ -7,7 +7,11 @@ GameView::GameView() : sf::RenderWindow(sf::VideoMode(VIEW_WIDTH, VIEW_HEIGHT), 
 }
 
 void GameView::setGameView() {
-    this->setView(gameView_);
+    if (updateView_) {
+        this->setView(gameView_);
+        updateView_ = false;
+    }
+
 }
 
 void GameView::updateCamera(const GameModel& model) {
@@ -18,9 +22,11 @@ void GameView::updateCamera(const GameModel& model) {
             sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
             gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), VIEW_WIDTH * 1.5f), std::min(birdPosition.y, defaultCenter_.y));
             manualControl_ = false;
-        } else if (!manualControl_ && gameView_.getCenter() != defaultCenter_) {
+            updateView_ = true;
+        } else if (!manualControl_) {
             gameView_.setCenter(defaultCenter_);
             manualControl_ = true;
+            updateView_ = true;
         }
     }
 }
@@ -29,15 +35,16 @@ void GameView::updateCamera(const sf::Keyboard::Key& code) {
     if (code == sf::Keyboard::Key::Left) {
         auto centerPosition = gameView_.getCenter();
         gameView_.setCenter(std::max(centerPosition.x - 10, defaultCenter_.x), defaultCenter_.y);
+        updateView_ = true;
     } else if (code == sf::Keyboard::Key::Right) {
         auto centerPosition = gameView_.getCenter();
         gameView_.setCenter(std::min(centerPosition.x + 10, VIEW_WIDTH * 1.5f), defaultCenter_.y);
+        updateView_ = true;
     }
 }
 
-// Update UI elements here that are not part of the game world (and require window coordinates)
-void GameView::updateUIElements(GameModel& model) {
-    // Update the position of the score and power text
+// Update HUD elements to keep them in the same position
+void GameView::updateHUD(GameModel& model) {
     if (model.getState() == GameModel::State::RUNNING) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
