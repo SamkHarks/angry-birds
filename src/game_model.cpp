@@ -7,7 +7,7 @@
 GameModel::GameModel() : state_(State::MENU), main_menu_(), world_(), gameOverMenu_(), settings_() {}
 
 void GameModel::update() {
-    // TODO: Update game logic here
+    // TODO: Refactor this method to smaller pieces
     switch (state_) {
         case State::RUNNING:
             world_.step();
@@ -40,37 +40,30 @@ void GameModel::update() {
                 objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
                 objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
             }
-            // Check if any objects are destroyed & update score or remove them if they are out of bounds
+            // Check if any objects are destroyed or out of bounds otherwise update them
             for (auto object : world_.getObjects()) {
-                if (object->isDestroyed()) {
+                if (object->isDestroyed() || object->isOutOfBounds()) {
                     if (object->getType() == Object::Type::Pig) {
                         world_.updateRemainingCounts(object->getTypeAsChar());
                     }
                     world_.updateScore(object->getDestructionScore());
                     world_.removeObject(object);
-                } else if (object->isOutOfBounds()) {
-                    if (object->getType() == Object::Type::Pig) {
-                        world_.updateRemainingCounts(object->getTypeAsChar());
-                    }
-                    world_.updateScore(object->getDestructionScore());
-                    world_.removeObject(object);
+                } else {
+                    object->update();
                 }
             }
-            // Check if the bird is destroyed
-            bird = world_.GetBird();
-            if (bird != nullptr && (bird->isDestroyed() || bird->shouldDestroy())) {
-                world_.updateRemainingCounts(bird->getTypeAsChar());
-                world_.removeBird();
-            }
-            // Update the bird and objects
+            // Check if the bird is destroyed or out of bounds otherwise update it
             bird = world_.GetBird();
             if (bird != nullptr) {
-                bird->update();
-            }
-            for (auto object : world_.getObjects()) {
-                object->update();
+                if (bird->isDestroyed() || bird->shouldDestroy()) {
+                    world_.updateRemainingCounts(bird->getTypeAsChar());
+                    world_.removeBird();
+                } else {
+                    bird->update();
+                }
             }
             // Check if the world has settled
+            bird = world_.GetBird();
             if (bird == nullptr || bird->isLaunched() || world_.getRemainingPigCount() == 0) {
                 isSettled = true;
                 for (auto object : world_.getObjects()) {
