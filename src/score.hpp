@@ -19,7 +19,7 @@ public:
     bool updateHighScores(const HighScore& highScore);
     void setHighScores(const std::vector<HighScore>& highScores);
     const std::vector<HighScore>& getHighScores() const;
-    void updatePosition(sf::RenderWindow& window);
+    void updatePosition(const sf::RenderWindow& window);
     void setPosition(const sf::Vector2f &position);
     int getCurrentScore() const;
     int getHighScore() const;

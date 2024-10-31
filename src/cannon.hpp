@@ -16,7 +16,7 @@ class Cannon {
         void update();
         bool isLaunching() const;
         void reset();
-        void updateTextPosition(sf::RenderWindow& window);
+        void updateTextPosition(const sf::RenderWindow& window);
         int getTextWidth() const;
 
     private:

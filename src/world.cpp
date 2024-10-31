@@ -213,7 +213,7 @@ void World::drawRemainingCounts(sf::RenderWindow &window) const {
     }
 }
 
-void World::updateRemainingCountPositions(sf::RenderWindow& window) {
+void World::updateRemainingCountPositions(const sf::RenderWindow& window) {
     int offset = cannon_->getTextWidth() + 40;
     for (auto& sfObject : sfObjects_) {
         sfObject.sprite.setPosition(window.mapPixelToCoords(sf::Vector2i(offset, 10)));

@@ -96,7 +96,7 @@ void Cannon::reset() {
     powerText_.setString("Power: 0 %");
 }
 
-void Cannon::updateTextPosition(sf::RenderWindow& window) {
+void Cannon::updateTextPosition(const sf::RenderWindow& window) {
     sf::Vector2i scorePosition(20, 10);
     powerText_.setPosition(window.mapPixelToCoords(scorePosition));
 }

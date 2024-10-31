@@ -12,7 +12,7 @@ Score::Score() {
     text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
 }
 
-void Score::updatePosition(sf::RenderWindow& window) {
+void Score::updatePosition(const sf::RenderWindow& window) {
     sf::FloatRect textBounds = text_.getGlobalBounds();
     float viewWidth = window.getView().getSize().x;
     float xPosition = viewWidth - textBounds.width - 20;

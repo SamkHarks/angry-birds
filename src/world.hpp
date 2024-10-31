@@ -47,7 +47,7 @@ class World {
         const std::string& getLevelName() const;
         void setPlayer(const Player& player);
         const Player& getPlayer() const;
-        void updateRemainingCountPositions(sf::RenderWindow& window);
+        void updateRemainingCountPositions(const sf::RenderWindow& window);
         void updateRemainingCounts(char type);
         int getAliveBirdCount() const;
         int getLevelIndex() const;
