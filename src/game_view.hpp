@@ -10,12 +10,14 @@ class GameView: public sf::RenderWindow {
         void draw(const GameModel& model);
         void render(const GameModel& model);
         void updateCamera(const GameModel& model);
+        void updateCamera(const sf::Keyboard::Key& code);
         void updateUIElements(GameModel& model);
         void setGameView();
 
     private:
         sf::Vector2f defaultCenter_;
         sf::View gameView_;
+        bool manualControl_ = false;
 };
 
 #endif // GAME_VIEW_HPP

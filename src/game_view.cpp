@@ -12,12 +12,26 @@ void GameView::setGameView() {
 
 void GameView::updateCamera(const GameModel& model) {
     const World& world = model.getWorld();
-    const Bird* activeBird = world.GetBird();
-    if (activeBird && activeBird->isMoving()) {
-        sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
-        gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), VIEW_WIDTH * 1.f), std::min(birdPosition.y, defaultCenter_.y));
-    } else {
-        gameView_.setCenter(SCREEN_CENTER);
+    if (model.getState() == GameModel::State::RUNNING) {
+        const Bird* activeBird = world.GetBird();
+        if (activeBird && activeBird->isMoving()) {
+            sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
+            gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), VIEW_WIDTH * 1.5f), std::min(birdPosition.y, defaultCenter_.y));
+            manualControl_ = false;
+        } else if (!manualControl_ && gameView_.getCenter() != defaultCenter_) {
+            gameView_.setCenter(defaultCenter_);
+            manualControl_ = true;
+        }
+    }
+}
+
+void GameView::updateCamera(const sf::Keyboard::Key& code) {
+    if (code == sf::Keyboard::Key::Left) {
+        auto centerPosition = gameView_.getCenter();
+        gameView_.setCenter(std::max(centerPosition.x - 10, defaultCenter_.x), defaultCenter_.y);
+    } else if (code == sf::Keyboard::Key::Right) {
+        auto centerPosition = gameView_.getCenter();
+        gameView_.setCenter(std::min(centerPosition.x + 10, VIEW_WIDTH * 1.5f), defaultCenter_.y);
     }
 }
 
