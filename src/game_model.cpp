@@ -7,7 +7,6 @@
 GameModel::GameModel() : state_(State::MENU), main_menu_(), world_(), gameOverMenu_(), settings_() {}
 
 void GameModel::update() {
-    // TODO: Refactor this method to smaller pieces
     switch (state_) {
         case State::RUNNING:
             world_.step();
@@ -19,7 +18,7 @@ void GameModel::update() {
             }
 
             // Check if level is ended and handle level ending
-            if (checkLevelEndConditions()) {
+            if (world_.isWorldSettled()) {
                 handleLevelEnd();
             }
             // Handle collisions
@@ -31,12 +30,6 @@ void GameModel::update() {
 
             break;
     }
-}
-
-bool GameModel::checkLevelEndConditions() {
-    bool isSettled = world_.isWorldSettled();
-    bool isLevelCleared = world_.getRemainingPigCount() == 0 || world_.getAliveBirdCount() == 0;
-    return isLevelCleared && isSettled;
 }
 
 void GameModel::handleLevelEnd() {

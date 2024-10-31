@@ -278,19 +278,23 @@ bool World::updatePlayer() {
 }
 
 bool World::isWorldSettled() const {
-    const Bird *bird = GetBird();
-    // initial check
-    bool isSettled = bird == nullptr || bird->isLaunched() || getRemainingPigCount() == 0;
-    if (isSettled) {
-        // check if all objects are settled
+    bool isLevelCleared = getRemainingPigCount() == 0 || getAliveBirdCount() == 0;
+    bool isSettled = false;
+    if (isLevelCleared) {
+        const Bird *bird = GetBird();
+        isSettled = (bird == nullptr || !bird->isMoving());
+        // Early return if bird is not settled
+        if (!isSettled) {
+            return isSettled;
+        }
+        // Check if other objects are settled
         for (auto object : objects_) {
             if (object->isMoving()) {
                 isSettled = false;
                 break;
             }
         }
-        // Make sure that launched bird is settled
-        isSettled = isSettled && (bird == nullptr || !bird->isMoving());
+        
     }
     return isSettled;
 }
