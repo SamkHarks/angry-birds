@@ -8,11 +8,11 @@
 World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this), scoreManager_() {
     world_ = new b2World(gravity_);
     cannon_ = new Cannon();
+    int height = VIEW.getHeight();
     background_image_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
-    background_.setSize(sf::Vector2f(VIEW_WIDTH * 2, VIEW_HEIGHT * 1.8f));
+    background_.setSize(sf::Vector2f(VIEW.getWidth() * 2, height * 1.8f));
     background_.setTexture(&background_image_);
-    background_.setPosition(0,-VIEW_HEIGHT+200);
-    
+    background_.setPosition(0,-height+200);
 }
 
 World::~World() {

@@ -3,6 +3,7 @@
 #include "resource_manager.hpp"
 
 UserSelector::UserSelector() : userLoader_(*this) {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     // set prompt text
     promptText_.setFont(font_);
@@ -25,7 +26,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
         acceptText_[i].setCharacterSize(65);
         textBounds = acceptText_[i].getGlobalBounds();
         acceptText_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        acceptText_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -80 : 80), 480);
+        acceptText_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -80 : 80), SCREEN_CENTER.y + 30);
     }
     // set player text
     playerText_.setFont(font_);
@@ -36,7 +37,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
     playerText_.setString("");
     textBounds = playerText_.getGlobalBounds();
     playerText_.setOrigin(textBounds.width / 2, 0);
-    playerText_.setPosition(SCREEN_CENTER.x, 470);
+    playerText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
 
     // Initialize caret
     caret_.setSize(sf::Vector2f(3, playerText_.getCharacterSize()*1.3));
@@ -114,10 +115,11 @@ void UserSelector::setPromptText(const std::string& text) {
 }
 
 void UserSelector::setPlayerText(const std::string& text) {
+    const sf::Vector2f& SCREEN_CENTER = VIEW.getCenter();
     playerText_.setString(text);
     sf::FloatRect textBounds = playerText_.getGlobalBounds();
     playerText_.setOrigin(textBounds.width / 2, 0);
-    playerText_.setPosition(SCREEN_CENTER.x, 470);
+    playerText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
     caret_.setPosition(
         playerText_.getPosition().x + textBounds.width / 2,
         playerText_.getPosition().y

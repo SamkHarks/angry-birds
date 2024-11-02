@@ -4,6 +4,7 @@
 #include "resource_manager.hpp"
 
 Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmount), menuItems_(buttonAmount) {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     woodenSign_.setSize(sf::Vector2f(860, 860));
     woodenSign_.setTexture(&ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png"));
@@ -11,7 +12,7 @@ Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmoun
     woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
     backgroundImage_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
     backgroundMusicBuffer_ = ResourceManager::getInstance().getSoundBuffer("/assets/sounds/menu_2.wav");
-    background_.setSize(sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
+    background_.setSize(sf::Vector2f(VIEW.getWidth(), VIEW.getHeight()));
     background_.setTexture(&backgroundImage_);
     background_.setPosition(0,0);
     backgroundMusic_.setBuffer(backgroundMusicBuffer_);
@@ -85,6 +86,7 @@ void Menu::updateMusic(sf::SoundSource::Status newStatus) {
 }
 
 void Menu::setTitle(const std::string& title, float radius, int yOffset) {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     // Define the circular path segment
     sf::Vector2f center(SCREEN_CENTER.x, SCREEN_CENTER.y+yOffset);
     float startAngle = 270 - 20.f;

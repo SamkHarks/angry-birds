@@ -3,6 +3,7 @@
 #include <vector>
 
 GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
+    const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
     // Load star textures
     starTextures_.resize(4);
     for (int i = 0; i < 4; ++i) {
@@ -17,8 +18,7 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
         starSprites_[i].setScale(1, 0.7);
         auto textureRect = starSprites_[i].getTextureRect();
         starSprites_[i].setOrigin(textureRect.width / 2.f, textureRect.height / 2.f);
-        auto y = 110/*90*/ + (starSprites_[i].getGlobalBounds().height / 2);
-        starSprites_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x, y));
+        starSprites_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x, SCREEN_CENTER.y - 280.f));
     }
     // Create menu items
     std::vector<std::string> button_texts = { "Restart", "Next Level", "Main Menu", "Exit" };
@@ -32,7 +32,7 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
         // center the text
         float width = menuItems_[i].getGlobalBounds().width;
         menuItems_[i].setOrigin(width / 2, 0);
-        menuItems_[i].setPosition(SCREEN_CENTER.x , (starSprites_[0].getGlobalBounds().height + 130) + i * 100);
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - 180) + i * 100);
         if (i == selectedItem_) {
             menuItems_[i].setFillColor(LIME_GREEN);
             menuItems_[i].setScale(1.1f, 1.1f);
@@ -42,7 +42,7 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
 
 void GameOver::setScoreManager(Score* scoreManager) {
     scoreManager_ = scoreManager;
-    scoreManager_->setPosition(sf::Vector2f(SCREEN_CENTER.x, 10));
+    scoreManager_->setPosition(sf::Vector2f(VIEW.getCenter().x, 10));
     clock_.restart();
 }
 

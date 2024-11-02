@@ -19,8 +19,34 @@
 
 #include <SFML/Graphics/Texture.hpp>
 
-const int VIEW_WIDTH = 1500;
-const int VIEW_HEIGHT = 900;
+struct View {
+
+    int getWidth() const {
+        return WIDTH;
+    }
+
+    int getHeight() const {
+        return HEIGHT;
+    }
+
+    const sf::Vector2f& getCenter() const {
+        return CENTER;
+    }
+
+    void setSize(int width, int height) {
+        WIDTH = width;
+        HEIGHT = height;
+        CENTER = sf::Vector2f(WIDTH / 2.f, HEIGHT / 2.f);
+    }
+    private: 
+        int WIDTH = 1500;
+        int HEIGHT = 900;
+        sf::Vector2f CENTER = sf::Vector2f(WIDTH / 2, HEIGHT / 2);
+};
+
+inline View VIEW;
+const int WORLD_WIDTH = VIEW.getWidth() * 2;
+const int WORLD_HEIGHT = VIEW.getHeight() * 1.8f;
 const float SCALE = 100.f;
 const int FRAME_RATE = 60.f;
 const float TIME_STEP = (1.0f / FRAME_RATE) / 2;
@@ -28,7 +54,6 @@ const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
 const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
-const sf::Vector2f SCREEN_CENTER(VIEW_WIDTH / 2.f, VIEW_HEIGHT / 2.f);
 const sf::Color LIME_GREEN(100, 255, 0);
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);

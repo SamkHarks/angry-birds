@@ -87,11 +87,11 @@ namespace utils
     }
 
     sf::Vector2f B2ToSfCoords(const b2Vec2& b2_vector) {
-        return sf::Vector2f(B2ToSf(b2_vector.x), VIEW_HEIGHT - ( B2ToSf(b2_vector.y) ));
+        return sf::Vector2f(B2ToSf(b2_vector.x), VIEW.getHeight() - ( B2ToSf(b2_vector.y) ));
     }
 
     b2Vec2 SfToB2Coords(const sf::Vector2f& sf_vector) {
-        return b2Vec2(SfToB2(sf_vector.x), SfToB2(VIEW_HEIGHT - sf_vector.y));
+        return b2Vec2(SfToB2(sf_vector.x), SfToB2(VIEW.getHeight() - sf_vector.y));
     }
 
     float RadiansToDegrees(const float radians) {

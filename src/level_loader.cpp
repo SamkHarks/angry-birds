@@ -4,7 +4,7 @@
 #include "resource_manager.hpp"
 
 // half width and half height of the ground
-b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW_WIDTH, 50.f));
+b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW.getWidth(), 50.f));
 // half width and half height of the wall
 b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
 

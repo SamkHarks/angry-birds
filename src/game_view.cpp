@@ -1,7 +1,7 @@
 #include "game_view.hpp"
 #include "utils.hpp"
 
-GameView::GameView() : sf::RenderWindow(sf::VideoMode(VIEW_WIDTH, VIEW_HEIGHT), "Angry Birds") {
+GameView::GameView() : sf::RenderWindow(sf::VideoMode(VIEW.getWidth(), VIEW.getHeight()), "Angry Birds") {
     gameView_ = this->getDefaultView();
     defaultCenter_ = this->getDefaultView().getCenter();
 }
@@ -20,7 +20,7 @@ void GameView::updateCamera(const GameModel& model) {
         const Bird* activeBird = world.GetBird();
         if (activeBird && activeBird->isMoving()) {
             sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
-            gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), VIEW_WIDTH * 1.5f), std::min(birdPosition.y, defaultCenter_.y));
+            gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), WORLD_WIDTH - (gameView_.getSize().x*0.5f)), std::min(birdPosition.y, defaultCenter_.y));
             manualControl_ = false;
             updateView_ = true;
         } else if (!manualControl_) {
@@ -32,13 +32,16 @@ void GameView::updateCamera(const GameModel& model) {
 }
 
 void GameView::updateCamera(const sf::Keyboard::Key& code) {
+    if (!manualControl_) {
+        return; // Don't update camera if it's not in manual control
+    }
     if (code == sf::Keyboard::Key::Left) {
         auto centerPosition = gameView_.getCenter();
         gameView_.setCenter(std::max(centerPosition.x - 10, defaultCenter_.x), defaultCenter_.y);
         updateView_ = true;
     } else if (code == sf::Keyboard::Key::Right) {
         auto centerPosition = gameView_.getCenter();
-        gameView_.setCenter(std::min(centerPosition.x + 10, VIEW_WIDTH * 1.5f), defaultCenter_.y);
+        gameView_.setCenter(std::min(centerPosition.x + 10, WORLD_WIDTH - (gameView_.getSize().x*0.5f)), defaultCenter_.y);
         updateView_ = true;
     }
 }

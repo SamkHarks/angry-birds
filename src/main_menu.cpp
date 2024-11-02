@@ -17,7 +17,7 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector
         // center the text
         sf::FloatRect textBounds = menuItems_[i].getGlobalBounds();
         menuItems_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        menuItems_[i].setPosition(SCREEN_CENTER.x, 350 + i * 100);
+        menuItems_[i].setPosition(VIEW.getCenter().x, (VIEW.getCenter().y - 100) + i * 100);
         if (i == selectedItem_) {
             menuItems_[i].setFillColor(LIME_GREEN);
             menuItems_[i].setScale(1.1f, 1.1f);

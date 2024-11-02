@@ -43,7 +43,7 @@ bool Object::isDestroyed() const {
 
 bool Object::isOutOfBounds() const {
     sf::Vector2f position = utils::B2ToSfCoords(body_->GetPosition());
-    return position.x < 0 || position.y > VIEW_HEIGHT || position.x > VIEW_WIDTH * 2;
+    return position.x < 0 || position.y > VIEW.getHeight() || position.x > WORLD_WIDTH;
 }
 
 void Object::update() {

@@ -3,6 +3,7 @@
 #include "resource_manager.hpp"
 
 LevelSelector::LevelSelector() {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     // Load font
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     std::vector<std::string> button_texts = { "Level 1", "Back" };
@@ -16,13 +17,13 @@ LevelSelector::LevelSelector() {
         text.setString(button_texts[i]);
         sf::FloatRect textBounds = text.getGlobalBounds();
         text.setOrigin(textBounds.width / 2, textBounds.height / 2);
-        text.setPosition(SCREEN_CENTER.x, 300 + i * 324);
+        text.setPosition(SCREEN_CENTER.x, (SCREEN_CENTER.y - 150) + i * 324);
         menuItems_.push_back(text);
     }
 
     // Load level image
     levelImage_ = ResourceManager::getInstance().getTexture("/assets/images/level1.png");
-    level_.setSize(sf::Vector2f(VIEW_WIDTH,VIEW_HEIGHT));
+    level_.setSize(sf::Vector2f(VIEW.getWidth(),VIEW.getHeight()));
     level_.setTexture(&levelImage_);
     level_.setOrigin(level_.getGlobalBounds().width / 2, level_.getGlobalBounds().height / 2);
     level_.setScale(0.27f, 0.27f);
