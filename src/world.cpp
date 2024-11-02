@@ -297,3 +297,21 @@ bool World::isSettled() const {
 
     return true;  // All conditions met, world is settled
 }
+
+void World::handleResize() {
+    // Original dimensions of the background image
+    float originalWidth = WORLD_WIDTH;
+    float originalHeight = WORLD_HEIGHT;
+
+    // Calculate the scale factors based on the new window size
+    float scaleX = (2 * VIEW.getWidth()) / originalWidth;
+    float scaleY = (1.8f * VIEW.getHeight()) / originalHeight;
+
+    // Choose the smaller of the two scale factors
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    // Apply the scaling to the background (this scales both axes proportionally)
+    background_.setScale(scaleFactor, scaleFactor);
+    // Resize cannon properties
+    cannon_->handleResize();
+}

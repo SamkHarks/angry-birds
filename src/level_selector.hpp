@@ -27,6 +27,7 @@ class LevelSelector {
         void handleMouseMove(sf::Vector2f mousePosition);
         Level& getSelectedLevel();
         void setLevel(Item item);
+        void handleResize();
     private:
         void updateItem(bool isSelected);
         sf::RectangleShape level_;

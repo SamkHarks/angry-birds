@@ -53,6 +53,7 @@ class World {
         int getLevelIndex() const;
         bool updatePlayer();
         bool isSettled () const;
+        void handleResize();
     private:
         b2World *world_;
         b2Vec2 gravity_;

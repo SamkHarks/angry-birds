@@ -24,6 +24,15 @@ Settings::Settings() : Menu(Menu::Type::SETTINGS, 1) {
     setTitle("Settings", 500.f, 160);
 };
 
+void Settings::handleResize() {
+    Menu::handleResize();
+    title_.clear();
+    setTitle("Settings", 500.f, 160);
+    for (int i = 0; i < buttonAmount_; ++i) {
+        menuItems_[i].setPosition(VIEW.getCenter().x, VIEW.getCenter().y + i * 100);
+    }
+}
+
 void Settings::draw(sf::RenderWindow& window) const {
     window.draw(background_);
     window.draw(woodenSign_);

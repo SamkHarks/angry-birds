@@ -28,6 +28,17 @@ MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector
     backgroundMusic_.play();
 };
 
+void MainMenu::handleResize() {
+    Menu::handleResize();
+    for (int i = 0; i < buttonAmount_; ++i) {
+        menuItems_[i].setPosition(VIEW.getCenter().x, (VIEW.getCenter().y - 100) + i * 100);
+    }
+    title_.clear();
+    setTitle("AngryBirds", 680.f, 340);
+    userSelector_.handleResize();
+    levelSelector_.handleResize();
+};
+
 void MainMenu::draw(sf::RenderWindow& window) const {
     window.draw(background_);
     window.draw(woodenSign_);

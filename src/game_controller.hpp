@@ -14,7 +14,7 @@ class GameController {
         void handleMouseRelease(sf::Mouse::Button button, sf::Vector2f mousePosition);
         void handleMouseMove(sf::Vector2f mousePosition);
         void handleTextEntered(sf::Uint32 unicode);
-
+        void handleResize(const sf::Event& event);
     private:
         GameModel& model_;
         GameView& view_;

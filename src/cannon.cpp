@@ -40,6 +40,11 @@ Cannon::Cannon() {
 
 }
 
+void Cannon::handleResize() {
+    barrelSprite_.setPosition(utils::B2ToSfCoords(BIRD_INITIAL_POSITION));
+    wheelsSprite_.setPosition(utils::B2ToSfCoords(b2Vec2(BIRD_INITIAL_POSITION.x, BIRD_INITIAL_POSITION.y - 0.2f)));
+}
+
 void Cannon::draw(sf::RenderWindow &window) const {
     window.draw(powerText_);
     window.draw(barrelSprite_);

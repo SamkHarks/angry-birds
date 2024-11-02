@@ -30,6 +30,9 @@ void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosit
         case sf::Event::TextEntered:
             handleTextEntered(event.text.unicode);
             break;
+        case sf::Event::Resized:
+            handleResize(event);
+            break;
         default:
             break;
     }
@@ -127,4 +130,23 @@ void GameController::handleMouseMove(sf::Vector2f mousePosition) {
 
 void GameController::handleTextEntered(sf::Uint32 unicode) {
     model_.handleTextEntered(unicode);
+}
+
+void GameController::handleResize(const sf::Event& event) {
+    float width = static_cast<float>(event.size.width);
+    float height = static_cast<float>(event.size.height);
+    if (width == VIEW.getWidth() && height == VIEW.getHeight()) {
+        return; // Ignore resize event on startup
+    }
+    // handle view resize
+    VIEW.setSize(event.size.width, event.size.height);
+    sf::View view = view_.getView();
+    view.setSize(width, height);
+    view.setCenter(width / 2, height / 2);
+    view_.setGameView(view);
+    // handle model resize
+    model_.getWorld().handleResize();
+    model_.getMenu(Menu::Type::MAIN).handleResize();
+    model_.getMenu(Menu::Type::SETTINGS).handleResize();
+    model_.getMenu(Menu::Type::GAME_OVER).handleResize();
 }

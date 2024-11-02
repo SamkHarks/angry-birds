@@ -9,7 +9,6 @@ Ground::Ground(b2Body *body, float hx, float hy) : Object(body, Type::Ground, "/
     float scaleX = utils::B2ToSf(2.f * hx) / width;
     float scaleY = heightSf / height;
     sprite_.setScale(scaleX, scaleY);
-    texture_.setRepeated(true);
     sf::Vector2f centerPosition = utils::B2ToSfCoords(body->GetPosition());
     sprite_.setPosition(0, centerPosition.y - heightSf);
 }
@@ -19,7 +18,11 @@ char Ground::getTypeAsChar() const {
 }
 
 void Ground::update() {
-    // Do nothing
+    b2Vec2 position = body_->GetPosition();
+    sf::Sprite& sprite = this->getSprite();
+    sf::Vector2f centerPosition = utils::B2ToSfCoords(position);
+    float heightSf = 100.f;
+    sprite_.setPosition(0, centerPosition.y - heightSf);
 }
 
 bool Ground::isMoving() const {

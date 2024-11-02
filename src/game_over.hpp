@@ -10,8 +10,9 @@ class GameOver: public Menu {
         void setScoreManager(Score* score);
         void draw(sf::RenderWindow& window) const override;
         void drawStars(int stars, sf::RenderWindow& window) const;
+        void handleResize() override;
     private:
-        Score* scoreManager_;
+        Score* scoreManager_ = nullptr;
         std::vector<sf::Texture> starTextures_;
         std::vector<sf::Sprite> starSprites_;
         sf::Clock clock_;

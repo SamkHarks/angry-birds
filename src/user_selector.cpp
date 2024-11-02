@@ -56,6 +56,19 @@ UserSelector::UserSelector() : userLoader_(*this) {
     userLoader_.loadPlayers();
 }
 
+void UserSelector::handleResize() {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
+    promptText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 50);
+    for(int i = 0; i < 2; i++) {
+        acceptText_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -80 : 80), SCREEN_CENTER.y + 30);
+    }
+    playerText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
+    caret_.setPosition(
+        SCREEN_CENTER.x,
+        playerText_.getPosition().y
+    );
+} 
+
 void UserSelector::draw(sf::RenderWindow& window) const {
     window.draw(promptText_);
     if (isPlayerSet() && !isPlayerAccepted_) {

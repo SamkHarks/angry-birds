@@ -21,6 +21,7 @@ class Menu {
         virtual bool handleMouseClick(sf::Vector2f mousePosition);
         virtual void handleMouseMove(sf::Vector2f mousePosition);
         void updateMusic(sf::SoundSource::Status status);
+        virtual void handleResize();
     private:
         Type type_;
     protected:

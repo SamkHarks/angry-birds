@@ -40,6 +40,20 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
     }
 }
 
+void GameOver::handleResize() {
+    const sf::Vector2f& SCREEN_CENTER = VIEW.getCenter();
+    Menu::handleResize();
+    for (size_t i = 0; i < starSprites_.size(); ++i) {
+        starSprites_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x, SCREEN_CENTER.y - 280.f));
+    }
+    for (int i = 0; i < buttonAmount_; ++i) {
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - 180) + i * 100);
+    }
+    if (scoreManager_ != nullptr) {
+        scoreManager_->setPosition(sf::Vector2f(SCREEN_CENTER.x, 10));
+    }
+}
+
 void GameOver::setScoreManager(Score* scoreManager) {
     scoreManager_ = scoreManager;
     scoreManager_->setPosition(sf::Vector2f(VIEW.getCenter().x, 10));

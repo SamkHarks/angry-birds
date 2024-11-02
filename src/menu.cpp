@@ -20,6 +20,13 @@ Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmoun
     backgroundMusic_.setLoop(true);
 }
 
+void Menu::handleResize() {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
+    woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
+    background_.setSize(sf::Vector2f(VIEW.getWidth(), VIEW.getHeight()));
+    background_.setPosition(0,0);
+}
+
 const Menu::Type Menu::getType() const {
     return type_;
 }

@@ -20,6 +20,7 @@ class MainMenu: public Menu {
         Screen getScreen() const;
         void handleMouseMove(sf::Vector2f mousePosition) override;
         bool handleMouseClick(sf::Vector2f mousePosition) override;
+        void handleResize() override;
     private:
         LevelSelector levelSelector_;
         UserSelector userSelector_;

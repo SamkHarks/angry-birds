@@ -32,6 +32,7 @@ class UserSelector {
         void setScreen(Screen screen);
         bool isNewPlayer() const;
         void savePlayer(const Player& player, bool updatePlayer = false);
+        void handleResize();
     private:
         sf::Font font_;
         sf::Text promptText_;

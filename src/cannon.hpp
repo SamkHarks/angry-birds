@@ -18,7 +18,7 @@ class Cannon {
         void reset();
         void updateTextPosition(const sf::RenderWindow& window);
         int getTextWidth() const;
-
+        void handleResize();
     private:
         sf::Texture barrelTexture_;
         sf::Texture wheelsTexture_;

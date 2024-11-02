@@ -53,6 +53,17 @@ LevelSelector::LevelSelector() {
     updateItem(true);
 }
 
+void LevelSelector::handleResize() {
+    sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
+    for (int i = 0; i < menuItems_.size(); i++) {
+        menuItems_[i].setPosition(SCREEN_CENTER.x, (SCREEN_CENTER.y - 150) + i * 324);
+    }
+    for (int i = 0; i < buttons_.size(); i++) {
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
+    }
+    level_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
+}
+
 void LevelSelector::draw(sf::RenderWindow& window) const {
     for (const auto& menuItem : menuItems_) {
         window.draw(menuItem);

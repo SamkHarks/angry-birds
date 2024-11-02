@@ -14,6 +14,13 @@ void GameView::setGameView() {
 
 }
 
+void GameView::setGameView(const sf::View& view) {
+    gameView_ = view;
+    this->setView(view);
+    auto x = view.getSize().x;
+    defaultCenter_ = view.getCenter();
+}
+
 void GameView::updateCamera(const GameModel& model) {
     const World& world = model.getWorld();
     if (model.getState() == GameModel::State::RUNNING) {

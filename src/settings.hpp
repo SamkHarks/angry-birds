@@ -7,6 +7,7 @@ class Settings : public Menu {
     public:
         Settings();
         void draw(sf::RenderWindow& window) const override;
+        void handleResize() override;
     private:
         // Add private members
 };

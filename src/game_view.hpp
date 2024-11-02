@@ -13,7 +13,7 @@ class GameView: public sf::RenderWindow {
         void updateCamera(const sf::Keyboard::Key& code);
         void updateHUD(GameModel& model);
         void setGameView();
-
+        void setGameView(const sf::View& view);
     private:
         sf::Vector2f defaultCenter_;
         sf::View gameView_;
