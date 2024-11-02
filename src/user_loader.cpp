@@ -29,9 +29,6 @@ void UserLoader::loadPlayers() {
     inFile.close();
     for (const auto& player : playersJson["players"]) {
         Player newPlayer = player.template get<Player>();
-        std::cout<<newPlayer.name<<std::endl;
-        std::cout<<newPlayer.stars.size()<<std::endl;
-        std::cout<<newPlayer.highScores.size()<<std::endl;
         players_.push_back(newPlayer);
     }
 }
