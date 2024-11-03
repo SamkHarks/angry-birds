@@ -40,7 +40,7 @@ void GameModel::handleLevelEnd() {
     world_.getScore().setLevelEndText(world_.getLevelName());
     world_.saveHighScore(world_.getScore().getCurrentScore());
     if (world_.updatePlayer()) {
-        main_menu_.getUserSelector().savePlayer(world_.getPlayer(), true);
+        main_menu_.getUserSelector().savePlayer();
     }
     gameOverMenu_.setScoreManager(&world_.getScore());
 }
@@ -228,7 +228,7 @@ void GameModel::setState() {
                         world_.loadLevel(main_menu_.getLevelSelector().getSelectedLevel().filename);
                         world_.setPlayer(userSelector.getPlayer());
                         if (userSelector.isNewPlayer()) {
-                            userSelector.savePlayer(userSelector.getPlayer());
+                            userSelector.savePlayer();
                         }
                         main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
                         state_ = State::RUNNING;
@@ -270,7 +270,7 @@ void GameModel::setState() {
                 state_ = State::MENU;
                 UserSelector& userSelector = main_menu_.getUserSelector();
                 userSelector.setPlayerAccepted(false);
-                userSelector.setPromptText("Player: " + userSelector.getPlayer().name + " already exists. Load player?");
+                userSelector.setPromptText("Player: " + userSelector.getPlayer()->name + " already exists. Load player?");
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
                 main_menu_.updateMusic(sf::SoundSource::Status::Playing); 
             } else if (selectedItem == 2) {
@@ -278,7 +278,7 @@ void GameModel::setState() {
                 state_ = State::MENU;
                 UserSelector& userSelector = main_menu_.getUserSelector();
                 userSelector.setPlayerAccepted(false);
-                userSelector.setPromptText("Player: " + userSelector.getPlayer().name + " already exists. Load player?");
+                userSelector.setPromptText("Player: " + userSelector.getPlayer()->name + " already exists. Load player?");
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
                 main_menu_.updateMusic(sf::SoundSource::Status::Playing);
             } else {

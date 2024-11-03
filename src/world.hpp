@@ -45,8 +45,7 @@ class World {
         int getStars() const;
         Score& getScore();
         const std::string& getLevelName() const;
-        void setPlayer(const Player& player);
-        const Player& getPlayer() const;
+        void setPlayer(const std::shared_ptr<Player>& player);
         void updateRemainingCountPositions(const sf::RenderWindow& window);
         void updateRemainingCounts(char type);
         int getAliveBirdCount() const;
@@ -68,7 +67,7 @@ class World {
         int totalBirdCount_ = 0;
         std::string fileName_;
         Score scoreManager_;
-        Player player_ = {"", std::vector<int>(), std::vector<int>()};
+        std::weak_ptr<Player> player_; // Ownership of player is managed by UserSelector;
         void drawRemainingCounts(sf::RenderWindow &window) const;
         std::list<SfObject> sfObjects_;
         LevelLoader levelLoader_;

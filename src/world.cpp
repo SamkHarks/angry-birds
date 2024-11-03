@@ -43,15 +43,18 @@ void World::saveHighScore(int score) {
     if (score == 0) {
         return;
     }
-    HighScore highScore;
-    highScore.player = player_.name;
-    highScore.score = score;
-    if (scoreManager_.updateHighScores(highScore)) {
-        levelLoader_.saveHighScores(scoreManager_.getHighScores(), fileName_);
-    }
-    if (score > scoreManager_.getHighScore()) {
-        scoreManager_.updateHighScore(score);
-    }
+    // Only update high scores if the player is set
+    if (auto player = player_.lock()) {
+        HighScore highScore;
+        highScore.player = player->name;
+        highScore.score = score;
+        if (scoreManager_.updateHighScores(highScore)) {
+            levelLoader_.saveHighScores(scoreManager_.getHighScores(), fileName_);
+        }
+        if (score > scoreManager_.getHighScore()) {
+            scoreManager_.updateHighScore(score);
+        }
+   }
 }
 
 int World::getStars() const {
@@ -236,7 +239,10 @@ const std::string& World::getLevelName() const {
     return levelName_;
 }
 
-void World::setPlayer(const Player& player) {
+void World::setPlayer(const std::shared_ptr<Player>& player) {
+    if (player == player_.lock()) {
+        return;
+    }
     player_ = player;
 }
 
@@ -248,31 +254,29 @@ int World::getLevelIndex() const {
     return levelIndex_;
 }
 
-const Player& World::getPlayer() const {
-    return player_;
-}
-
 bool World::updatePlayer() {
-    int score = scoreManager_.getCurrentScore();
-    int stars = scoreManager_.getStars();
     bool hasUpdated = false;
-    // push new score if score doesn't exist or if new score is higher
-    if (player_.highScores.size() <= levelIndex_) {
-        player_.highScores.resize(levelIndex_ + 1, 0);
-        player_.highScores[levelIndex_] = score;
-        hasUpdated = true;
-    } else if (player_.highScores[levelIndex_] < score) {
-        player_.highScores[levelIndex_] = score;
-        hasUpdated = true;
-    }
-    // push new stars if stars doesn't exist or if new stars is higher
-    if (player_.stars.size() <= levelIndex_) {
-        player_.stars.resize(levelIndex_ + 1, 0);
-        player_.stars[levelIndex_] = stars;
-        hasUpdated = true;
-    } else if (player_.stars[levelIndex_] < stars) {
-        player_.stars[levelIndex_] = stars;
-        hasUpdated = true;
+    if (auto player = player_.lock()) {
+        int score = scoreManager_.getCurrentScore();
+        int stars = scoreManager_.getStars();
+        // push new score if score doesn't exist or if new score is higher
+        if (player->highScores.size() <= levelIndex_) {
+            player->highScores.resize(levelIndex_ + 1, 0);
+            player->highScores[levelIndex_] = score;
+            hasUpdated = true;
+        } else if (player->highScores[levelIndex_] < score) {
+            player->highScores[levelIndex_] = score;
+            hasUpdated = true;
+        }
+        // push new stars if stars doesn't exist or if new stars is higher
+        if (player->stars.size() <= levelIndex_) {
+            player->stars.resize(levelIndex_ + 1, 0);
+            player->stars[levelIndex_] = stars;
+            hasUpdated = true;
+        } else if (player->stars[levelIndex_] < stars) {
+            player->stars[levelIndex_] = stars;
+            hasUpdated = true;
+        }
     }
     return hasUpdated;
 }

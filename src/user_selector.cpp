@@ -83,16 +83,14 @@ void UserSelector::draw(sf::RenderWindow& window) const {
 }
 
 bool UserSelector::isPlayerSet() const {
-    return !player_.name.empty();
+    return player_ != nullptr && !player_->name.empty();
 }
 
 void UserSelector::setPlayer() {
     std::string playerName = playerText_.getString();
     if (playerName.length() >= 3) {
         if (userLoader_.isPlayerNameAvailable(playerName)) {
-            player_.name = playerName;
-            player_.stars = std::vector<int>();
-            player_.highScores = std::vector<int>();
+            player_ = std::make_shared<Player>(Player{playerName, {}, {}});
             setPromptText("Create new player: " + playerName + "?");
         } else {
             userLoader_.loadPlayer(playerName);
@@ -102,14 +100,12 @@ void UserSelector::setPlayer() {
     }
 }
 
-const Player& UserSelector::getPlayer() const {
+const std::shared_ptr<Player>& UserSelector::getPlayer() const {
     return player_;
 }
 
 void UserSelector::clearPlayer() {
-    player_.name = "";
-    player_.highScores.clear();
-    player_.stars.clear();
+    player_.reset();
     setPromptText("Add player:");
     setPlayerText("");
     isPlayerAccepted_ = false;
@@ -205,12 +201,9 @@ void UserSelector::setScreen(UserSelector::Screen screen) {
 }
 
 bool UserSelector::isNewPlayer() const {
-    return userLoader_.isPlayerNameAvailable(player_.name);
+    return userLoader_.isPlayerNameAvailable(player_->name);
 }
 
-void UserSelector::savePlayer(const Player& player, bool updatePlayer) {
-    userLoader_.savePlayer(player);
-    if (updatePlayer) {
-        player_ = player;
-    }
+void UserSelector::savePlayer() {
+    userLoader_.savePlayer();
 }

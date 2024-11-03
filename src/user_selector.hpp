@@ -20,7 +20,7 @@ class UserSelector {
         void setPlayerText(const std::string& text);
         void setPlayer();
         void clearPlayer();
-        const Player& getPlayer() const;
+        const std::shared_ptr<Player>& getPlayer() const;
         std::string getPlayerText() const;
         void setPlayerAccepted(bool accepted);
         bool isPlayerAccepted() const;
@@ -31,7 +31,7 @@ class UserSelector {
         Screen getScreen() const;
         void setScreen(Screen screen);
         bool isNewPlayer() const;
-        void savePlayer(const Player& player, bool updatePlayer = false);
+        void savePlayer();
         void handleResize();
     private:
         sf::Font font_;
@@ -46,7 +46,7 @@ class UserSelector {
         Screen screen_ = Screen::MAIN;
         friend class UserLoader;
         UserLoader userLoader_;
-        Player player_;
+        std::shared_ptr<Player> player_ = nullptr; // Solo owner of the player, other classes only have weak_ptr
 };
 
 #endif // USER_SELECTOR_HPP

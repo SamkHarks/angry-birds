@@ -45,13 +45,16 @@ bool UserLoader::isPlayerNameAvailable(const std::string& playerName) const {
 void UserLoader::loadPlayer(const std::string& playerName) {
     for (const auto& player : players_) {
         if (player.name == playerName) {
-            userSelector_.player_ = player;
+            userSelector_.player_ = std::make_shared<Player>(player);
             return;
         }
     }
 }
 
-void UserLoader::savePlayer(const Player& player) {
+void UserLoader::savePlayer() {
+    if (!userSelector_.player_) {
+        throw std::runtime_error("No player loaded to save.");
+    }
     std::string path = utils::getExecutablePath() + "/assets/data/players.json";
     std::ifstream inFile(path);
     if(!inFile.is_open()) {
@@ -61,14 +64,16 @@ void UserLoader::savePlayer(const Player& player) {
     inFile >> playersJson;
     inFile.close();
 
+    const std::shared_ptr<Player>& player = userSelector_.player_;
+
     // Add or update the player in the players_ vector
     auto it = std::find_if(players_.begin(), players_.end(), [&player](const Player& p){
-        return p.name == player.name;
+        return p.name == player->name;
     });
     if (it == players_.end()) {
-        players_.push_back(player);
+        players_.push_back(*player);
     } else {
-        *it = player;
+        *it = *player;
     }
 
     // Create a JSON array to store player data
