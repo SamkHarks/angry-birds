@@ -10,6 +10,8 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - **Graphics Rendering** and **Input Handling** with **SFML**
 - **JSON (nlohmann/json)** for data formatting when storing and reading data
 - Main menu
+- Level selector
+- User selector
 - Settings - WIP
 - Level end menu - WIP
 - Pause menu - WIP
