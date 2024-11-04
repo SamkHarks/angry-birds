@@ -206,7 +206,7 @@ void GameModel::setState() {
                 case MainMenu::Screen::MAIN: {
                     auto selectedItem = main_menu_.getSelectedItem();
                      if (selectedItem == 0) {
-                        main_menu_.setScreen(MainMenu::Screen::LEVEL_SELECTOR);
+                        main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
                     } else if (selectedItem == 1) {
                         state_ = State::SETTINGS;
                     } else {
@@ -230,14 +230,11 @@ void GameModel::setState() {
                     }
                     // If the player is accepted, load the level
                     if (userSelector.isPlayerAccepted()) {
-                        world_.clearLevel();
-                        world_.loadLevel(main_menu_.getLevelSelector().getSelectedLevel().filename);
-                        world_.setPlayer(userSelector.getPlayer());
                         if (userSelector.isNewPlayer()) {
                             userSelector.savePlayer();
                         }
-                        main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
-                        state_ = State::RUNNING;
+                        main_menu_.getLevelSelector().setPlayer(userSelector.getPlayer());
+                        main_menu_.setScreen(MainMenu::Screen::LEVEL_SELECTOR);
                     }
                     break;
                 }
@@ -247,10 +244,15 @@ void GameModel::setState() {
                     LevelSelector::Item item = levelSelector.getSelectedItem();
                     switch (item) {
                         case LevelSelector::Item::BACK:
+                            main_menu_.getUserSelector().resetPlayer();
                             main_menu_.setScreen(MainMenu::Screen::MAIN);
                             break;
                         case LevelSelector::Item::LEVEL:
-                            main_menu_.setScreen(MainMenu::Screen::USER_SELECTOR);
+                            world_.clearLevel();
+                            world_.loadLevel(levelSelector.getSelectedLevel().filename);
+                            world_.setPlayer(main_menu_.getUserSelector().getPlayer());
+                            main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
+                            state_ = State::RUNNING;
                             break;
                         case LevelSelector::Item::NEXT: 
                             levelSelector.setLevel(LevelSelector::Item::NEXT);
@@ -288,10 +290,9 @@ void GameModel::setState() {
             } else if (selectedItem == mainMenuIndex) {
                 // Main Menu
                 state_ = State::MENU;
-                UserSelector& userSelector = main_menu_.getUserSelector();
-                userSelector.setPlayerAccepted(false);
-                userSelector.setPromptText("Player: " + userSelector.getPlayer()->name + " already exists. Load player?");
+                main_menu_.getUserSelector().resetPlayer();
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
+                main_menu_.getLevelSelector().updateLevel();
                 main_menu_.updateMusic(sf::SoundSource::Status::Playing);
             } else if (selectedItem == exitIndex) {
                 // Exit
