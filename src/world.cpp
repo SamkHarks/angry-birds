@@ -277,6 +277,11 @@ bool World::updatePlayer() {
             player->stars[levelIndex_] = stars;
             hasUpdated = true;
         }
+        // update levels completed
+        if (player->levelsCompleted <= levelIndex_ && stars > 0) {
+            player->levelsCompleted = levelIndex_ + 1;
+            hasUpdated = true;
+        }
     }
     return hasUpdated;
 }
