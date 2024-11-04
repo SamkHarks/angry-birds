@@ -31,7 +31,7 @@ class Menu {
         sf::Texture backgroundImage_;
         sf::SoundBuffer backgroundMusicBuffer_;
         sf::Sound backgroundMusic_;
-        const int buttonAmount_;
+        int buttonAmount_;
         std::vector<sf::Text> menuItems_;
         std::vector<sf::Text> title_;
         int selectedItem_ = 0;

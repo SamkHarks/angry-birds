@@ -166,3 +166,13 @@ void LevelSelector::setLevel(Item item) {
     setLevelText();
     setLevelImage();
 }
+
+bool LevelSelector::hasNextLevel() const {
+    return levelIndex_ < levels_.size() - 1;
+}
+
+Level& LevelSelector::getNextLevel() {
+    assert(hasNextLevel());
+    setLevel(Item::NEXT);
+    return levels_[levelIndex_];
+}

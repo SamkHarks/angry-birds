@@ -28,6 +28,8 @@ class LevelSelector {
         Level& getSelectedLevel();
         void setLevel(Item item);
         void handleResize();
+        bool hasNextLevel() const;
+        Level& getNextLevel();
     private:
         void updateItem(bool isSelected);
         sf::RectangleShape level_;

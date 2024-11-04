@@ -11,6 +11,8 @@ class GameOver: public Menu {
         void draw(sf::RenderWindow& window) const override;
         void drawStars(int stars, sf::RenderWindow& window) const;
         void handleResize() override;
+        void updateMenuItems(bool hasNextLevel);
+        bool hasNextLevel() const;
     private:
         Score* scoreManager_ = nullptr;
         std::vector<sf::Texture> starTextures_;

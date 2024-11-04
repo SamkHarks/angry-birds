@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include <vector>
 
-GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
+GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 3) {
     const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
     // Load star textures
     starTextures_.resize(4);
@@ -21,18 +21,41 @@ GameOver::GameOver() : Menu(Menu::Type::GAME_OVER, 4) {
         starSprites_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x, SCREEN_CENTER.y - 280.f));
     }
     // Create menu items
+    updateMenuItems(true);
+}
+
+void GameOver::updateMenuItems(bool hasNextLevel) {
+    int newButtonAmount = hasNextLevel ? 4 : 3;
+    if (newButtonAmount == buttonAmount_) {
+        return; // No need to update if the amount of buttons is the same
+    }
+    const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
     std::vector<std::string> button_texts = { "Restart", "Next Level", "Main Menu", "Exit" };
+    if (!hasNextLevel) {
+        button_texts.erase(button_texts.begin() + 1); // Remove "Next Level" if not available
+    }
+    buttonAmount_ = newButtonAmount;
+    menuItems_.clear();
+    menuItems_.resize(buttonAmount_);
+    // Use different values for 3 buttons
+    int yOffset = 180;
+    int characterSize = 75;
+    int gap = 100;
+    if (buttonAmount_ == 3) {
+        yOffset = 140;
+        characterSize = 80;
+        gap = 102.5;
+    }
     for (int i = 0; i < buttonAmount_; ++i) {
         menuItems_[i].setFont(font_);
         menuItems_[i].setString(button_texts[i]);
         menuItems_[i].setFillColor(sf::Color::White);
         menuItems_[i].setOutlineColor(sf::Color::Black);
         menuItems_[i].setOutlineThickness(5);
-        menuItems_[i].setCharacterSize(75);
-        // center the text
+        menuItems_[i].setCharacterSize(characterSize);
         float width = menuItems_[i].getGlobalBounds().width;
         menuItems_[i].setOrigin(width / 2, 0);
-        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - 180) + i * 100);
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - yOffset) + i * gap);
         if (i == selectedItem_) {
             menuItems_[i].setFillColor(LIME_GREEN);
             menuItems_[i].setScale(1.1f, 1.1f);
@@ -46,8 +69,14 @@ void GameOver::handleResize() {
     for (size_t i = 0; i < starSprites_.size(); ++i) {
         starSprites_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x, SCREEN_CENTER.y - 280.f));
     }
+    int yOffset = 180;
+    int gap = 100;
+    if (buttonAmount_ == 3) {
+        yOffset = 140;
+        gap = 102.5;
+    }
     for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - 180) + i * 100);
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - yOffset) + i * gap);
     }
     if (scoreManager_ != nullptr) {
         scoreManager_->setPosition(sf::Vector2f(SCREEN_CENTER.x, 10));
@@ -85,3 +114,7 @@ void GameOver::draw(sf::RenderWindow& window) const {
         window.draw(menuItem);
     }
 };
+
+bool GameOver::hasNextLevel() const {
+    return buttonAmount_ == 4;
+}

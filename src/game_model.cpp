@@ -43,6 +43,11 @@ void GameModel::handleLevelEnd() {
         main_menu_.getUserSelector().savePlayer();
     }
     gameOverMenu_.setScoreManager(&world_.getScore());
+    if (main_menu_.getLevelSelector().hasNextLevel()) {
+        gameOverMenu_.updateMenuItems(true);
+    } else {
+        gameOverMenu_.updateMenuItems(false);
+    }
 }
 
 void GameModel::handleCollisions() {
@@ -191,6 +196,7 @@ void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
     }
 }
 
+// TODO: Implement the setState function and refactor the code to smaller functions
 void GameModel::setState() {
     switch (state_) {
         case State::MENU: {
@@ -261,19 +267,25 @@ void GameModel::setState() {
         case State::GAME_OVER: {
             auto selectedItem = gameOverMenu_.getSelectedItem();
             // TODO: handle game over updates properly
+            int nextLevelIndex = 1;
+            int mainMenuIndex = 2;
+            int exitIndex = 3;
+            if (!gameOverMenu_.hasNextLevel()) {
+                nextLevelIndex = -100; // Set to invalid index
+                mainMenuIndex = 1;
+                exitIndex = 2;
+            }
             if (selectedItem == 0) {
                 // Restart
+                world_.clearLevel();
                 world_.resetLevel();
                 state_ = State::RUNNING;
-            } else if (selectedItem == 1) {
+            } else if (selectedItem == nextLevelIndex) {
                 // Next Level
-                state_ = State::MENU;
-                UserSelector& userSelector = main_menu_.getUserSelector();
-                userSelector.setPlayerAccepted(false);
-                userSelector.setPromptText("Player: " + userSelector.getPlayer()->name + " already exists. Load player?");
-                main_menu_.setScreen(MainMenu::Screen::MAIN);
-                main_menu_.updateMusic(sf::SoundSource::Status::Playing); 
-            } else if (selectedItem == 2) {
+                world_.clearLevel();
+                world_.loadLevel(main_menu_.getLevelSelector().getNextLevel().filename);
+                state_ = State::RUNNING;
+            } else if (selectedItem == mainMenuIndex) {
                 // Main Menu
                 state_ = State::MENU;
                 UserSelector& userSelector = main_menu_.getUserSelector();
@@ -281,7 +293,7 @@ void GameModel::setState() {
                 userSelector.setPromptText("Player: " + userSelector.getPlayer()->name + " already exists. Load player?");
                 main_menu_.setScreen(MainMenu::Screen::MAIN);
                 main_menu_.updateMusic(sf::SoundSource::Status::Playing);
-            } else {
+            } else if (selectedItem == exitIndex) {
                 // Exit
                 state_ = State::QUIT;
             } 
