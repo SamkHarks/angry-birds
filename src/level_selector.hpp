@@ -2,6 +2,7 @@
 #define LEVEL_SELECTOR_HPP
 
 #include <SFML/Graphics.hpp>
+#include "user_selector.hpp"
 
 struct Level {
     std::string name;
@@ -30,8 +31,12 @@ class LevelSelector {
         void handleResize();
         bool hasNextLevel() const;
         Level& getNextLevel();
+        void updateLevel();
+        void setPlayer(const std::shared_ptr<Player>& player);
     private:
         void updateItem(bool isSelected);
+        std::weak_ptr<Player> player_; // User selector is the owner
+        std::vector<sf::Sprite> stars_;
         sf::RectangleShape level_;
         sf::Texture levelImage_;
         std::vector<sf::Text> menuItems_;
@@ -42,9 +47,13 @@ class LevelSelector {
         Item selectedItem_ = Item::LEVEL;
         std::vector<Level> levels_;
         int levelIndex_ = 0;
+        int starIndex_ = 0;
         void setLevelText();
         void setLevelImage();
         void setLevelIndex(int index);
+        void setLevelStarIndex();
+        void setLevelHighScore();
+        void drawStars(sf::RenderWindow& window) const;
 };
 
 #endif // LEVEL_SELECTOR_HPP
