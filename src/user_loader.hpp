@@ -19,6 +19,7 @@ struct Player {
     std::string name;
     std::vector<int> stars;
     std::vector<int> highScores;
+    int levelsCompleted = 0;
 };
 
 class UserLoader {

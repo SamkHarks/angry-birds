@@ -33,6 +33,7 @@ class UserSelector {
         bool isNewPlayer() const;
         void savePlayer();
         void handleResize();
+        void resetPlayer();
     private:
         sf::Font font_;
         sf::Text promptText_;

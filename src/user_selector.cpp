@@ -90,7 +90,7 @@ void UserSelector::setPlayer() {
     std::string playerName = playerText_.getString();
     if (playerName.length() >= 3) {
         if (userLoader_.isPlayerNameAvailable(playerName)) {
-            player_ = std::make_shared<Player>(Player{playerName, {}, {}});
+            player_ = std::make_shared<Player>(Player{playerName, {}, {}, 0});
             setPromptText("Create new player: " + playerName + "?");
         } else {
             userLoader_.loadPlayer(playerName);
@@ -206,4 +206,9 @@ bool UserSelector::isNewPlayer() const {
 
 void UserSelector::savePlayer() {
     userLoader_.savePlayer();
+}
+
+void UserSelector::resetPlayer() {
+    isPlayerAccepted_ = false;
+    setPromptText("Continue with player: " + player_->name + "?");
 }

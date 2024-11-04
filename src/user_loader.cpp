@@ -6,13 +6,15 @@ void from_json(const json& j, Player& player) {
     j.at("name").get_to(player.name);
     j.at("stars").get_to(player.stars);
     j.at("highScores").get_to(player.highScores);
+    j.at("levelsCompleted").get_to(player.levelsCompleted);
 }
 
 void to_json(json& j, const Player& player) {
     j = json{
         {"name", player.name},
         {"stars", player.stars},
-        {"highScores", player.highScores}
+        {"highScores", player.highScores},
+        {"levelsCompleted", player.levelsCompleted}
     };
 }
 
