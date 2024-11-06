@@ -9,7 +9,7 @@ class Settings : public Menu {
         void draw(sf::RenderWindow& window) const override;
         void handleResize() override;
     private:
-        // Add private members
+        const std::vector<std::string>& getButtonNames() const override;
 };
 
 #endif // SETTINGS_HPP

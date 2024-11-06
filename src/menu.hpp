@@ -4,6 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+struct MenuItemLayout {
+    int yOffset; // The y offset of the menu item from reference point.
+    int characterSize; // The character size of the menu item.
+    float gap; // The gap between menu items.
+};
+
 class Menu {
     public:
         enum class Type {
@@ -13,7 +19,7 @@ class Menu {
             SETTINGS,       // The settings menu.
             GAME_OVER,      // The game over menu.
         };
-        Menu(Type type, int buttonAmount);
+        Menu(Type type);
         virtual void draw(sf::RenderWindow& window) const = 0;
         const int getSelectedItem() const;
         void setSelectedItem(int nextItem);
@@ -23,6 +29,7 @@ class Menu {
         virtual void handleMouseMove(sf::Vector2f mousePosition);
         void updateMusic(sf::SoundSource::Status status);
         virtual void handleResize();
+        void updateMenuItems();
     private:
         Type type_;
     protected:
@@ -32,12 +39,14 @@ class Menu {
         sf::Texture backgroundImage_;
         sf::SoundBuffer backgroundMusicBuffer_;
         sf::Sound backgroundMusic_;
-        int buttonAmount_;
+        int buttonAmount_ = 0;
         std::vector<sf::Text> menuItems_;
         std::vector<sf::Text> title_;
         int selectedItem_ = 0;
         void updateItem(sf::Color fillColor, float scale);
         void setTitle(const std::string& title, float radius, int y);
+        virtual const std::vector<std::string>& getButtonNames() const = 0;
+        virtual const MenuItemLayout& getMenuItemLayout() const;
 };
 
 #endif // MENU_HPP

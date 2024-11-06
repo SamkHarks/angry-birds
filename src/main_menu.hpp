@@ -12,6 +12,8 @@ class MainMenu: public Menu {
         LevelSelector& getLevelSelector();
         UserSelector& getUserSelector();
         void handleResize() override;
+    private:
+        virtual const std::vector<std::string>& getButtonNames() const override;
 };
 
 #endif // MAIN_MENU_HPP

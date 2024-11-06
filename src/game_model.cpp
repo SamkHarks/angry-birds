@@ -47,11 +47,8 @@ void GameModel::handleLevelEnd() {
         gameSelector_.getUserSelector().savePlayer();
     }
     gameOverMenu_.setScoreManager(&world_.getScore());
-    if (gameSelector_.getLevelSelector().hasNextLevel()) {
-        gameOverMenu_.updateMenuItems(true);
-    } else {
-        gameOverMenu_.updateMenuItems(false);
-    }
+    gameOverMenu_.setHasNextlevel(gameSelector_.getLevelSelector().hasNextLevel());
+    gameOverMenu_.updateMenuItems();
 }
 
 void GameModel::handleCollisions() {

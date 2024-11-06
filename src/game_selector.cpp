@@ -1,7 +1,7 @@
 #include "game_selector.hpp"
 
 
-GameSelector::GameSelector() : Menu(Menu::Type::GAME_SELECTOR, 0), levelSelector_(), userSelector_() {
+GameSelector::GameSelector() : Menu(Menu::Type::GAME_SELECTOR), levelSelector_(), userSelector_() {
     // Create menu items
     updateMenuItems();
     setTitle("AngryBirds", 680.f, 340);
@@ -9,58 +9,11 @@ GameSelector::GameSelector() : Menu(Menu::Type::GAME_SELECTOR, 0), levelSelector
 
 void GameSelector::handleResize() {
     Menu::handleResize();
-    int yOffset = 180;
-    int gap = 100;
-    if (buttonAmount_ == 3 || buttonAmount_ == 2) {
-        yOffset = 140;
-        gap = 102.5;
-    }
-    for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setPosition(VIEW.getCenter().x, (VIEW.getCenter().y - yOffset) + i * gap);
-    }
     title_.clear();
     setTitle("AngryBirds", 680.f, 340);
     userSelector_.handleResize();
     levelSelector_.handleResize();
 };
-
-void GameSelector::updateMenuItems() {
-    const std::vector<std::string>& button_texts = getButtonNames();
-    if (button_texts.size() == buttonAmount_) {
-        return; // No need to update if the amount of buttons is the same
-    }
-    buttonAmount_ = button_texts.size();
-    menuItems_.clear();
-    menuItems_.resize(buttonAmount_);
-    const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
-    int yOffset = 100;
-    int characterSize = 80;
-    int gap = 100;
-
-    if (buttonAmount_ == 3) {
-        yOffset = 140;
-    } else if (buttonAmount_ == 4) {
-        yOffset = 180;
-        characterSize = 75;
-    }
-
-    for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setFont(font_);
-        menuItems_[i].setString(button_texts[i]);
-        menuItems_[i].setFillColor(sf::Color::White);
-        menuItems_[i].setOutlineColor(sf::Color::Black);
-        menuItems_[i].setOutlineThickness(5);
-        menuItems_[i].setCharacterSize(characterSize);
-        float width = menuItems_[i].getGlobalBounds().width;
-        menuItems_[i].setOrigin(width / 2, 0);
-        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - yOffset) + i * gap);
-        if (i == selectedItem_) {
-            menuItems_[i].setFillColor(LIME_GREEN);
-            menuItems_[i].setScale(1.1f, 1.1f);
-        }
-    }
-
-}
 
 void GameSelector::drawScreen(sf::RenderWindow& window) const {
     switch (screen_) {
@@ -171,4 +124,4 @@ const std::vector<std::string>& GameSelector::getButtonNames() const {
     static const std::vector<std::string> button_texts = { "New Game", "Back" };
     return button_texts;
     }
-};
+}

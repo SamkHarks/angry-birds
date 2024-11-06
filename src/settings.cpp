@@ -1,26 +1,10 @@
 #include "settings.hpp"
 #include "utils.hpp"
 
-Settings::Settings() : Menu(Menu::Type::SETTINGS, 1) {
+Settings::Settings() : Menu(Menu::Type::SETTINGS) {
     // Create menu items
-    std::vector<std::string> button_texts = { "Back" };
-    for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setFont(font_);
-        menuItems_[i].setString(button_texts[i]);
-        menuItems_[i].setFillColor(sf::Color::White);
-        menuItems_[i].setOutlineColor(sf::Color::Black);
-        menuItems_[i].setOutlineThickness(5);
-        menuItems_[i].setCharacterSize(80);
-        // center the text
-        sf::FloatRect textBounds = menuItems_[i].getGlobalBounds();
-        menuItems_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        menuItems_[i].setPosition(VIEW.getCenter().x, VIEW.getCenter().y + i * 100);
-        if (i == selectedItem_) {
-            menuItems_[i].setFillColor(LIME_GREEN);
-            menuItems_[i].setScale(1.1f, 1.1f);
-        }
-    }
-
+    updateMenuItems();
+    // Create title
     setTitle("Settings", 500.f, 160);
 };
 
@@ -28,9 +12,6 @@ void Settings::handleResize() {
     Menu::handleResize();
     title_.clear();
     setTitle("Settings", 500.f, 160);
-    for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setPosition(VIEW.getCenter().x, VIEW.getCenter().y + i * 100);
-    }
 }
 
 void Settings::draw(sf::RenderWindow& window) const {
@@ -44,5 +25,10 @@ void Settings::draw(sf::RenderWindow& window) const {
     for (auto menuItem : menuItems_) {
         window.draw(menuItem);
     }
-};
+}
+
+const std::vector<std::string>& Settings::getButtonNames() const {
+    const static std::vector<std::string> buttonNames = { "Back" };
+    return buttonNames;
+}
 

@@ -3,7 +3,7 @@
 #include <iostream>
 #include "resource_manager.hpp"
 
-Menu::Menu(Type type, int buttonAmount) : type_(type), buttonAmount_(buttonAmount), menuItems_(buttonAmount) {
+Menu::Menu(Type type) : type_(type), menuItems_(buttonAmount_) {
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     woodenSign_.setSize(sf::Vector2f(860, 860));
@@ -25,6 +25,10 @@ void Menu::handleResize() {
     woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
     background_.setSize(sf::Vector2f(VIEW.getWidth(), VIEW.getHeight()));
     background_.setPosition(0,0);
+    const MenuItemLayout& layout = getMenuItemLayout();
+    for (int i = 0; i < buttonAmount_; ++i) {
+        menuItems_[i].setPosition(VIEW.getCenter().x, (VIEW.getCenter().y - layout.yOffset) + i * layout.gap);
+    }
 }
 
 const Menu::Type Menu::getType() const {
@@ -137,4 +141,49 @@ void Menu::setTitle(const std::string& title, float radius, int yOffset) {
         // Update the current angle based on the width of the character
         currentAngle += (charWidth / totalWidth) * (endAngle - startAngle);
     }
+}
+
+const MenuItemLayout& Menu::getMenuItemLayout() const {
+    if (buttonAmount_ == 1) {
+        static const MenuItemLayout layout = { 80, 80, 100 };
+        return layout;
+    } else if (buttonAmount_ == 2) {
+        static const MenuItemLayout layout = { 100, 80, 100 };
+        return layout;
+    } else if (buttonAmount_ == 3) {
+        static const MenuItemLayout layout = { 140, 80, 100 };
+        return layout;
+    } else {
+        static const MenuItemLayout layout = { 180, 75, 100 };
+        return layout;
+    }
+}
+
+void Menu::updateMenuItems() {
+    const std::vector<std::string>& buttonNames = getButtonNames();
+    if (buttonNames.size() == buttonAmount_ || buttonNames.empty()) {
+        return; // No need to update if the amount of buttons is the same or empty
+    }
+    buttonAmount_ = buttonNames.size();
+    menuItems_.clear();
+    menuItems_.resize(buttonAmount_);
+    const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
+    const MenuItemLayout &layout = getMenuItemLayout();
+
+    for (int i = 0; i < buttonAmount_; ++i) {
+        menuItems_[i].setFont(font_);
+        menuItems_[i].setString(buttonNames[i]);
+        menuItems_[i].setFillColor(sf::Color::White);
+        menuItems_[i].setOutlineColor(sf::Color::Black);
+        menuItems_[i].setOutlineThickness(5);
+        menuItems_[i].setCharacterSize(layout.characterSize);
+        float width = menuItems_[i].getGlobalBounds().width;
+        menuItems_[i].setOrigin(width / 2, 0);
+        menuItems_[i].setPosition(SCREEN_CENTER.x , (SCREEN_CENTER.y - layout.yOffset) + i * layout.gap);
+        if (i == selectedItem_) {
+            menuItems_[i].setFillColor(LIME_GREEN);
+            menuItems_[i].setScale(1.1f, 1.1f);
+        }
+    }
+
 }
