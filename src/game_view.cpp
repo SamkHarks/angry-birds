@@ -76,6 +76,9 @@ void GameView::draw(const GameModel& model) {
         case GameModel::State::MENU:
             model.getMenu(Menu::Type::MAIN).draw(*this);
             break;
+        case GameModel::State::GAME_SELECTOR:
+            model.getMenu(Menu::Type::GAME_SELECTOR).draw(*this);
+            break;
         case GameModel::State::SETTINGS:
             model.getMenu(Menu::Type::SETTINGS).draw(*this);
             break;

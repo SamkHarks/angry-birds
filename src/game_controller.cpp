@@ -69,6 +69,12 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
                     }
                     break;
                 }
+                case GameModel::State::GAME_SELECTOR: {
+                    if (model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseClick(mousePosition)) {
+                        model_.setState();
+                    }
+                    break;
+                }
                 case GameModel::State::RUNNING:
                     // TODO: Implement mouse actions in running state
                     model_.getWorld().getCannon()->startLaunch();
@@ -123,6 +129,9 @@ void GameController::handleMouseMove(sf::Vector2f mousePosition) {
         case GameModel::State::GAME_OVER:
             model_.getMenu(Menu::Type::GAME_OVER).handleMouseMove(mousePosition);
             break;
+        case GameModel::State::GAME_SELECTOR:
+            model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseMove(mousePosition);
+            break;
         default:
             break;
     }
@@ -149,4 +158,5 @@ void GameController::handleResize(const sf::Event& event) {
     model_.getMenu(Menu::Type::MAIN).handleResize();
     model_.getMenu(Menu::Type::SETTINGS).handleResize();
     model_.getMenu(Menu::Type::GAME_OVER).handleResize();
+    model_.getMenu(Menu::Type::GAME_SELECTOR).handleResize();
 }
