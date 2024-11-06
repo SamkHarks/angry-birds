@@ -212,3 +212,7 @@ void UserSelector::resetPlayer() {
     isPlayerAccepted_ = false;
     setPromptText("Continue with player: " + player_->name + "?");
 }
+
+const std::vector<Player>& UserSelector::getPlayers() const {
+    return userLoader_.getPlayers();
+}

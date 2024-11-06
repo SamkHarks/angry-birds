@@ -95,3 +95,7 @@ void UserLoader::savePlayer() {
     outFile << playersJson.dump(4); // Pretty print with 4 spaces
     outFile.close();
 }
+
+const std::vector<Player>& UserLoader::getPlayers() const {
+    return players_;
+}

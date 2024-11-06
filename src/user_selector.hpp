@@ -34,6 +34,7 @@ class UserSelector {
         void savePlayer();
         void handleResize();
         void resetPlayer();
+        const std::vector<Player>& getPlayers() const;
     private:
         sf::Font font_;
         sf::Text promptText_;
