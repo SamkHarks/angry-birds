@@ -4,7 +4,7 @@
 #include "resource_manager.hpp"
 
 
-MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3), levelSelector_(), userSelector_() {
+MainMenu::MainMenu() : Menu(Menu::Type::MAIN, 3) {
     // Create menu items
     std::vector<std::string> button_texts = { "Play", "Settings", "Exit" };
     for (int i = 0; i < buttonAmount_; ++i) {
@@ -35,8 +35,6 @@ void MainMenu::handleResize() {
     }
     title_.clear();
     setTitle("AngryBirds", 680.f, 340);
-    userSelector_.handleResize();
-    levelSelector_.handleResize();
 };
 
 void MainMenu::draw(sf::RenderWindow& window) const {
@@ -46,66 +44,8 @@ void MainMenu::draw(sf::RenderWindow& window) const {
     for (const auto& character : title_) {
         window.draw(character);
     }
-    // Draw player selection screen
-    if (screen_ == MainMenu::Screen::USER_SELECTOR) {
-       userSelector_.draw(window);
-    // Draw level selector screen
-    } else if (screen_ == MainMenu::Screen::LEVEL_SELECTOR) {
-       levelSelector_.draw(window);
-    // Draw main menu screen
-    } else {
-        // Draw menu items
-        for (auto menuItem : menuItems_) {
-            window.draw(menuItem);
-        }
+    // Draw menu items
+    for (auto menuItem : menuItems_) {
+        window.draw(menuItem);
     }
-
-};
-
-MainMenu::Screen MainMenu::getScreen() const {
-    return screen_;
-};
-
-void MainMenu::setScreen(MainMenu::Screen screen) {
-    screen_ = screen;
-};
-
-LevelSelector& MainMenu::getLevelSelector() {
-    return levelSelector_;
-};
-
-void MainMenu::handleMouseMove(sf::Vector2f mousePosition) {
-    switch (screen_) {
-        case MainMenu::Screen::MAIN: {
-            this->Menu::handleMouseMove(mousePosition);
-            break;
-        }
-        case MainMenu::Screen::LEVEL_SELECTOR:
-            levelSelector_.handleMouseMove(mousePosition);
-            break;
-        case MainMenu::Screen::USER_SELECTOR: {
-            userSelector_.handleMouseMove(mousePosition);
-            break;
-        }
-        default:
-            break;
-    }
-};
-
-bool MainMenu::handleMouseClick(sf::Vector2f mousePosition) {
-    switch (screen_) {
-        case MainMenu::Screen::MAIN:
-            return this->Menu::handleMouseClick(mousePosition);
-        case MainMenu::Screen::LEVEL_SELECTOR:
-            return levelSelector_.handleMouseClick(mousePosition);
-        case MainMenu::Screen::USER_SELECTOR:
-            return userSelector_.handleMouseClick(mousePosition);
-        default:
-            break;
-    }
-    return false;
-};
-
-UserSelector& MainMenu::getUserSelector() {
-    return userSelector_;
 };
