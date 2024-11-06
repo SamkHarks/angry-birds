@@ -4,6 +4,7 @@
 #include "main_menu.hpp"
 #include "game_over.hpp"
 #include "settings.hpp"
+#include "game_selector.hpp"
 #include "world.hpp"
 
 class GameModel {
@@ -13,13 +14,12 @@ class GameModel {
 
         enum class State {
             MENU,       // The game is at the main menu.
+            GAME_SELECTOR, // The player is selecting a game.
             RUNNING,    // The game is currently being played.
             PAUSED,     // The game is paused.
             LOADING,    // The game is loading resources or a new level.
             SETTINGS,   // The player is adjusting settings.
             GAME_OVER,  // The game has ended.
-            WIN,        // The player has won the game.
-            LOSE,       // The player has lost the game.
             QUIT,       // Quit game
         };
 
@@ -51,6 +51,7 @@ class GameModel {
         State state_;
         MainMenu main_menu_;
         GameOver gameOverMenu_;
+        GameSelector gameSelector_;
         Settings settings_;
         World world_;
         void handleLevelEnd();

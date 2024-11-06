@@ -7,10 +7,11 @@
 class Menu {
     public:
         enum class Type {
-            MAIN,       // The main menu.
-            PAUSE,      // The pause menu.
-            SETTINGS,   // The settings menu.
-            GAME_OVER,  // The game over menu.
+            MAIN,           // The main menu.
+            GAME_SELECTOR,  // The game selector menu.
+            PAUSE,          // The pause menu.
+            SETTINGS,       // The settings menu.
+            GAME_OVER,      // The game over menu.
         };
         Menu(Type type, int buttonAmount);
         virtual void draw(sf::RenderWindow& window) const = 0;
