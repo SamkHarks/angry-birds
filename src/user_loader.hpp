@@ -28,6 +28,7 @@ class UserLoader {
         void loadPlayers();
         void loadPlayer(const std::string& playerName);
         void savePlayer();
+        void loadPlayer(int index);
         bool isPlayerNameAvailable(const std::string& playerName) const;
         const std::vector<Player>& getPlayers() const;
     private:

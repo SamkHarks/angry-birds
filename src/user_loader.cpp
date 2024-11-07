@@ -53,6 +53,13 @@ void UserLoader::loadPlayer(const std::string& playerName) {
     }
 }
 
+void UserLoader::loadPlayer(int index) {
+    if (index < 0 || index >= players_.size()) {
+        throw std::runtime_error("Invalid player index: " + std::to_string(index));
+    }
+    userSelector_.player_ = std::make_shared<Player>(players_[index]);
+}
+
 void UserLoader::savePlayer() {
     if (!userSelector_.player_) {
         throw std::runtime_error("No player loaded to save.");
