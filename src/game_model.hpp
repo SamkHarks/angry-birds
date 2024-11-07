@@ -58,6 +58,14 @@ class GameModel {
         void handleCollisions();
         void handleObjectState();
         void handleBirdState();
+        void handleMainMenuState();
+        void handleGameOverState();
+        void handleSettingsState();
+        void handlePauseState();
+        void handleGameSelectorState();
+        void handleGameSelectorScreenState();
+        void handleUserSelectorScreenState();
+        void handleLevelSelectorScreenState();
 };
 
 #endif // GAME_MODEL_HPP
