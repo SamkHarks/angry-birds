@@ -7,9 +7,15 @@
 class UserSelector {
     public:
         enum class Screen {
-            MAIN,
-            LOAD_PLAYER,
-            NEW_PLAYER
+            NEW_PLAYER,
+            LOAD_PLAYER
+        };
+        enum class Item {
+            ACCEPT,
+            CANCEL,
+            BACK,
+            PLAYER_NAME,
+            UNDEFINED
         };
         UserSelector();
         void draw(sf::RenderWindow& window) const;
@@ -26,29 +32,37 @@ class UserSelector {
         bool isPlayerAccepted() const;
         bool isPlayerSet() const;
         const int getSelectedItem() const;
+        const Item convertIndexToItem() const;
         void setSelectedItem(int nextItem);
         int getItemAtPosition(sf::Vector2f mousePosition) const;
         Screen getScreen() const;
         void setScreen(Screen screen);
         bool isNewPlayer() const;
         void savePlayer();
+        void loadPlayer();
         void handleResize();
-        void resetPlayer();
+        void initializeScreen();
         const std::vector<Player>& getPlayers() const;
     private:
         sf::Font font_;
-        sf::Text promptText_;
-        sf::Text playerText_;
-        std::vector<sf::Text> acceptText_;
-        sf::RectangleShape caret_;
+        sf::Text promptText_; // Text prompt for player name
+        sf::Text playerText_; // Text input for player name
+        sf::Text loadHeaderText_; // Text header for load player screen
+        std::vector<sf::Text> acceptText_; // Text for accepting player name
+        std::vector<sf::Text> playerNames_; // List of player names for load player screen
+        sf::RectangleShape caret_; // Caret for text input
         mutable sf::Clock caretClock_;
         bool isPlayerAccepted_ = false;
         void updateItem(bool isSelected);
         int selectedItem_ = 0;
-        Screen screen_ = Screen::MAIN;
+        Screen screen_ = Screen::NEW_PLAYER;
         friend class UserLoader;
         UserLoader userLoader_;
         std::shared_ptr<Player> player_ = nullptr; // Solo owner of the player, other classes only have weak_ptr
+        void drawNewPlayer(sf::RenderWindow& window) const;
+        void drawLoadPlayer(sf::RenderWindow& window) const;
+        void initializePlayerNames();
+        const int getSelectedPlayerIndex() const;
 };
 
 #endif // USER_SELECTOR_HPP
