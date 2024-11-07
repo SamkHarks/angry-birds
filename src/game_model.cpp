@@ -168,11 +168,29 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                     }
                     break;
                 }
-                case GameSelector::Screen::USER_SELECTOR:
-                    if (code == sf::Keyboard::Key::Left || code == sf::Keyboard::Key::Right) {
-                        gameSelector_.getUserSelector().setSelectedItem(gameSelector_.getUserSelector().getSelectedItem() == 0 ? 1 : 0);
+                case GameSelector::Screen::USER_SELECTOR: {
+                    UserSelector& userSelector = gameSelector_.getUserSelector();
+                    const UserSelector::Item& item = userSelector.convertIndexToItem();
+                    if (userSelector.getScreen() == UserSelector::Screen::NEW_PLAYER) {
+                        if (code == sf::Keyboard::Key::Left) {
+                            userSelector.setSelectedItem(item == UserSelector::Item::ACCEPT ? 1 : 0);
+                        } else if (code == sf::Keyboard::Key::Right) {
+                            userSelector.setSelectedItem(item == UserSelector::Item::CANCEL ? 0 : 1);
+                        }
+                    } else {
+                        int playerCountRange = userSelector.getPlayers().size() + 3;
+                        int selectedItem = userSelector.getSelectedItem();
+                        if (code == sf::Keyboard::Key::Up) {
+                            int nextItem = selectedItem - 1 < 2 ? playerCountRange - 1 : selectedItem - 1;
+                            userSelector.setSelectedItem(nextItem);
+                        } else if (code == sf::Keyboard::Key::Down) {
+                            int nextItem = selectedItem + 1 >= playerCountRange ? 2 : selectedItem + 1;
+                            userSelector.setSelectedItem(nextItem);
+                        }
                     }
                     break;
+                }
+
             }
             break;
         case State::GAME_OVER:
@@ -206,6 +224,7 @@ void GameModel::setState() {
            auto selectedItem = main_menu_.getSelectedItem();
             if (selectedItem == 0) {
                 gameSelector_.updateMenuItems();
+                gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
                 state_ = State::GAME_SELECTOR;
             } else if (selectedItem == 1) {
                 state_ = State::SETTINGS;
@@ -238,8 +257,6 @@ void GameModel::setState() {
             } else if (selectedItem == mainMenuIndex) {
                 // Main Menu
                 state_ = State::MENU;
-                gameSelector_.getUserSelector().resetPlayer();
-                gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
                 main_menu_.updateMusic(sf::SoundSource::Status::Playing);
             } else if (selectedItem == exitIndex) {
                 // Exit
@@ -252,12 +269,22 @@ void GameModel::setState() {
                 case GameSelector::Screen::GAME_SELECTOR: {
                     auto item = gameSelector_.getSelectedItem();
                     switch (item) {
-                        case GameSelector::Item::NEW_GAME:
-                        case GameSelector::Item::LOAD_GAME:
-                            // TODO: handle new game and load game, for just move to user selector
+                        case GameSelector::Item::NEW_GAME: {
+                            UserSelector& userSelector = gameSelector_.getUserSelector();
                             gameSelector_.setScreen(GameSelector::Screen::USER_SELECTOR);
+                            userSelector.setScreen(UserSelector::Screen::NEW_PLAYER);
+                            userSelector.initializeScreen();
                             break;
+                        }
+                        case GameSelector::Item::LOAD_GAME: {
+                            UserSelector& userSelector = gameSelector_.getUserSelector();
+                            gameSelector_.setScreen(GameSelector::Screen::USER_SELECTOR);
+                            userSelector.setScreen(UserSelector::Screen::LOAD_PLAYER);
+                            userSelector.initializeScreen();
+                            break;
+                        }
                         case GameSelector::Item::CONTINUE:
+                            gameSelector_.getLevelSelector().updateLevel();
                             gameSelector_.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
                             break;
                         case GameSelector::Item::BACK:
@@ -268,26 +295,38 @@ void GameModel::setState() {
                 }
                 case GameSelector::Screen::USER_SELECTOR: {
                     UserSelector& userSelector = gameSelector_.getUserSelector();
-                    // Check if player is set and accepted
-                    if (userSelector.isPlayerSet()) {
-                        if (userSelector.getSelectedItem() == 0) {
-                            userSelector.setPlayerAccepted(true);
-                        } else {
-                            userSelector.clearPlayer();
-                        }
-                    // set player if player is not set
-                    } else {
-                        userSelector.setPlayer();
+                    const UserSelector::Item& item = userSelector.convertIndexToItem();
+                    switch (userSelector.getScreen()) {
+                        case UserSelector::Screen::NEW_PLAYER:
+                            // Check if player is set and accepted
+                            if (userSelector.isPlayerSet()) {
+                                if (item == UserSelector::Item::ACCEPT) {
+                                    userSelector.setPlayerAccepted(true);
+                                } else if (item == UserSelector::Item::CANCEL) {
+                                    userSelector.clearPlayer();
+                                }
+                            // set player if player is not set
+                            } else {
+                                userSelector.setPlayer();
+                            }
+                            // if player is accepted, save new player and move to level selector
+                            if (userSelector.isPlayerAccepted()) {
+                                if (userSelector.isNewPlayer()) {
+                                    userSelector.savePlayer();
+                                }
+                                gameSelector_.initializeLevelSelector();
+                            }
+                            break;
+                        case UserSelector::Screen::LOAD_PLAYER:
+                            if (item == UserSelector::Item::BACK) {
+                                gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
+                            } else if (item == UserSelector::Item::PLAYER_NAME) {
+                                userSelector.loadPlayer();
+                                gameSelector_.initializeLevelSelector();
+                            }
+                            break;
                     }
-                    // if player is accepted, save new player and move to level selector
-                    if (userSelector.isPlayerAccepted()) {
-                        if (userSelector.isNewPlayer()) {
-                            userSelector.savePlayer();
-                        }
-                        gameSelector_.getLevelSelector().setPlayer(userSelector.getPlayer());
-                        gameSelector_.getLevelSelector().updateLevel();
-                        gameSelector_.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
-                    }
+                    
                     break;
                 }
                 case GameSelector::Screen::LEVEL_SELECTOR: {
@@ -295,7 +334,6 @@ void GameModel::setState() {
                     LevelSelector::Item item = levelSelector.getSelectedItem();
                     switch (item) {
                         case LevelSelector::Item::BACK:
-                            gameSelector_.getUserSelector().resetPlayer();
                             gameSelector_.updateMenuItems();
                             gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
                             break;
