@@ -29,12 +29,14 @@ class GameSelector : public Menu {
         bool handleMouseClick(sf::Vector2f mousePosition) override;
         void handleResize() override;
         Item getSelectedItem() const;
+        void initializeLevelSelector();
     private:
         LevelSelector levelSelector_;
         UserSelector userSelector_;
         Screen screen_ = Screen::GAME_SELECTOR;
         void drawScreen(sf::RenderWindow& window) const;
         const std::vector<std::string>& getButtonNames() const override;
+
 };
 
 
