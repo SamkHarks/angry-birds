@@ -57,7 +57,7 @@ void Menu::updateItem(sf::Color fillColor, float scale) {
     menuItems_[selectedItem_].setScale(scale, scale);
 }
 
-int Menu::getItemAtPosition(sf::Vector2f mousePosition) const {
+int Menu::getItemAtPosition(const sf::Vector2f& mousePosition) const {
     for (int i = 0; i < buttonAmount_; i++) {
         if (menuItems_[i].getGlobalBounds().contains(mousePosition)) {
             return i;
@@ -66,11 +66,11 @@ int Menu::getItemAtPosition(sf::Vector2f mousePosition) const {
     return -1;
 }
 
-bool Menu::handleMouseClick(sf::Vector2f mousePosition) {
+bool Menu::handleMouseClick(const sf::Vector2f& mousePosition) {
     return getItemAtPosition(mousePosition) >= 0;
 };
 
-void Menu::handleMouseMove(sf::Vector2f mousePosition) {
+void Menu::handleMouseMove(const sf::Vector2f& mousePosition) {
     int hoveredItem = getItemAtPosition(mousePosition);
     if (hoveredItem == -1) {
         return;

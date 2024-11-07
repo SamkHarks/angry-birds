@@ -25,8 +25,8 @@ class UserSelector {
         };
         UserSelector();
         void draw(sf::RenderWindow& window) const;
-        void handleMouseMove(sf::Vector2f mousePosition);
-        bool handleMouseClick(sf::Vector2f mousePosition);
+        void handleMouseMove(const sf::Vector2f& mousePosition);
+        bool handleMouseClick(const sf::Vector2f& mousePosition);
         void handleTextEntered(sf::Uint32 unicode);
         void setPromptText(const std::string& text);
         void setPlayerText(const std::string& text);
@@ -40,7 +40,7 @@ class UserSelector {
         const int getSelectedItem() const;
         const Item convertIndexToItem() const;
         void setSelectedItem(int nextItem);
-        int getItemAtPosition(sf::Vector2f mousePosition) const;
+        int getItemAtPosition(const sf::Vector2f& mousePosition) const;
         Screen getScreen() const;
         void setScreen(Screen screen);
         bool isNewPlayer() const;

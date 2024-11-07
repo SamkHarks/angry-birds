@@ -4,13 +4,13 @@
 GameController::GameController(GameModel& model, GameView& view) : model_(model), view_(view) {}
 
 void GameController::handleEvents() {
-    sf::Vector2f mousePosition = view_.mapPixelToCoords(sf::Mouse::getPosition(view_));
+    const sf::Vector2f& mousePosition = view_.mapPixelToCoords(sf::Mouse::getPosition(view_));
     for (auto event = sf::Event{}; view_.pollEvent(event);) {
        handleEvent(event, mousePosition);
     }
 }
 
-void GameController::handleEvent(const sf::Event& event, sf::Vector2f mousePosition) {
+void GameController::handleEvent(const sf::Event& event, const sf::Vector2f& mousePosition) {
     switch (event.type) {
         case sf::Event::Closed:
             view_.close();
@@ -58,44 +58,10 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     }
 }
 
-void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::Vector2f mousePosition) {
+void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition) {
     switch (mouseButton) {
         case sf::Mouse::Button::Left:
-            // TODO: Implement mouse left actions
-            switch(model_.getState()) {
-                case GameModel::State::MENU: {
-                    if (model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition)) {
-                        model_.setState();
-                    }
-                    break;
-                }
-                case GameModel::State::GAME_SELECTOR: {
-                    if (model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseClick(mousePosition)) {
-                        model_.setState();
-                    }
-                    break;
-                }
-                case GameModel::State::RUNNING:
-                    // TODO: Implement mouse actions in running state
-                    model_.getWorld().getCannon()->startLaunch();
-                    break;
-                case GameModel::State::GAME_OVER: {
-                    if (model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition)) {
-                        model_.setState();
-                    }
-                    break;
-                }
-                case GameModel::State::PAUSED:
-                    // TODO: Implement mouse actions in Pause menu
-                    break;
-                case GameModel::State::SETTINGS:
-                    if (model_.getMenu(Menu::Type::SETTINGS).handleMouseClick(mousePosition)) {
-                        model_.setState();
-                    }
-                    break;
-                default:
-                    break;
-            }
+            handleMouseLeftPress(mousePosition);
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions
@@ -108,7 +74,44 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, sf::
     }
 }
 
-void GameController::handleMouseRelease(sf::Mouse::Button button, sf::Vector2f mousePosition) {
+void GameController::handleMouseLeftPress(const sf::Vector2f& mousePosition) {
+     switch(model_.getState()) {
+        case GameModel::State::MENU: {
+            if (model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition)) {
+                model_.setState();
+            }
+            break;
+        }
+        case GameModel::State::GAME_SELECTOR: {
+            if (model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseClick(mousePosition)) {
+                model_.setState();
+            }
+            break;
+        }
+        case GameModel::State::RUNNING:
+            // TODO: Implement mouse actions in running state
+            model_.getWorld().getCannon()->startLaunch();
+            break;
+        case GameModel::State::GAME_OVER: {
+            if (model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition)) {
+                model_.setState();
+            }
+            break;
+        }
+        case GameModel::State::PAUSED:
+            // TODO: Implement mouse actions in Pause menu
+            break;
+        case GameModel::State::SETTINGS:
+            if (model_.getMenu(Menu::Type::SETTINGS).handleMouseClick(mousePosition)) {
+                model_.setState();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void GameController::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
     if (
         button == sf::Mouse::Button::Left
         && model_.getState() == GameModel::State::RUNNING
@@ -118,7 +121,7 @@ void GameController::handleMouseRelease(sf::Mouse::Button button, sf::Vector2f m
     }
 }
 
-void GameController::handleMouseMove(sf::Vector2f mousePosition) {
+void GameController::handleMouseMove(const sf::Vector2f& mousePosition) {
     switch(model_.getState()) {
         case GameModel::State::RUNNING:
             model_.rotateCannon(mousePosition);

@@ -24,9 +24,9 @@ class Menu {
         const int getSelectedItem() const;
         void setSelectedItem(int nextItem);
         const Type getType() const;
-        int getItemAtPosition(sf::Vector2f mousePosition) const;
-        virtual bool handleMouseClick(sf::Vector2f mousePosition);
-        virtual void handleMouseMove(sf::Vector2f mousePosition);
+        int getItemAtPosition(const sf::Vector2f& mousePosition) const;
+        virtual bool handleMouseClick(const sf::Vector2f& mousePosition);
+        virtual void handleMouseMove(const sf::Vector2f& mousePosition);
         void updateMusic(sf::SoundSource::Status status);
         virtual void handleResize();
         void updateMenuItems();

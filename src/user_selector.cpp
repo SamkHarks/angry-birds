@@ -231,13 +231,15 @@ void UserSelector::updateItem(bool isSelected) {
             }
             break;
         case UserSelector::Item::PREV:
-        case UserSelector::Item::NEXT:
+        case UserSelector::Item::NEXT: {
+            auto index = selectedItem_ == static_cast<int>(UserSelector::Item::PREV) ? 0 : 1;
             if (isSelected) {
-                buttons_[selectedItem_ == static_cast<int>(UserSelector::Item::PREV) ? 0 : 1].setScale(1.1f, 1.1f);
+                buttons_[index].setScale(1.1f, 1.1f);
             } else {
-                buttons_[selectedItem_ == static_cast<int>(UserSelector::Item::PREV) ? 0 : 1].setScale(1.f, 1.f);
+                buttons_[index].setScale(1.f, 1.f);
             }
             break;
+        }
         case UserSelector::Item::PLAYER_NAME:
             isSelected
                 ? playerNames_[getSelectedPlayerIndex()].setFillColor(LIME_GREEN)
@@ -253,7 +255,7 @@ void UserSelector::setSelectedItem(int nextItem) {
     updateItem(true);
 }
 
-int UserSelector::getItemAtPosition(sf::Vector2f mousePosition) const {
+int UserSelector::getItemAtPosition(const sf::Vector2f& mousePosition) const {
     if (screen_ == UserSelector::Screen::NEW_PLAYER) {
         if (isPlayerSet() && !isPlayerAccepted_) {
             for (int i = 0; i < 2; i++) {
@@ -317,11 +319,11 @@ const int UserSelector::getSelectedItem() const {
     return selectedItem_;
 }
 
-bool UserSelector::handleMouseClick(sf::Vector2f mousePosition) {
+bool UserSelector::handleMouseClick(const sf::Vector2f& mousePosition) {
     return getItemAtPosition(mousePosition) >= 0;
 }
 
-void UserSelector::handleMouseMove(sf::Vector2f mousePosition) {
+void UserSelector::handleMouseMove(const sf::Vector2f& mousePosition) {
     int hoveredItem = getItemAtPosition(mousePosition);
     if (hoveredItem == -1) {
         return;
@@ -380,38 +382,44 @@ const UserSelector::IndexRange& UserSelector::getIndexRange() const {
 
 void UserSelector::setIndexRange(Item item) {
     assert(item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT || item == UserSelector::Item::UNDEFINED);
-    // Reset with item undefined by setting range to first 3 players
-    if (playerCount_ <= 3 || item == UserSelector::Item::UNDEFINED) {
+    // if player count is less than 3, show all players
+    if (playerCount_ <= 3) {
         range_.start = 0;
-        range_.end = playerCount_ > 3 ? 3 : playerCount_;
+        range_.end = playerCount_;
         return;
     }
     int lastPageItemCount = playerCount_ % 3;
-    // next page
-    if (item == UserSelector::Item::NEXT) {
-        // check if last page has less than 3 players
-        if (range_.start + 3 >= playerCount_ - 3) {
-            range_.start = lastPageItemCount == 0 ? playerCount_ - 3 : playerCount_ - lastPageItemCount;
-            range_.end = playerCount_;
-        // go to next page
-        } else {
-            range_.start += 3;
-            range_.end += 3;
-        }
-    // prev page
-    } else {
-        // check if last page has less than 3 players
-        if (range_.end - range_.start != 3) {
-            range_.end = playerCount_ - lastPageItemCount;
-            range_.start = range_.end - 3;
-        // check that we are not going below first page
-        } else if (range_.start - 3 < 0) {
+    switch (item) {
+        case UserSelector::Item::UNDEFINED:
+            // Initialize range to show first 3 players
             range_.start = 0;
             range_.end = 3;
-        // go to prev page
-        } else {
-            range_.start -= 3;
-            range_.end -= 3;
-        }
-    }
+            return;
+        case UserSelector::Item::NEXT:
+            // check if last page has less than 3 players
+            if (range_.start + 3 >= playerCount_ - 3) {
+                range_.start = lastPageItemCount == 0 ? playerCount_ - 3 : playerCount_ - lastPageItemCount;
+                range_.end = playerCount_;
+            // go to next page
+            } else {
+                range_.start += 3;
+                range_.end += 3;
+            }
+            break;
+        case UserSelector::Item::PREV:
+            // check if last page has less than 3 players
+            if (range_.end - range_.start != 3) {
+                range_.end = playerCount_ - lastPageItemCount;
+                range_.start = range_.end - 3;
+            // check that we are not going below first page
+            } else if (range_.start - 3 < 0) {
+                range_.start = 0;
+                range_.end = 3;
+            // go to prev page
+            } else {
+                range_.start -= 3;
+                range_.end -= 3;
+            }
+            break;
+    }    
 }

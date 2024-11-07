@@ -103,7 +103,7 @@ void LevelSelector::setSelectedItem(Item nextItem) {
     updateItem(true);
 }
 
-LevelSelector::Item LevelSelector::getItemAtPosition(sf::Vector2f mousePosition) const {
+LevelSelector::Item LevelSelector::getItemAtPosition(const sf::Vector2f& mousePosition) const {
     for (int i = 0; i < menuItems_.size(); i++) {
         if (menuItems_[i].getGlobalBounds().contains(mousePosition)) {
             return static_cast<Item>(i);
@@ -123,7 +123,7 @@ LevelSelector::Item LevelSelector::getItemAtPosition(sf::Vector2f mousePosition)
     return Item::UNDEFINED;
 }
 
-bool LevelSelector::handleMouseClick(sf::Vector2f mousePosition) {
+bool LevelSelector::handleMouseClick(const sf::Vector2f& mousePosition) {
     Item item = getItemAtPosition(mousePosition);
     if (item != Item::UNDEFINED) {
         return true;
@@ -131,7 +131,7 @@ bool LevelSelector::handleMouseClick(sf::Vector2f mousePosition) {
     return false;
 }
 
-void LevelSelector::handleMouseMove(sf::Vector2f mousePosition) {
+void LevelSelector::handleMouseMove(const sf::Vector2f& mousePosition) {
     Item hoveredItem = getItemAtPosition(mousePosition);
     if (hoveredItem == Item::UNDEFINED) {
         return;

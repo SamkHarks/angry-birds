@@ -58,7 +58,7 @@ UserSelector& GameSelector::getUserSelector() {
     return userSelector_;
 };
 
-void GameSelector::handleMouseMove(sf::Vector2f mousePosition) {
+void GameSelector::handleMouseMove(const sf::Vector2f& mousePosition) {
     switch (screen_) {
         case GameSelector::Screen::GAME_SELECTOR:
             this->Menu::handleMouseMove(mousePosition);
@@ -74,7 +74,7 @@ void GameSelector::handleMouseMove(sf::Vector2f mousePosition) {
     }
 };
 
-bool GameSelector::handleMouseClick(sf::Vector2f mousePosition) {
+bool GameSelector::handleMouseClick(const sf::Vector2f& mousePosition) {
     switch (screen_) {
         case GameSelector::Screen::GAME_SELECTOR:
             return this->Menu::handleMouseClick(mousePosition);

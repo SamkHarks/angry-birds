@@ -25,8 +25,8 @@ class GameSelector : public Menu {
         UserSelector& getUserSelector();
         void setScreen(Screen screen);
         Screen getScreen() const;
-        void handleMouseMove(sf::Vector2f mousePosition) override;
-        bool handleMouseClick(sf::Vector2f mousePosition) override;
+        void handleMouseMove(const sf::Vector2f& mousePosition) override;
+        bool handleMouseClick(const sf::Vector2f& mousePosition) override;
         void handleResize() override;
         Item getSelectedItem() const;
         void initializeLevelSelector();

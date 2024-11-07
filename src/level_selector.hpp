@@ -23,9 +23,9 @@ class LevelSelector {
         void draw(sf::RenderWindow& window) const;
         const Item getSelectedItem() const;
         void setSelectedItem(Item nextItem);
-        Item getItemAtPosition(sf::Vector2f mousePosition) const;
-        bool handleMouseClick(sf::Vector2f mousePosition);
-        void handleMouseMove(sf::Vector2f mousePosition);
+        Item getItemAtPosition(const sf::Vector2f& mousePosition) const;
+        bool handleMouseClick(const sf::Vector2f& mousePosition);
+        void handleMouseMove(const sf::Vector2f& mousePosition);
         Level& getSelectedLevel();
         void setLevel(Item item);
         void handleResize();

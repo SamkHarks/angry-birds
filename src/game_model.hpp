@@ -43,7 +43,7 @@ class GameModel {
 
         void launchBird();
 
-        void rotateCannon(sf::Vector2f mousePosition);
+        void rotateCannon(const sf::Vector2f& mousePosition);
 
         void handleTextEntered(sf::Uint32 unicode);
 

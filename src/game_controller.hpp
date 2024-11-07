@@ -7,17 +7,20 @@
 class GameController {
     public:
         GameController(GameModel& model, GameView& view);
-        void handleEvent(const sf::Event& event, sf::Vector2f mousePosition);
         void handleEvents();
-        void handleKeyPress(const sf::Keyboard::Key& code);
-        void handleMousePress(const sf::Mouse::Button& mouseButton, sf::Vector2f mousePosition);
-        void handleMouseRelease(sf::Mouse::Button button, sf::Vector2f mousePosition);
-        void handleMouseMove(sf::Vector2f mousePosition);
-        void handleTextEntered(sf::Uint32 unicode);
-        void handleResize(const sf::Event& event);
     private:
         GameModel& model_;
         GameView& view_;
+        // Handle different types of events
+        void handleKeyPress(const sf::Keyboard::Key& code);
+        void handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition);
+        void handleMouseLeftPress(const sf::Vector2f& mousePosition);
+        void handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition);
+        void handleMouseMove(const sf::Vector2f& mousePosition);
+        void handleTextEntered(sf::Uint32 unicode);
+        void handleResize(const sf::Event& event);
+        void handleEvent(const sf::Event& event, const sf::Vector2f& mousePosition);
+
 };
 
 #endif // GAME_CONTROLLER_HPP
