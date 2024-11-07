@@ -33,6 +33,8 @@ void UserLoader::loadPlayers() {
         Player newPlayer = player.template get<Player>();
         players_.push_back(newPlayer);
     }
+
+    userSelector_.playerCount_ = players_.size();
 }
 
 bool UserLoader::isPlayerNameAvailable(const std::string& playerName) const {

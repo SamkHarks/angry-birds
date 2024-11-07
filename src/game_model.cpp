@@ -178,13 +178,30 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                             userSelector.setSelectedItem(item == UserSelector::Item::CANCEL ? 0 : 1);
                         }
                     } else {
-                        int playerCountRange = userSelector.getPlayers().size() + 3;
+                        const UserSelector::IndexRange& range = userSelector.getIndexRange();
+                        int playerCountRange = PLAYER_INDEX_START + range.end;
                         int selectedItem = userSelector.getSelectedItem();
                         if (code == sf::Keyboard::Key::Up) {
-                            int nextItem = selectedItem - 1 < 2 ? playerCountRange - 1 : selectedItem - 1;
+                            int nextItem;
+                            if (item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                                nextItem = PLAYER_INDEX_START + range.start;
+                            } else if (item == UserSelector::Item::BACK) {
+                                nextItem = playerCountRange - 1;
+                            } else if (selectedItem - 1 < PLAYER_INDEX_START + range.start) {
+                                nextItem = static_cast<int>(UserSelector::Item::BACK);
+                            } else {
+                                nextItem = selectedItem - 1;
+                            }
                             userSelector.setSelectedItem(nextItem);
                         } else if (code == sf::Keyboard::Key::Down) {
-                            int nextItem = selectedItem + 1 >= playerCountRange ? 2 : selectedItem + 1;
+                            int nextItem;
+                            if (item == UserSelector::Item::BACK || item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                                nextItem = PLAYER_INDEX_START + range.start;
+                            } else if (selectedItem + 1 >= playerCountRange) {
+                                nextItem = static_cast<int>(UserSelector::Item::BACK);
+                            } else {
+                                nextItem = selectedItem + 1;
+                            }
                             userSelector.setSelectedItem(nextItem);
                         }
                     }
@@ -323,6 +340,10 @@ void GameModel::setState() {
                             } else if (item == UserSelector::Item::PLAYER_NAME) {
                                 userSelector.loadPlayer();
                                 gameSelector_.initializeLevelSelector();
+                            } else if (item == UserSelector::Item::PREV) {
+                                userSelector.setIndexRange(UserSelector::Item::PREV);
+                            } else if (item == UserSelector::Item::NEXT) {
+                                userSelector.setIndexRange(UserSelector::Item::NEXT);
                             }
                             break;
                     }

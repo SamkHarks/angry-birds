@@ -14,8 +14,14 @@ class UserSelector {
             ACCEPT,
             CANCEL,
             BACK,
+            PREV,
+            NEXT,
             PLAYER_NAME,
             UNDEFINED
+        };
+        struct IndexRange {
+            int start = 0;
+            int end = 0;
         };
         UserSelector();
         void draw(sf::RenderWindow& window) const;
@@ -43,6 +49,8 @@ class UserSelector {
         void handleResize();
         void initializeScreen();
         const std::vector<Player>& getPlayers() const;
+        const IndexRange& getIndexRange() const;
+        void setIndexRange(Item item);
     private:
         sf::Font font_;
         sf::Text promptText_; // Text prompt for player name
@@ -51,10 +59,14 @@ class UserSelector {
         std::vector<sf::Text> acceptText_; // Text for accepting player name
         std::vector<sf::Text> playerNames_; // List of player names for load player screen
         sf::RectangleShape caret_; // Caret for text input
+        std::vector<sf::RectangleShape> buttons_; // Buttons for setting next players to visible
+        
         mutable sf::Clock caretClock_;
         bool isPlayerAccepted_ = false;
         void updateItem(bool isSelected);
         int selectedItem_ = 0;
+        int playerCount_ = 0;
+        IndexRange range_;
         Screen screen_ = Screen::NEW_PLAYER;
         friend class UserLoader;
         UserLoader userLoader_;

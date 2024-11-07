@@ -4,7 +4,8 @@
 
 UserSelector::UserSelector() : userLoader_(*this) {
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
-    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+    ResourceManager& resourceManager = ResourceManager::getInstance();
+    font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     // set prompt text
     promptText_.setFont(font_);
     promptText_.setString("Add new player:");
@@ -51,10 +52,19 @@ UserSelector::UserSelector() : userLoader_(*this) {
         SCREEN_CENTER.x,
         playerText_.getPosition().y
     );
-    // Set initial selected item to Yes
-    selectedItem_ = 0;
-    updateItem(true);
 
+    // Load arrow textures
+    buttons_.resize(2);
+    for (int i = 0; i < 2; ++i) {
+        buttons_[i].setSize(sf::Vector2f(100, 100));
+        auto globalBounds = buttons_[i].getGlobalBounds();
+        buttons_[i].setOrigin(globalBounds.width / 2, globalBounds.height / 2);
+        buttons_[i].setTexture(&resourceManager.getTexture("/assets/images/wooden_arrow.png"));
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
+        if (i == 0) {
+            buttons_[i].setRotation(180);
+        }
+    }
     // load players
     userLoader_.loadPlayers();
 }
@@ -76,7 +86,10 @@ void UserSelector::handleResize() {
         playerText_.getPosition().y
     );
     for (int i = 0; i < playerNames_.size(); i++) {
-        playerNames_[i].setPosition(SCREEN_CENTER.x - 200, (SCREEN_CENTER.y - 50) + i * 50);
+        playerNames_[i].setPosition(SCREEN_CENTER.x - 200, (SCREEN_CENTER.y - 50) + (i % 3) * 50);
+    }
+    for (int i = 0; i < 2; ++i) {
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
     }
 }
 
@@ -85,6 +98,7 @@ void UserSelector::initializePlayerNames() {
     if (userCount == playerNames_.size()) {
         return; // No need to reinitialize
     }
+    playerCount_ = userCount;
     const sf::Vector2f& SCREEN_CENTER = VIEW.getCenter();
     // Initialize player names
     playerNames_.clear();
@@ -97,7 +111,7 @@ void UserSelector::initializePlayerNames() {
         playerNames_[i].setCharacterSize(50);
         playerNames_[i].setString(userLoader_.getPlayers()[i].name);
         sf::FloatRect textBounds = playerNames_[i].getGlobalBounds();
-        playerNames_[i].setPosition(SCREEN_CENTER.x - 200, (SCREEN_CENTER.y - 50) + i * 50);
+        playerNames_[i].setPosition(SCREEN_CENTER.x - 200, (SCREEN_CENTER.y - 50) + (i % 3) * 50);
     }
 }
 
@@ -114,8 +128,16 @@ void UserSelector::drawNewPlayer(sf::RenderWindow& window) const {
 }
 
 void UserSelector::drawLoadPlayer(sf::RenderWindow& window) const {
-    for (const auto& playerName : playerNames_) {
-        window.draw(playerName);
+    for (int i = range_.start; i < range_.end; i++) {
+        window.draw(playerNames_[i]);
+    }
+    if (playerCount_ > 3) {
+        if (range_.start > 0) {
+            window.draw(buttons_[0]);
+        }
+        if (range_.end < playerCount_) {
+            window.draw(buttons_[1]);
+        }
     }
     window.draw(acceptText_[2]);
 }
@@ -208,6 +230,14 @@ void UserSelector::updateItem(bool isSelected) {
                 acceptText_[selectedItem_].setScale(1.f, 1.f);
             }
             break;
+        case UserSelector::Item::PREV:
+        case UserSelector::Item::NEXT:
+            if (isSelected) {
+                buttons_[selectedItem_ == static_cast<int>(UserSelector::Item::PREV) ? 0 : 1].setScale(1.1f, 1.1f);
+            } else {
+                buttons_[selectedItem_ == static_cast<int>(UserSelector::Item::PREV) ? 0 : 1].setScale(1.f, 1.f);
+            }
+            break;
         case UserSelector::Item::PLAYER_NAME:
             isSelected
                 ? playerNames_[getSelectedPlayerIndex()].setFillColor(LIME_GREEN)
@@ -237,9 +267,23 @@ int UserSelector::getItemAtPosition(sf::Vector2f mousePosition) const {
             return 2;
         }
         // Check player names and return convereted index if found 
-        for (int i = 0; i < playerNames_.size(); i++) {
+        for (int i = range_.start; i < range_.end; i++) {
             if (playerNames_[i].getGlobalBounds().contains(mousePosition)) {
-                return i + 3;
+                return i + PLAYER_INDEX_START;
+            }
+        }
+        // Check buttons
+        if (playerCount_ > 3) {
+            for (int i = 0; i < 2; i++) {
+                if (buttons_[i].getGlobalBounds().contains(mousePosition)) {
+                    if (i == 0 && range_.start > 0) {
+                        return static_cast<int>(UserSelector::Item::PREV);
+                    } else if (i == 1 && range_.end < playerCount_) {
+                        return static_cast<int>(UserSelector::Item::NEXT);
+                    } else {
+                        return -1;
+                    }
+                }
             }
         }
     }
@@ -247,23 +291,26 @@ int UserSelector::getItemAtPosition(sf::Vector2f mousePosition) const {
 }
 
 const UserSelector::Item UserSelector::convertIndexToItem() const {
-    if (screen_ == UserSelector::Screen::NEW_PLAYER) {
-        if (selectedItem_ >= 0 && selectedItem_ < 2) {
+    bool isNewPlayerScreen = screen_ == UserSelector::Screen::NEW_PLAYER;
+    switch (selectedItem_) {
+        case static_cast<int>(UserSelector::Item::ACCEPT):
+        case static_cast<int>(UserSelector::Item::CANCEL):
+        case static_cast<int>(UserSelector::Item::BACK):
+        case static_cast<int>(UserSelector::Item::PREV):
+        case static_cast<int>(UserSelector::Item::NEXT):
             return static_cast<Item>(selectedItem_);
-        }
-    } else if (screen_ == UserSelector::Screen::LOAD_PLAYER) {
-        if (selectedItem_ == 2) {
-            return Item::BACK;
-        }
-        if (selectedItem_ >= 3 && selectedItem_ < playerNames_.size() + 3) {
-            return Item::PLAYER_NAME;
-        }
+        default:
+            if (selectedItem_ >= PLAYER_INDEX_START && selectedItem_ < playerNames_.size() + PLAYER_INDEX_START) {
+                return Item::PLAYER_NAME;
+            } else {
+                return Item::UNDEFINED;
+            }
+        
     }
-    return Item::UNDEFINED;
 }
 
 const int UserSelector::getSelectedPlayerIndex() const {
-    return selectedItem_ - 3;
+    return selectedItem_ - PLAYER_INDEX_START;
 }
 
 const int UserSelector::getSelectedItem() const {
@@ -301,7 +348,7 @@ void UserSelector::savePlayer() {
 }
 
 void UserSelector::loadPlayer() {
-    assert (selectedItem_ >= 3 && selectedItem_ < userLoader_.getPlayers().size() + 3);
+    assert (selectedItem_ >= PLAYER_INDEX_START && selectedItem_ < userLoader_.getPlayers().size() + PLAYER_INDEX_START);
     userLoader_.loadPlayer(getSelectedPlayerIndex());
 }
 
@@ -311,16 +358,60 @@ const std::vector<Player>& UserSelector::getPlayers() const {
 
 void UserSelector::initializeScreen() {
     const sf::Vector2f& SCREEN_CENTER = VIEW.getCenter();
-    selectedItem_ = 0;
     switch (screen_) {
         case Screen::NEW_PLAYER:
+            setSelectedItem(0);
             clearPlayer();
             promptText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 50);
             break;
         case Screen::LOAD_PLAYER:
             initializePlayerNames();
+            setIndexRange(UserSelector::Item::UNDEFINED);
+            setSelectedItem(PLAYER_INDEX_START);
             setPromptText("Select player:");
             promptText_.setPosition(SCREEN_CENTER.x + 10, SCREEN_CENTER.y - 95);
             break;
+    }
+}
+
+const UserSelector::IndexRange& UserSelector::getIndexRange() const {
+    return range_;
+}
+
+void UserSelector::setIndexRange(Item item) {
+    assert(item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT || item == UserSelector::Item::UNDEFINED);
+    // Reset with item undefined by setting range to first 3 players
+    if (playerCount_ <= 3 || item == UserSelector::Item::UNDEFINED) {
+        range_.start = 0;
+        range_.end = playerCount_ > 3 ? 3 : playerCount_;
+        return;
+    }
+    int lastPageItemCount = playerCount_ % 3;
+    // next page
+    if (item == UserSelector::Item::NEXT) {
+        // check if last page has less than 3 players
+        if (range_.start + 3 >= playerCount_ - 3) {
+            range_.start = lastPageItemCount == 0 ? playerCount_ - 3 : playerCount_ - lastPageItemCount;
+            range_.end = playerCount_;
+        // go to next page
+        } else {
+            range_.start += 3;
+            range_.end += 3;
+        }
+    // prev page
+    } else {
+        // check if last page has less than 3 players
+        if (range_.end - range_.start != 3) {
+            range_.end = playerCount_ - lastPageItemCount;
+            range_.start = range_.end - 3;
+        // check that we are not going below first page
+        } else if (range_.start - 3 < 0) {
+            range_.start = 0;
+            range_.end = 3;
+        // go to prev page
+        } else {
+            range_.start -= 3;
+            range_.end -= 3;
+        }
     }
 }

@@ -55,6 +55,7 @@ const int POSITION_ITERATIONS = 2;
 const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
 const sf::Color LIME_GREEN(100, 255, 0);
+const int PLAYER_INDEX_START = 5;
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
