@@ -177,6 +177,7 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                         } else if (code == sf::Keyboard::Key::Right) {
                             userSelector.setSelectedItem(item == UserSelector::Item::CANCEL ? 0 : 1);
                         }
+                    // Load player screen
                     } else {
                         const UserSelector::IndexRange& range = userSelector.getIndexRange();
                         int playerCountRange = PLAYER_INDEX_START + range.end;
@@ -203,6 +204,16 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                                 nextItem = selectedItem + 1;
                             }
                             userSelector.setSelectedItem(nextItem);
+                        } else if (code == sf::Keyboard::Key::Left) {
+                            userSelector.setSelectedItem(item == UserSelector::Item::PREV
+                                ? static_cast<int>(UserSelector::Item::NEXT)
+                                : static_cast<int>(UserSelector::Item::PREV)
+                            );
+                        } else if (code == sf::Keyboard::Key::Right) {
+                            userSelector.setSelectedItem(item == UserSelector::Item::NEXT
+                                ? static_cast<int>(UserSelector::Item::PREV)
+                                : static_cast<int>(UserSelector::Item::NEXT)
+                            );
                         }
                     }
                     break;
