@@ -70,28 +70,28 @@ namespace utils
         return assetsPath;
     }
 
-    float B2ToSf(float b2_coord) {
-        return b2_coord * SCALE;
+    float B2ToSf(float b2Coord) {
+        return b2Coord * SCALE;
     }
 
-    float SfToB2(float sf_coord) {
-        return sf_coord / SCALE;
+    float SfToB2(float sfCoord) {
+        return sfCoord / SCALE;
     }
 
-    sf::Vector2f B2ToSf(const b2Vec2& b2_vector) {
-        return sf::Vector2f(B2ToSf(b2_vector.x), B2ToSf(b2_vector.y));
+    sf::Vector2f B2ToSf(const b2Vec2& b2Vector) {
+        return sf::Vector2f(B2ToSf(b2Vector.x), B2ToSf(b2Vector.y));
     }
 
-    b2Vec2 SfToB2(const sf::Vector2f& sf_vector) {
-        return b2Vec2(SfToB2(sf_vector.x), SfToB2(sf_vector.y));
+    b2Vec2 SfToB2(const sf::Vector2f& sfVector) {
+        return b2Vec2(SfToB2(sfVector.x), SfToB2(sfVector.y));
     }
 
-    sf::Vector2f B2ToSfCoords(const b2Vec2& b2_vector) {
-        return sf::Vector2f(B2ToSf(b2_vector.x), VIEW.getHeight() - ( B2ToSf(b2_vector.y) ));
+    sf::Vector2f B2ToSfCoords(const b2Vec2& b2Vector) {
+        return sf::Vector2f(B2ToSf(b2Vector.x), VIEW.getHeight() - ( B2ToSf(b2Vector.y) ));
     }
 
-    b2Vec2 SfToB2Coords(const sf::Vector2f& sf_vector) {
-        return b2Vec2(SfToB2(sf_vector.x), SfToB2(VIEW.getHeight() - sf_vector.y));
+    b2Vec2 SfToB2Coords(const sf::Vector2f& sfVector) {
+        return b2Vec2(SfToB2(sfVector.x), SfToB2(VIEW.getHeight() - sfVector.y));
     }
 
     float RadiansToDegrees(const float radians) {
@@ -103,7 +103,7 @@ namespace utils
     }
 
     float getDirection(const sf::Vector2f& difference) {
-        float direction = RadiansToDegrees(atan2(difference.y, difference.x));//RadiansToDegrees(-atan2(difference.y, difference.x));
+        float direction = RadiansToDegrees(atan2(difference.y, difference.x));
         if (difference.x < 0) {
             direction += 180;
         }

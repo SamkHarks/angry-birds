@@ -10,7 +10,7 @@ class Bird : public Object {
             Blue,
             Green,
         };
-        Bird(b2Body *body, std::string texture_file, Type bird_type, float radius);
+        Bird(b2Body *body, std::string textureFile, Type birdType, float radius);
         virtual char getTypeAsChar() const override = 0;
 
         Type getBirdType() const;
@@ -22,8 +22,8 @@ class Bird : public Object {
         bool shouldRemove() const override;
 
         private:
-            Type bird_type_;
-            bool is_launched_ = false;
+            Type birdType_;
+            bool isLaunched_ = false;
             sf::Clock pressClock_;
 };
 

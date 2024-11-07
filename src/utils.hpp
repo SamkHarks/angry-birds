@@ -72,17 +72,17 @@ namespace utils
         std::string executablePath = getExecutablePath();
         return object.loadFromFile(executablePath + FilePath);
     }
-    float B2ToSf(float b2_coord);
+    float B2ToSf(float b2Coord);
 
-    float SfToB2(float sf_coord);
+    float SfToB2(float sfCoord);
 
-    sf::Vector2f B2ToSf(const b2Vec2& b2_vector);
+    sf::Vector2f B2ToSf(const b2Vec2& b2Vector);
 
-    b2Vec2 SfToB2(const sf::Vector2f& sf_vector);
+    b2Vec2 SfToB2(const sf::Vector2f& sfVector);
 
-    sf::Vector2f B2ToSfCoords(const b2Vec2& b2_vector);
+    sf::Vector2f B2ToSfCoords(const b2Vec2& b2Vector);
 
-    b2Vec2 SfToB2Coords(const sf::Vector2f& sf_vector);
+    b2Vec2 SfToB2Coords(const sf::Vector2f& sfVector);
 
     float RadiansToDegrees(const float radians);
 

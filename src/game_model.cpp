@@ -4,7 +4,7 @@
 
 GameModel::GameModel() :
     state_(State::MENU),
-    main_menu_(),
+    mainMenu_(),
     world_(),
     gameOverMenu_(),
     settings_(),
@@ -103,10 +103,10 @@ void GameModel::setState(State state) {
 const Menu& GameModel::getMenu(Menu::Type type) const {
     switch (type) {
         case Menu::Type::MAIN:
-            return main_menu_;
+            return mainMenu_;
         case Menu::Type::PAUSE:
             //TODO: return pause menu here, for now return main_menu
-            return main_menu_;
+            return mainMenu_;
         case Menu::Type::SETTINGS:
             return settings_;
         case Menu::Type::GAME_OVER:
@@ -121,10 +121,10 @@ const Menu& GameModel::getMenu(Menu::Type type) const {
 Menu& GameModel::getMenu(Menu::Type type) {
     switch (type) {
         case Menu::Type::MAIN:
-            return main_menu_;
+            return mainMenu_;
         case Menu::Type::PAUSE:
             // TODO: return pause menu here,  for now return main_menu
-            return main_menu_;
+            return mainMenu_;
         case Menu::Type::SETTINGS:
             return settings_;
         case Menu::Type::GAME_OVER:
@@ -249,7 +249,7 @@ void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
 void GameModel::setState() {
     switch (state_) {
         case State::MENU: {
-           auto selectedItem = main_menu_.getSelectedItem();
+           auto selectedItem = mainMenu_.getSelectedItem();
             if (selectedItem == 0) {
                 gameSelector_.updateMenuItems();
                 gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
@@ -285,7 +285,7 @@ void GameModel::setState() {
             } else if (selectedItem == mainMenuIndex) {
                 // Main Menu
                 state_ = State::MENU;
-                main_menu_.updateMusic(sf::SoundSource::Status::Playing);
+                mainMenu_.updateMusic(sf::SoundSource::Status::Playing);
             } else if (selectedItem == exitIndex) {
                 // Exit
                 state_ = State::QUIT;
@@ -373,7 +373,7 @@ void GameModel::setState() {
                             world_.clearLevel();
                             world_.loadLevel(levelSelector.getSelectedLevel().filename);
                             world_.setPlayer(gameSelector_.getUserSelector().getPlayer());
-                            main_menu_.updateMusic(sf::SoundSource::Status::Stopped);
+                            mainMenu_.updateMusic(sf::SoundSource::Status::Stopped);
                             state_ = State::RUNNING;
                             break;
                         case LevelSelector::Item::NEXT: 

@@ -49,7 +49,7 @@ class GameModel {
 
     private:
         State state_;
-        MainMenu main_menu_;
+        MainMenu mainMenu_;
         GameOver gameOverMenu_;
         GameSelector gameSelector_;
         Settings settings_;

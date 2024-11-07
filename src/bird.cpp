@@ -2,8 +2,8 @@
 #include <iostream>
 #include "utils.hpp"
 
-Bird::Bird(b2Body *body, std::string texture_file, Bird::Type bird_type, float radius) : 
-    Object(body, Object::Type::Bird, texture_file, 100.f, true), bird_type_(bird_type) {
+Bird::Bird(b2Body *body, std::string textureFile, Bird::Type birdType, float radius) : 
+    Object(body, Object::Type::Bird, textureFile, 100.f, true), birdType_(birdType) {
         int width = sprite_.getTextureRect().width;
         int height = sprite_.getTextureRect().height;
         sprite_.setScale(radius * SCALE * 2.f / (1.f * width), radius * SCALE * 2.f / (1.f * height));
@@ -11,16 +11,16 @@ Bird::Bird(b2Body *body, std::string texture_file, Bird::Type bird_type, float r
     }
 
 Bird::Type Bird::getBirdType() const {
-    return bird_type_;
+    return birdType_;
 }
 
 bool Bird::isLaunched() const {
-    return is_launched_;
+    return isLaunched_;
 }
 
 void Bird::setLaunched(bool launched) {
     pressClock_.restart();
-    is_launched_ = launched;
+    isLaunched_ = launched;
 }
 
 RedBird::RedBird(b2Body *body, float radius) : Bird(body, "/assets/images/red_bird.png", Bird::Type::Red, radius) {}
@@ -45,7 +45,7 @@ bool Bird::shouldRemove() const {
     if (isDestroyed()) {
         return true;
     }
-    if (!is_launched_) { 
+    if (!isLaunched_) { 
         return false;
     }
    	if (this->isOutOfBounds()) {
