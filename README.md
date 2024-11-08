@@ -74,7 +74,7 @@ sudo apt install libxrandr-dev libxcursor-dev libudev-dev \
 1. Aim the cannon to control the angle, and hold down the mouse button to adjust the power of the bird launch.
 2. Use different bird powers to destroy pigs - WIP
 3. Release to fire the bird at the structures.
-4. Destroy all the pigs on each level to progress to the next. - WIP
+4. Destroy all the pigs on each level to progress to the next.
 
 The game features different levels with increasing difficulty and complex structures to destroy.
 
