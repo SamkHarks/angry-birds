@@ -435,38 +435,44 @@ void UserSelector::handleKeyPress(const sf::Keyboard::Key &code) {
     // Load player screen
     } else {
         int currentPlayerIndexEnd = PLAYER_INDEX_START + range_.end;
-        if (code == sf::Keyboard::Key::Up) {
-            int nextItem;
-            if (item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
-                nextItem = PLAYER_INDEX_START + range_.start;
-            } else if (item == UserSelector::Item::BACK) {
-                nextItem = currentPlayerIndexEnd - 1;
-            } else if (selectedItem_ - 1 < PLAYER_INDEX_START + range_.start) {
-                nextItem = static_cast<int>(UserSelector::Item::BACK);
-            } else {
-                nextItem = selectedItem_ - 1;
-            }
-            setSelectedItem(nextItem);
-        } else if (code == sf::Keyboard::Key::Down) {
-            int nextItem;
-            if (item == UserSelector::Item::BACK || item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
-                nextItem = PLAYER_INDEX_START + range_.start;
-            } else if (selectedItem_ + 1 >= currentPlayerIndexEnd) {
-                nextItem = static_cast<int>(UserSelector::Item::BACK);
-            } else {
-                nextItem = selectedItem_ + 1;
-            }
-            setSelectedItem(nextItem);
-        } else if (code == sf::Keyboard::Key::Left) {
-            setSelectedItem(item == UserSelector::Item::PREV
-                ? static_cast<int>(UserSelector::Item::NEXT)
-                : static_cast<int>(UserSelector::Item::PREV)
-            );
-        } else if (code == sf::Keyboard::Key::Right) {
-            setSelectedItem(item == UserSelector::Item::NEXT
-                ? static_cast<int>(UserSelector::Item::PREV)
-                : static_cast<int>(UserSelector::Item::NEXT)
-            );
+        int nextItem;
+        switch (code) {
+            case sf::Keyboard::Key::Up:
+                if (item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                    nextItem = PLAYER_INDEX_START + range_.start;
+                } else if (item == UserSelector::Item::BACK) {
+                    nextItem = currentPlayerIndexEnd - 1;
+                } else if (selectedItem_ - 1 < PLAYER_INDEX_START + range_.start) {
+                    nextItem = static_cast<int>(UserSelector::Item::BACK);
+                } else {
+                    nextItem = selectedItem_ - 1;
+                }
+                setSelectedItem(nextItem);
+                break;
+            case sf::Keyboard::Key::Down:
+                if (item == UserSelector::Item::BACK) {
+                    nextItem = PLAYER_INDEX_START + range_.start;
+                } else if (selectedItem_ + 1 >= currentPlayerIndexEnd || item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                    nextItem = static_cast<int>(UserSelector::Item::BACK);
+                } else {
+                    nextItem = selectedItem_ + 1;
+                }
+                setSelectedItem(nextItem);
+                break;
+            case sf::Keyboard::Key::Left:
+                setSelectedItem(item == UserSelector::Item::PREV
+                    ? static_cast<int>(UserSelector::Item::NEXT)
+                    : static_cast<int>(UserSelector::Item::PREV)
+                );
+                break;
+            case sf::Keyboard::Key::Right:
+                setSelectedItem(item == UserSelector::Item::NEXT
+                    ? static_cast<int>(UserSelector::Item::PREV)
+                    : static_cast<int>(UserSelector::Item::NEXT)
+                );
+                break;
+            default:
+                break;
         }
     }
 }
