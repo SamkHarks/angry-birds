@@ -81,22 +81,11 @@ void GameView::draw(const GameModel& model) {
     // TODO: Draw game objects here
     switch (model.getState()) {
         case GameModel::State::MENU:
-            model.getMenu(Menu::Type::MAIN).draw(*this);
-            break;
         case GameModel::State::GAME_SELECTOR:
-            model.getMenu(Menu::Type::GAME_SELECTOR).draw(*this);
-            break;
         case GameModel::State::SETTINGS:
-            model.getMenu(Menu::Type::SETTINGS).draw(*this);
-            break;
-        case GameModel::State::RUNNING:
-            model.getWorld().draw(*this);
-            break;
-        case GameModel::State::PAUSED:
-            // TODO: Draw pause menu
-            break;
         case GameModel::State::GAME_OVER:
-            model.getMenu(Menu::Type::GAME_OVER).draw(*this);
+        case GameModel::State::RUNNING:
+            model.draw(*this);
             break;
         case GameModel::State::QUIT:
             this->close();

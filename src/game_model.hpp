@@ -6,6 +6,7 @@
 #include "settings.hpp"
 #include "game_selector.hpp"
 #include "world.hpp"
+#include <type_traits>
 
 class GameModel {
     public:
@@ -24,8 +25,11 @@ class GameModel {
         const State& getState() const;
         void setState(State);
         void setState();
+        template <typename T>
+        T& getMenu(Menu::Type type);
         const Menu& getMenu(const Menu::Type& type) const;
         Menu& getMenu(const Menu::Type& type);
+        void setMenu(Menu::Type newMenuType);
         void handleKeyPress(const sf::Keyboard::Key& code);
         World &getWorld();
         const World &getWorld() const;
@@ -34,12 +38,12 @@ class GameModel {
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleResize();
         void handleMouseLeftClick(const sf::Vector2f& mousePosition);
+        void draw(sf::RenderWindow& window) const;
+        void switchMenu(Menu::Type type, State state);
     private:
         State state_;
-        MainMenu mainMenu_;
-        GameOver gameOverMenu_;
-        GameSelector gameSelector_;
-        Settings settings_;
+        std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;
+        Menu *currentMenu_;
         World world_;
         void handleLevelEnd();
         void handleCollisions();

@@ -28,7 +28,7 @@ class GameSelector : public Menu {
         void handleMouseMove(const sf::Vector2f& mousePosition) override;
         bool handleMouseClick(const sf::Vector2f& mousePosition) override;
         void handleKeyPress(const sf::Keyboard::Key& code) override;
-        void handleTextEntered(const sf::Uint32& unicode);
+        void handleTextEntered(const sf::Uint32& unicode) override;
         void handleResize() override;
         Item getSelectedItem() const;
         void initializeLevelSelector();
