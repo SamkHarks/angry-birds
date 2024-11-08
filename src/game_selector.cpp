@@ -88,6 +88,22 @@ bool GameSelector::handleMouseClick(const sf::Vector2f& mousePosition) {
     return false;
 };
 
+void GameSelector::handleKeyPress(const sf::Keyboard::Key& code) {
+    switch (screen_) {
+        case GameSelector::Screen::GAME_SELECTOR:
+            this->Menu::handleKeyPress(code);
+            break;
+        case GameSelector::Screen::LEVEL_SELECTOR:
+            levelSelector_.handleKeyPress(code);
+            break;
+        case GameSelector::Screen::USER_SELECTOR:
+            userSelector_.handleKeyPress(code);
+            break;
+        default:
+            break;
+    }
+};
+
 GameSelector::Item GameSelector::getSelectedItem() const {
     int itemCount = menuItems_.size();
     if (screen_ == GameSelector::Screen::GAME_SELECTOR && itemCount > 0 && selectedItem_ < itemCount) {
@@ -131,3 +147,9 @@ void GameSelector::initializeLevelSelector() {
     levelSelector_.updateLevel();
     setScreen(GameSelector::Screen::LEVEL_SELECTOR);
 }
+
+void GameSelector::handleTextEntered(const sf::Uint32& unicode) {
+    if (screen_ == GameSelector::Screen::USER_SELECTOR) {
+        userSelector_.handleTextEntered(unicode);
+    }
+};

@@ -100,7 +100,7 @@ void GameModel::setState(State state) {
     state_ = state;
 }
 
-const Menu& GameModel::getMenu(Menu::Type type) const {
+const Menu& GameModel::getMenu(const Menu::Type& type) const {
     switch (type) {
         case Menu::Type::MAIN:
             return mainMenu_;
@@ -118,7 +118,7 @@ const Menu& GameModel::getMenu(Menu::Type type) const {
     }
 }
 
-Menu& GameModel::getMenu(Menu::Type type) {
+Menu& GameModel::getMenu(const Menu::Type& type) {
     switch (type) {
         case Menu::Type::MAIN:
             return mainMenu_;
@@ -136,113 +136,22 @@ Menu& GameModel::getMenu(Menu::Type type) {
     }
 }
 
-// TODO: refactor to smaller functions
 void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (state_) {
         case State::GAME_SELECTOR:
-            switch (gameSelector_.getScreen()) {
-                case GameSelector::Screen::GAME_SELECTOR:
-                    setMenuSelection(Menu::Type::GAME_SELECTOR, code);
-                    break;
-                case GameSelector::Screen::LEVEL_SELECTOR: {
-                    LevelSelector& levelSelector = gameSelector_.getLevelSelector();
-                    if (code == sf::Keyboard::Key::Left) {
-                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::PREV
-                            ? LevelSelector::Item::NEXT
-                            : LevelSelector::Item::PREV
-                        );
-                    } else if (code == sf::Keyboard::Key::Right) {
-                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::NEXT
-                            ? LevelSelector::Item::PREV
-                            : LevelSelector::Item::NEXT
-                        );
-                    } else if (code == sf::Keyboard::Key::Up) {
-                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::LEVEL
-                            ? LevelSelector::Item::BACK
-                            : LevelSelector::Item::LEVEL
-                        );
-                    } else if (code == sf::Keyboard::Key::Down) {
-                        levelSelector.setSelectedItem(levelSelector.getSelectedItem() == LevelSelector::Item::BACK
-                            ? LevelSelector::Item::LEVEL
-                            : LevelSelector::Item::BACK
-                        );
-                    }
-                    break;
-                }
-                case GameSelector::Screen::USER_SELECTOR: {
-                    UserSelector& userSelector = gameSelector_.getUserSelector();
-                    const UserSelector::Item& item = userSelector.convertIndexToItem();
-                    if (userSelector.getScreen() == UserSelector::Screen::NEW_PLAYER) {
-                        if (code == sf::Keyboard::Key::Left) {
-                            userSelector.setSelectedItem(item == UserSelector::Item::ACCEPT ? 1 : 0);
-                        } else if (code == sf::Keyboard::Key::Right) {
-                            userSelector.setSelectedItem(item == UserSelector::Item::CANCEL ? 0 : 1);
-                        }
-                    // Load player screen
-                    } else {
-                        const UserSelector::IndexRange& range = userSelector.getIndexRange();
-                        int playerCountRange = PLAYER_INDEX_START + range.end;
-                        int selectedItem = userSelector.getSelectedItem();
-                        if (code == sf::Keyboard::Key::Up) {
-                            int nextItem;
-                            if (item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
-                                nextItem = PLAYER_INDEX_START + range.start;
-                            } else if (item == UserSelector::Item::BACK) {
-                                nextItem = playerCountRange - 1;
-                            } else if (selectedItem - 1 < PLAYER_INDEX_START + range.start) {
-                                nextItem = static_cast<int>(UserSelector::Item::BACK);
-                            } else {
-                                nextItem = selectedItem - 1;
-                            }
-                            userSelector.setSelectedItem(nextItem);
-                        } else if (code == sf::Keyboard::Key::Down) {
-                            int nextItem;
-                            if (item == UserSelector::Item::BACK || item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
-                                nextItem = PLAYER_INDEX_START + range.start;
-                            } else if (selectedItem + 1 >= playerCountRange) {
-                                nextItem = static_cast<int>(UserSelector::Item::BACK);
-                            } else {
-                                nextItem = selectedItem + 1;
-                            }
-                            userSelector.setSelectedItem(nextItem);
-                        } else if (code == sf::Keyboard::Key::Left) {
-                            userSelector.setSelectedItem(item == UserSelector::Item::PREV
-                                ? static_cast<int>(UserSelector::Item::NEXT)
-                                : static_cast<int>(UserSelector::Item::PREV)
-                            );
-                        } else if (code == sf::Keyboard::Key::Right) {
-                            userSelector.setSelectedItem(item == UserSelector::Item::NEXT
-                                ? static_cast<int>(UserSelector::Item::PREV)
-                                : static_cast<int>(UserSelector::Item::NEXT)
-                            );
-                        }
-                    }
-                    break;
-                }
-
-            }
+            gameSelector_.handleKeyPress(code);
             break;
         case State::GAME_OVER:
-            setMenuSelection(Menu::Type::GAME_OVER, code);
+            gameOverMenu_.handleKeyPress(code);
             break;
         case State::MENU:
-            setMenuSelection(Menu::Type::MAIN, code);
+            mainMenu_.handleKeyPress(code);
             break;
         case State::SETTINGS:
         case State::PAUSED:
             break;
         default:
             break;
-    }
-}
-
-void GameModel::setMenuSelection(Menu::Type type, sf::Keyboard::Key key) {
-    Menu &menu = getMenu(type);
-    int currentItem = menu.getSelectedItem();
-    if (key == sf::Keyboard::Key::Up) {
-        menu.setSelectedItem(currentItem - 1);
-    } else if (key == sf::Keyboard::Key::Down) {
-        menu.setSelectedItem(currentItem + 1);
     }
 }
 
@@ -442,32 +351,68 @@ void GameModel::launchBird() {
     world_.getCannon()->launchBird(bird);
 }
 
-void GameModel::rotateCannon(const sf::Vector2f& mousePosition) {
-    sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
-    sf::Vector2f difference = mousePosition - canonCenter;
-    float direction = utils::getDirection(difference);
-    Cannon* cannon = world_.getCannon();
-    cannon->setAngle(direction);
+void GameModel::handleTextEntered(const sf::Uint32& unicode) {
+    if (state_ == State::GAME_SELECTOR) {
+        gameSelector_.handleTextEntered(unicode);
+    }
 }
 
-void GameModel::handleTextEntered(sf::Uint32 unicode) {
-    if (state_ == State::GAME_SELECTOR && gameSelector_.getScreen() == GameSelector::Screen::USER_SELECTOR) {
-        // Handle backspace
-        if (unicode == 8) {
-            std::string currentText = gameSelector_.getUserSelector().getPlayerText();
-            if (!currentText.empty()) {
-                currentText.pop_back();
-                gameSelector_.getUserSelector().setPlayerText(currentText);
-            }
-        // Handle printable characters
-        } else if (unicode >= 32 && unicode < 128) {
-            std::string currentText = gameSelector_.getUserSelector().getPlayerText();
-            // Max length of player name is 12
-            if (currentText.size() < 13) {
-                currentText += static_cast<char>(unicode);
-                gameSelector_.getUserSelector().setPlayerText(currentText);
-            }
+void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
+    switch(state_) {
+        case State::RUNNING:
+            world_.handleMouseMove(mousePosition);
+            break;
+        case GameModel::State::MENU:
+            mainMenu_.handleMouseMove(mousePosition);
+            break;
+        case GameModel::State::GAME_OVER:
+            gameOverMenu_.handleMouseMove(mousePosition);
+            break;
+        case GameModel::State::GAME_SELECTOR:
+            gameSelector_.handleMouseMove(mousePosition);
+            break;
+        default:
+            break;
+    }
+}
 
-        }
+void GameModel::handleResize() {
+    world_.handleResize();
+    mainMenu_.handleResize();
+    gameOverMenu_.handleResize();
+    gameSelector_.handleResize();
+    settings_.handleResize();
+}
+
+void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
+     switch(state_) {
+        case State::RUNNING:
+            world_.getCannon()->startLaunch();
+            break;
+        case State::MENU:
+            if (mainMenu_.handleMouseClick(mousePosition)) {
+                setState();
+            }
+            break;
+        case State::GAME_SELECTOR:
+            if (gameSelector_.handleMouseClick(mousePosition)) {
+                setState();
+            }
+            break;
+        case GameModel::State::GAME_OVER:
+            if (gameOverMenu_.handleMouseClick(mousePosition)) {
+                setState();
+            }
+            break;
+        case State::SETTINGS:
+            if (settings_.handleMouseClick(mousePosition)) {
+                setState();
+            }
+            break;
+        case State::PAUSED:
+            // TODO: Implement mouse actions in Pause menu
+            break;
+        default:
+            break;
     }
 }

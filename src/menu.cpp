@@ -187,3 +187,11 @@ void Menu::updateMenuItems() {
     }
 
 }
+
+void Menu::handleKeyPress(const sf::Keyboard::Key& code) {
+    if (code == sf::Keyboard::Key::Up) {
+        setSelectedItem(selectedItem_ - 1);
+    } else if (code == sf::Keyboard::Key::Down) {
+        setSelectedItem(selectedItem_ + 1);
+    }
+}

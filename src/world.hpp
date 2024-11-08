@@ -53,6 +53,7 @@ class World {
         bool updatePlayer();
         bool isSettled () const;
         void handleResize();
+        void handleMouseMove(const sf::Vector2f& mousePosition);
     private:
         b2World *world_;
         b2Vec2 gravity_;

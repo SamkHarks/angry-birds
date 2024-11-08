@@ -63,6 +63,13 @@ void GameView::updateHUD(GameModel& model) {
     }
 }
 
+void GameView::handleResize(const float& width, const float& height) {
+    VIEW.setSize(width, height);
+    gameView_.setSize(width, height);
+    gameView_.setCenter(width / 2, height / 2);
+    this->setView(gameView_);
+    defaultCenter_ = gameView_.getCenter();
+}
 
 void GameView::render(const GameModel& model) {
     this->clear(sf::Color::Blue);

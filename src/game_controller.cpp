@@ -61,49 +61,12 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
 void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition) {
     switch (mouseButton) {
         case sf::Mouse::Button::Left:
-            handleMouseLeftPress(mousePosition);
+            model_.handleMouseLeftClick(mousePosition);
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions
             if (model_.getState() == GameModel::State::RUNNING) {
                 model_.getWorld().resetBird();
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void GameController::handleMouseLeftPress(const sf::Vector2f& mousePosition) {
-     switch(model_.getState()) {
-        case GameModel::State::MENU: {
-            if (model_.getMenu(Menu::Type::MAIN).handleMouseClick(mousePosition)) {
-                model_.setState();
-            }
-            break;
-        }
-        case GameModel::State::GAME_SELECTOR: {
-            if (model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseClick(mousePosition)) {
-                model_.setState();
-            }
-            break;
-        }
-        case GameModel::State::RUNNING:
-            // TODO: Implement mouse actions in running state
-            model_.getWorld().getCannon()->startLaunch();
-            break;
-        case GameModel::State::GAME_OVER: {
-            if (model_.getMenu(Menu::Type::GAME_OVER).handleMouseClick(mousePosition)) {
-                model_.setState();
-            }
-            break;
-        }
-        case GameModel::State::PAUSED:
-            // TODO: Implement mouse actions in Pause menu
-            break;
-        case GameModel::State::SETTINGS:
-            if (model_.getMenu(Menu::Type::SETTINGS).handleMouseClick(mousePosition)) {
-                model_.setState();
             }
             break;
         default:
@@ -122,25 +85,10 @@ void GameController::handleMouseRelease(const sf::Mouse::Button& button, const s
 }
 
 void GameController::handleMouseMove(const sf::Vector2f& mousePosition) {
-    switch(model_.getState()) {
-        case GameModel::State::RUNNING:
-            model_.rotateCannon(mousePosition);
-            break;
-        case GameModel::State::MENU:
-            model_.getMenu(Menu::Type::MAIN).handleMouseMove(mousePosition);
-            break;
-        case GameModel::State::GAME_OVER:
-            model_.getMenu(Menu::Type::GAME_OVER).handleMouseMove(mousePosition);
-            break;
-        case GameModel::State::GAME_SELECTOR:
-            model_.getMenu(Menu::Type::GAME_SELECTOR).handleMouseMove(mousePosition);
-            break;
-        default:
-            break;
-    }
+    model_.handleMouseMove(mousePosition);
 }
 
-void GameController::handleTextEntered(sf::Uint32 unicode) {
+void GameController::handleTextEntered(const sf::Uint32& unicode) {
     model_.handleTextEntered(unicode);
 }
 
@@ -150,16 +98,6 @@ void GameController::handleResize(const sf::Event& event) {
     if (width == VIEW.getWidth() && height == VIEW.getHeight()) {
         return; // Ignore resize event on startup
     }
-    // handle view resize
-    VIEW.setSize(event.size.width, event.size.height);
-    sf::View view = view_.getView();
-    view.setSize(width, height);
-    view.setCenter(width / 2, height / 2);
-    view_.setGameView(view);
-    // handle model resize
-    model_.getWorld().handleResize();
-    model_.getMenu(Menu::Type::MAIN).handleResize();
-    model_.getMenu(Menu::Type::SETTINGS).handleResize();
-    model_.getMenu(Menu::Type::GAME_OVER).handleResize();
-    model_.getMenu(Menu::Type::GAME_SELECTOR).handleResize();
+    view_.handleResize(width, height);
+    model_.handleResize();
 }

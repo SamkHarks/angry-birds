@@ -11,7 +11,6 @@ class GameModel {
     public:
         GameModel();   
         void update();
-
         enum class State {
             MENU,       // The game is at the main menu.
             GAME_SELECTOR, // The player is selecting a game.
@@ -22,31 +21,19 @@ class GameModel {
             GAME_OVER,  // The game has ended.
             QUIT,       // Quit game
         };
-
         const State& getState() const;
-
         void setState(State);
-
         void setState();
-
-        const Menu& getMenu(Menu::Type type) const;
-
-        Menu& getMenu(Menu::Type type);
-
-        void setMenuSelection(Menu::Type type, sf::Keyboard::Key);
-
+        const Menu& getMenu(const Menu::Type& type) const;
+        Menu& getMenu(const Menu::Type& type);
         void handleKeyPress(const sf::Keyboard::Key& code);
-
         World &getWorld();
-
         const World &getWorld() const;
-
         void launchBird();
-
-        void rotateCannon(const sf::Vector2f& mousePosition);
-
-        void handleTextEntered(sf::Uint32 unicode);
-
+        void handleTextEntered(const sf::Uint32& unicode);
+        void handleMouseMove(const sf::Vector2f& mousePosition);
+        void handleResize();
+        void handleMouseLeftClick(const sf::Vector2f& mousePosition);
     private:
         State state_;
         MainMenu mainMenu_;

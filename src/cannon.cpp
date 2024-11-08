@@ -109,3 +109,10 @@ void Cannon::updateTextPosition(const sf::RenderWindow& window) {
 int Cannon::getTextWidth() const {
     return powerText_.getGlobalBounds().width;
 }
+
+void Cannon::handleMouseMove(const sf::Vector2f& mousePosition) {
+    sf::Vector2f canonCenter = utils::B2ToSfCoords(BIRD_INITIAL_POSITION);
+    sf::Vector2f difference = mousePosition - canonCenter;
+    float direction = utils::getDirection(difference);
+    setAngle(direction);
+}

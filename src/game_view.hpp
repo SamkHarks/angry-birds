@@ -14,6 +14,7 @@ class GameView: public sf::RenderWindow {
         void updateHUD(GameModel& model);
         void setGameView();
         void setGameView(const sf::View& view);
+        void handleResize(const float& width, const float& height);
     private:
         sf::Vector2f defaultCenter_;
         sf::View gameView_;

@@ -423,3 +423,71 @@ void UserSelector::setIndexRange(Item item) {
             break;
     }    
 }
+
+void UserSelector::handleKeyPress(const sf::Keyboard::Key &code) {
+    const UserSelector::Item& item = convertIndexToItem();
+    if (screen_ == UserSelector::Screen::NEW_PLAYER) {
+        if (code == sf::Keyboard::Key::Left) {
+            setSelectedItem(item == UserSelector::Item::ACCEPT ? 1 : 0);
+        } else if (code == sf::Keyboard::Key::Right) {
+            setSelectedItem(item == UserSelector::Item::CANCEL ? 0 : 1);
+        }
+    // Load player screen
+    } else {
+        int currentPlayerIndexEnd = PLAYER_INDEX_START + range_.end;
+        if (code == sf::Keyboard::Key::Up) {
+            int nextItem;
+            if (item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                nextItem = PLAYER_INDEX_START + range_.start;
+            } else if (item == UserSelector::Item::BACK) {
+                nextItem = currentPlayerIndexEnd - 1;
+            } else if (selectedItem_ - 1 < PLAYER_INDEX_START + range_.start) {
+                nextItem = static_cast<int>(UserSelector::Item::BACK);
+            } else {
+                nextItem = selectedItem_ - 1;
+            }
+            setSelectedItem(nextItem);
+        } else if (code == sf::Keyboard::Key::Down) {
+            int nextItem;
+            if (item == UserSelector::Item::BACK || item == UserSelector::Item::PREV || item == UserSelector::Item::NEXT) {
+                nextItem = PLAYER_INDEX_START + range_.start;
+            } else if (selectedItem_ + 1 >= currentPlayerIndexEnd) {
+                nextItem = static_cast<int>(UserSelector::Item::BACK);
+            } else {
+                nextItem = selectedItem_ + 1;
+            }
+            setSelectedItem(nextItem);
+        } else if (code == sf::Keyboard::Key::Left) {
+            setSelectedItem(item == UserSelector::Item::PREV
+                ? static_cast<int>(UserSelector::Item::NEXT)
+                : static_cast<int>(UserSelector::Item::PREV)
+            );
+        } else if (code == sf::Keyboard::Key::Right) {
+            setSelectedItem(item == UserSelector::Item::NEXT
+                ? static_cast<int>(UserSelector::Item::PREV)
+                : static_cast<int>(UserSelector::Item::NEXT)
+            );
+        }
+    }
+}
+
+void UserSelector::handleTextEntered(const sf::Uint32& unicode) {
+    if (screen_ == UserSelector::Screen::NEW_PLAYER) {
+        // Handle backspace
+        if (unicode == 8) {
+            std::string currentText = getPlayerText();
+            if (!currentText.empty()) {
+                currentText.pop_back();
+                setPlayerText(currentText);
+            }
+        // Handle printable characters
+        } else if (unicode >= 32 && unicode < 128) {
+            std::string currentText = getPlayerText();
+            // Max length of player name is 12
+            if (currentText.size() < 13) {
+                currentText += static_cast<char>(unicode);
+                setPlayerText(currentText);
+            }
+        }
+    }
+}

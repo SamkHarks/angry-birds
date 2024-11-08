@@ -33,6 +33,7 @@ class LevelSelector {
         Level& getNextLevel();
         void updateLevel();
         void setPlayer(const std::shared_ptr<Player>& player);
+        void handleKeyPress(const sf::Keyboard::Key& code);
     private:
         void updateItem(bool isSelected);
         std::weak_ptr<Player> player_; // User selector is the owner

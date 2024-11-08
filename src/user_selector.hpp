@@ -27,7 +27,8 @@ class UserSelector {
         void draw(sf::RenderWindow& window) const;
         void handleMouseMove(const sf::Vector2f& mousePosition);
         bool handleMouseClick(const sf::Vector2f& mousePosition);
-        void handleTextEntered(sf::Uint32 unicode);
+        void handleKeyPress(const sf::Keyboard::Key& code);
+        void handleTextEntered(const sf::Uint32& unicode);
         void setPromptText(const std::string& text);
         void setPlayerText(const std::string& text);
         void setPlayer();

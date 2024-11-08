@@ -231,3 +231,27 @@ void LevelSelector::updateLevel() {
     setLevelText();
     setLevelImage();
 }
+
+void LevelSelector::handleKeyPress(const sf::Keyboard::Key& code) {
+    if (code == sf::Keyboard::Key::Left) {
+        setSelectedItem(selectedItem_ == LevelSelector::Item::PREV
+            ? LevelSelector::Item::NEXT
+            : LevelSelector::Item::PREV
+        );
+    } else if (code == sf::Keyboard::Key::Right) {
+        setSelectedItem(selectedItem_ == LevelSelector::Item::NEXT
+            ? LevelSelector::Item::PREV
+            : LevelSelector::Item::NEXT
+        );
+    } else if (code == sf::Keyboard::Key::Up) {
+        setSelectedItem(selectedItem_ == LevelSelector::Item::LEVEL
+            ? LevelSelector::Item::BACK
+            : LevelSelector::Item::LEVEL
+        );
+    } else if (code == sf::Keyboard::Key::Down) {
+        setSelectedItem(selectedItem_ == LevelSelector::Item::BACK
+            ? LevelSelector::Item::LEVEL
+            : LevelSelector::Item::BACK
+        );
+    }
+}

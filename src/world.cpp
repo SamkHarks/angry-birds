@@ -324,3 +324,7 @@ void World::handleResize() {
     // Resize cannon properties
     cannon_->handleResize();
 }
+
+void World::handleMouseMove(const sf::Vector2f& mousePosition) {
+    cannon_->handleMouseMove(mousePosition);
+}
