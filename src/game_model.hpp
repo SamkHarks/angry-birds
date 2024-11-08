@@ -6,6 +6,7 @@
 #include "settings.hpp"
 #include "game_selector.hpp"
 #include "world.hpp"
+#include <type_traits>
 
 class GameModel {
     public:
@@ -24,6 +25,8 @@ class GameModel {
         const State& getState() const;
         void setState(State);
         void setState();
+        template <typename T>
+        T& getMenu(Menu::Type type);
         const Menu& getMenu(const Menu::Type& type) const;
         Menu& getMenu(const Menu::Type& type);
         void setMenu(Menu::Type newMenuType);

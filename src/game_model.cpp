@@ -41,8 +41,8 @@ void GameModel::update() {
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
     switchMenu(Menu::Type::GAME_OVER, State::GAME_OVER);
-    auto &gameOverMenu = static_cast<GameOver&>(getMenu(Menu::Type::GAME_OVER));
-    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    auto &gameOverMenu = getMenu<GameOver>(Menu::Type::GAME_OVER);
+    auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
     world_.updateScore(world_.getRemainingBirdCount() * 1000);
     world_.getScore().setStars(world_.getStars());
     world_.getScore().setLevelEndText(world_.getLevelName());
@@ -112,6 +112,12 @@ Menu& GameModel::getMenu(const Menu::Type& type) {
     return *menus_.at(type);
 }
 
+template <typename T>
+T& GameModel::getMenu(Menu::Type type) {
+    static_assert(std::is_base_of<Menu, T>::value, "T must be derived from Menu");
+    return static_cast<T&>(getMenu(type));
+}
+
 void GameModel::setMenu(Menu::Type newMenuType) {
     currentMenu_ = menus_.at(newMenuType).get();
 }
@@ -151,7 +157,7 @@ void GameModel::setState() {
 void GameModel::handleMainMenuState() {
    auto selectedItem = currentMenu_->getSelectedItem();
     if (selectedItem == 0) {
-        auto& gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+        auto& gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
         gameSelector.updateMenuItems();
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
         switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
@@ -163,7 +169,7 @@ void GameModel::handleMainMenuState() {
 }
 
 void GameModel::handleGameOverState() {
-    auto &gameOverMenu = static_cast<GameOver&>(getMenu(Menu::Type::GAME_OVER));
+    auto &gameOverMenu = getMenu<GameOver>(Menu::Type::GAME_OVER);
     const int selectedItem = gameOverMenu.getSelectedItem();
     // TODO: handle game over updates properly
     int nextLevelIndex = 1;
@@ -180,7 +186,7 @@ void GameModel::handleGameOverState() {
         world_.resetLevel();
         state_ = State::RUNNING;
     } else if (selectedItem == nextLevelIndex) {
-        auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+        auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
         // Next Level
         world_.clearLevel();
         world_.loadLevel(gameSelector.getLevelSelector().getNextLevel().filename);
@@ -196,7 +202,7 @@ void GameModel::handleGameOverState() {
 }
 
 void GameModel::handleGameSelectorScreenState() {
-    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
     auto item = gameSelector.getSelectedItem();
     switch (item) {
         case GameSelector::Item::NEW_GAME: {
@@ -224,7 +230,7 @@ void GameModel::handleGameSelectorScreenState() {
 }
 
 void GameModel::handleUserSelectorScreenState() {
-    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
     UserSelector& userSelector = gameSelector.getUserSelector();
     const UserSelector::Item& item = userSelector.convertIndexToItem();
     switch (userSelector.getScreen()) {
@@ -264,7 +270,7 @@ void GameModel::handleUserSelectorScreenState() {
 }
 
 void GameModel::handleLevelSelectorScreenState() {
-    auto & gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    auto & gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
     LevelSelector& levelSelector = gameSelector.getLevelSelector();
     LevelSelector::Item item = levelSelector.getSelectedItem();
     switch (item) {
@@ -289,7 +295,7 @@ void GameModel::handleLevelSelectorScreenState() {
 }
 
 void GameModel::handleGameSelectorState() {
-    const auto& gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    const auto& gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
     switch (gameSelector.getScreen()) {
         case GameSelector::Screen::GAME_SELECTOR:
             handleGameSelectorScreenState();
