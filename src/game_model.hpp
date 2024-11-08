@@ -36,6 +36,7 @@ class GameModel {
         void handleResize();
         void handleMouseLeftClick(const sf::Vector2f& mousePosition);
         void draw(sf::RenderWindow& window) const;
+        void switchMenu(Menu::Type type, State state);
     private:
         State state_;
         std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;

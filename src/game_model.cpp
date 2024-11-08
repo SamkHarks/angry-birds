@@ -40,8 +40,7 @@ void GameModel::update() {
 
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
-    state_ = State::GAME_OVER;
-    setMenu(Menu::Type::GAME_OVER);
+    switchMenu(Menu::Type::GAME_OVER, State::GAME_OVER);
     auto &gameOverMenu = static_cast<GameOver&>(getMenu(Menu::Type::GAME_OVER));
     auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
     world_.updateScore(world_.getRemainingBirdCount() * 1000);
@@ -117,6 +116,11 @@ void GameModel::setMenu(Menu::Type newMenuType) {
     currentMenu_ = menus_.at(newMenuType).get();
 }
 
+void GameModel::switchMenu(Menu::Type type, State state) {
+    state_ = state;
+    setMenu(type);
+}
+
 void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
     currentMenu_->handleKeyPress(code);  
 }
@@ -150,12 +154,9 @@ void GameModel::handleMainMenuState() {
         auto& gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
         gameSelector.updateMenuItems();
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
-        // Change the state and active menu
-        state_ = State::GAME_SELECTOR;
-        setMenu(Menu::Type::GAME_SELECTOR);
+        switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
     } else if (selectedItem == 1) {
-        state_ = State::SETTINGS;
-        setMenu(Menu::Type::SETTINGS);
+        switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
     } else {
         state_ = State::QUIT;
     }
@@ -186,8 +187,7 @@ void GameModel::handleGameOverState() {
         state_ = State::RUNNING;
     } else if (selectedItem == mainMenuIndex) {
         // Main Menu
-        state_ = State::MENU;
-        setMenu(Menu::Type::MAIN);
+        switchMenu(Menu::Type::MAIN, State::MENU);
         currentMenu_->updateMusic(sf::SoundSource::Status::Playing);
     } else if (selectedItem == exitIndex) {
         // Exit
@@ -218,8 +218,7 @@ void GameModel::handleGameSelectorScreenState() {
             gameSelector.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
             break;
         case GameSelector::Item::BACK:
-            state_ = State::MENU;
-            setMenu(Menu::Type::MAIN);
+            switchMenu(Menu::Type::MAIN, State::MENU);
             break;
     }
 }
@@ -307,8 +306,7 @@ void GameModel::handleGameSelectorState() {
 // TODO: Add implementation later
 void GameModel::handleSettingsState() {
     if (currentMenu_->getSelectedItem() == 0) {
-        setMenu(Menu::Type::MAIN);
-        state_ = State::MENU;
+        switchMenu(Menu::Type::MAIN, State::MENU);
     }
 }
 
