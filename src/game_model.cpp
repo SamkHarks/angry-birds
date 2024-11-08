@@ -4,11 +4,13 @@
 
 GameModel::GameModel() :
     state_(State::MENU),
-    mainMenu_(),
-    world_(),
-    gameOverMenu_(),
-    settings_(),
-    gameSelector_() {}
+    world_() {
+        menus_[Menu::Type::MAIN] = std::make_unique<MainMenu>();
+        menus_[Menu::Type::GAME_SELECTOR] = std::make_unique<GameSelector>();
+        menus_[Menu::Type::SETTINGS] = std::make_unique<Settings>();
+        menus_[Menu::Type::GAME_OVER] = std::make_unique<GameOver>();
+        currentMenu_ = menus_[Menu::Type::MAIN].get();  // Start with main menu
+    }
 
 void GameModel::update() {
     switch (state_) {
@@ -39,16 +41,19 @@ void GameModel::update() {
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
     state_ = State::GAME_OVER;
+    setMenu(Menu::Type::GAME_OVER);
+    auto &gameOverMenu = static_cast<GameOver&>(getMenu(Menu::Type::GAME_OVER));
+    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
     world_.updateScore(world_.getRemainingBirdCount() * 1000);
     world_.getScore().setStars(world_.getStars());
     world_.getScore().setLevelEndText(world_.getLevelName());
     world_.saveHighScore(world_.getScore().getCurrentScore());
     if (world_.updatePlayer()) {
-        gameSelector_.getUserSelector().savePlayer();
+        gameSelector.getUserSelector().savePlayer();
     }
-    gameOverMenu_.setScoreManager(&world_.getScore());
-    gameOverMenu_.setHasNextlevel(gameSelector_.getLevelSelector().hasNextLevel());
-    gameOverMenu_.updateMenuItems();
+    gameOverMenu.setScoreManager(&world_.getScore());
+    gameOverMenu.setHasNextlevel(gameSelector.getLevelSelector().hasNextLevel());
+    gameOverMenu.updateMenuItems();
 }
 
 void GameModel::handleCollisions() {
@@ -101,58 +106,19 @@ void GameModel::setState(State state) {
 }
 
 const Menu& GameModel::getMenu(const Menu::Type& type) const {
-    switch (type) {
-        case Menu::Type::MAIN:
-            return mainMenu_;
-        case Menu::Type::PAUSE:
-            //TODO: return pause menu here, for now return main_menu
-            return mainMenu_;
-        case Menu::Type::SETTINGS:
-            return settings_;
-        case Menu::Type::GAME_OVER:
-            return gameOverMenu_;
-        case Menu::Type::GAME_SELECTOR:
-            return gameSelector_;
-        default:
-            throw std::invalid_argument("Invalid menu type");
-    }
+    return *menus_.at(type);
 }
 
 Menu& GameModel::getMenu(const Menu::Type& type) {
-    switch (type) {
-        case Menu::Type::MAIN:
-            return mainMenu_;
-        case Menu::Type::PAUSE:
-            // TODO: return pause menu here,  for now return main_menu
-            return mainMenu_;
-        case Menu::Type::SETTINGS:
-            return settings_;
-        case Menu::Type::GAME_OVER:
-            return gameOverMenu_;
-        case Menu::Type::GAME_SELECTOR:
-            return gameSelector_;
-        default:
-            throw std::invalid_argument("Invalid menu type");
-    }
+    return *menus_.at(type);
+}
+
+void GameModel::setMenu(Menu::Type newMenuType) {
+    currentMenu_ = menus_.at(newMenuType).get();
 }
 
 void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
-    switch (state_) {
-        case State::GAME_SELECTOR:
-            gameSelector_.handleKeyPress(code);
-            break;
-        case State::GAME_OVER:
-            gameOverMenu_.handleKeyPress(code);
-            break;
-        case State::MENU:
-            mainMenu_.handleKeyPress(code);
-            break;
-        case State::SETTINGS:
-        case State::PAUSED:
-            break;
-        default:
-            break;
-    }
+    currentMenu_->handleKeyPress(code);  
 }
 
 // handle menu actions based on the current state and selected item
@@ -179,25 +145,30 @@ void GameModel::setState() {
 }
 
 void GameModel::handleMainMenuState() {
-    auto selectedItem = mainMenu_.getSelectedItem();
+   auto selectedItem = currentMenu_->getSelectedItem();
     if (selectedItem == 0) {
-        gameSelector_.updateMenuItems();
-        gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
+        auto& gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+        gameSelector.updateMenuItems();
+        gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
+        // Change the state and active menu
         state_ = State::GAME_SELECTOR;
+        setMenu(Menu::Type::GAME_SELECTOR);
     } else if (selectedItem == 1) {
         state_ = State::SETTINGS;
+        setMenu(Menu::Type::SETTINGS);
     } else {
         state_ = State::QUIT;
     }
 }
 
 void GameModel::handleGameOverState() {
-    const int selectedItem = gameOverMenu_.getSelectedItem();
+    auto &gameOverMenu = static_cast<GameOver&>(getMenu(Menu::Type::GAME_OVER));
+    const int selectedItem = gameOverMenu.getSelectedItem();
     // TODO: handle game over updates properly
     int nextLevelIndex = 1;
     int mainMenuIndex = 2;
     int exitIndex = 3;
-    if (!gameOverMenu_.hasNextLevel()) {
+    if (!gameOverMenu.hasNextLevel()) {
         nextLevelIndex = -100; // Set to invalid index
         mainMenuIndex = 1;
         exitIndex = 2;
@@ -208,14 +179,16 @@ void GameModel::handleGameOverState() {
         world_.resetLevel();
         state_ = State::RUNNING;
     } else if (selectedItem == nextLevelIndex) {
+        auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
         // Next Level
         world_.clearLevel();
-        world_.loadLevel(gameSelector_.getLevelSelector().getNextLevel().filename);
+        world_.loadLevel(gameSelector.getLevelSelector().getNextLevel().filename);
         state_ = State::RUNNING;
     } else if (selectedItem == mainMenuIndex) {
         // Main Menu
         state_ = State::MENU;
-        mainMenu_.updateMusic(sf::SoundSource::Status::Playing);
+        setMenu(Menu::Type::MAIN);
+        currentMenu_->updateMusic(sf::SoundSource::Status::Playing);
     } else if (selectedItem == exitIndex) {
         // Exit
         state_ = State::QUIT;
@@ -223,34 +196,37 @@ void GameModel::handleGameOverState() {
 }
 
 void GameModel::handleGameSelectorScreenState() {
-    auto item = gameSelector_.getSelectedItem();
+    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    auto item = gameSelector.getSelectedItem();
     switch (item) {
         case GameSelector::Item::NEW_GAME: {
-            UserSelector& userSelector = gameSelector_.getUserSelector();
-            gameSelector_.setScreen(GameSelector::Screen::USER_SELECTOR);
+            UserSelector& userSelector = gameSelector.getUserSelector();
+            gameSelector.setScreen(GameSelector::Screen::USER_SELECTOR);
             userSelector.setScreen(UserSelector::Screen::NEW_PLAYER);
             userSelector.initializeScreen();
             break;
         }
         case GameSelector::Item::LOAD_GAME: {
-            UserSelector& userSelector = gameSelector_.getUserSelector();
-            gameSelector_.setScreen(GameSelector::Screen::USER_SELECTOR);
+            UserSelector& userSelector = gameSelector.getUserSelector();
+            gameSelector.setScreen(GameSelector::Screen::USER_SELECTOR);
             userSelector.setScreen(UserSelector::Screen::LOAD_PLAYER);
             userSelector.initializeScreen();
             break;
         }
         case GameSelector::Item::CONTINUE:
-            gameSelector_.getLevelSelector().updateLevel();
-            gameSelector_.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
+            gameSelector.getLevelSelector().updateLevel();
+            gameSelector.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
             break;
         case GameSelector::Item::BACK:
             state_ = State::MENU;
+            setMenu(Menu::Type::MAIN);
             break;
     }
 }
 
 void GameModel::handleUserSelectorScreenState() {
-    UserSelector& userSelector = gameSelector_.getUserSelector();
+    auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    UserSelector& userSelector = gameSelector.getUserSelector();
     const UserSelector::Item& item = userSelector.convertIndexToItem();
     switch (userSelector.getScreen()) {
         case UserSelector::Screen::NEW_PLAYER:
@@ -270,15 +246,15 @@ void GameModel::handleUserSelectorScreenState() {
                 if (userSelector.isNewPlayer()) {
                     userSelector.savePlayer();
                 }
-                gameSelector_.initializeLevelSelector();
+                gameSelector.initializeLevelSelector();
             }
             break;
         case UserSelector::Screen::LOAD_PLAYER:
             if (item == UserSelector::Item::BACK) {
-                gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
+                gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
             } else if (item == UserSelector::Item::PLAYER_NAME) {
                 userSelector.loadPlayer();
-                gameSelector_.initializeLevelSelector();
+                gameSelector.initializeLevelSelector();
             } else if (item == UserSelector::Item::PREV) {
                 userSelector.setIndexRange(UserSelector::Item::PREV);
             } else if (item == UserSelector::Item::NEXT) {
@@ -289,18 +265,19 @@ void GameModel::handleUserSelectorScreenState() {
 }
 
 void GameModel::handleLevelSelectorScreenState() {
-    LevelSelector& levelSelector = gameSelector_.getLevelSelector();
+    auto & gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    LevelSelector& levelSelector = gameSelector.getLevelSelector();
     LevelSelector::Item item = levelSelector.getSelectedItem();
     switch (item) {
         case LevelSelector::Item::BACK:
-            gameSelector_.updateMenuItems();
-            gameSelector_.setScreen(GameSelector::Screen::GAME_SELECTOR);
+            gameSelector.updateMenuItems();
+            gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
             break;
         case LevelSelector::Item::LEVEL:
             world_.clearLevel();
             world_.loadLevel(levelSelector.getSelectedLevel().filename);
-            world_.setPlayer(gameSelector_.getUserSelector().getPlayer());
-            mainMenu_.updateMusic(sf::SoundSource::Status::Stopped);
+            world_.setPlayer(gameSelector.getUserSelector().getPlayer());
+            getMenu(Menu::Type::MAIN).updateMusic(sf::SoundSource::Status::Stopped);
             state_ = State::RUNNING;
             break;
         case LevelSelector::Item::NEXT: 
@@ -313,7 +290,8 @@ void GameModel::handleLevelSelectorScreenState() {
 }
 
 void GameModel::handleGameSelectorState() {
-    switch (gameSelector_.getScreen()) {
+    const auto& gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+    switch (gameSelector.getScreen()) {
         case GameSelector::Screen::GAME_SELECTOR:
             handleGameSelectorScreenState();
             break;
@@ -328,7 +306,8 @@ void GameModel::handleGameSelectorState() {
 
 // TODO: Add implementation later
 void GameModel::handleSettingsState() {
-    if (settings_.getSelectedItem() == 0) {
+    if (currentMenu_->getSelectedItem() == 0) {
+        setMenu(Menu::Type::MAIN);
         state_ = State::MENU;
     }
 }
@@ -353,66 +332,40 @@ void GameModel::launchBird() {
 
 void GameModel::handleTextEntered(const sf::Uint32& unicode) {
     if (state_ == State::GAME_SELECTOR) {
-        gameSelector_.handleTextEntered(unicode);
+        auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
+        gameSelector.handleTextEntered(unicode);
     }
 }
 
 void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
-    switch(state_) {
-        case State::RUNNING:
-            world_.handleMouseMove(mousePosition);
-            break;
-        case GameModel::State::MENU:
-            mainMenu_.handleMouseMove(mousePosition);
-            break;
-        case GameModel::State::GAME_OVER:
-            gameOverMenu_.handleMouseMove(mousePosition);
-            break;
-        case GameModel::State::GAME_SELECTOR:
-            gameSelector_.handleMouseMove(mousePosition);
-            break;
-        default:
-            break;
+   if (state_ == State::RUNNING) {
+        world_.handleMouseMove(mousePosition);
+    } else {
+        currentMenu_->handleMouseMove(mousePosition);
     }
 }
 
 void GameModel::handleResize() {
     world_.handleResize();
-    mainMenu_.handleResize();
-    gameOverMenu_.handleResize();
-    gameSelector_.handleResize();
-    settings_.handleResize();
+    for (auto& menu : menus_) {
+        menu.second->handleResize();
+    }
 }
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
-     switch(state_) {
-        case State::RUNNING:
-            world_.getCannon()->startLaunch();
-            break;
-        case State::MENU:
-            if (mainMenu_.handleMouseClick(mousePosition)) {
-                setState();
-            }
-            break;
-        case State::GAME_SELECTOR:
-            if (gameSelector_.handleMouseClick(mousePosition)) {
-                setState();
-            }
-            break;
-        case GameModel::State::GAME_OVER:
-            if (gameOverMenu_.handleMouseClick(mousePosition)) {
-                setState();
-            }
-            break;
-        case State::SETTINGS:
-            if (settings_.handleMouseClick(mousePosition)) {
-                setState();
-            }
-            break;
-        case State::PAUSED:
-            // TODO: Implement mouse actions in Pause menu
-            break;
-        default:
-            break;
+   if (state_ == State::RUNNING) {
+        world_.getCannon()->startLaunch();
+    } else {
+        if (currentMenu_->handleMouseClick(mousePosition)) {
+            setState();
+        }
+    }
+}
+
+void GameModel::draw(sf::RenderWindow& window) const {
+    if (state_ == State::RUNNING) {
+        world_.draw(window);
+    } else {
+        currentMenu_->draw(window);
     }
 }
