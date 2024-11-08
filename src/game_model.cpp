@@ -332,8 +332,7 @@ void GameModel::launchBird() {
 
 void GameModel::handleTextEntered(const sf::Uint32& unicode) {
     if (state_ == State::GAME_SELECTOR) {
-        auto &gameSelector = static_cast<GameSelector&>(getMenu(Menu::Type::GAME_SELECTOR));
-        gameSelector.handleTextEntered(unicode);
+        currentMenu_->handleTextEntered(unicode);
     }
 }
 
