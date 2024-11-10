@@ -51,9 +51,25 @@ bool Bird::shouldRemove() const {
    	if (this->isOutOfBounds()) {
 		return true;
 	}
-    float duration = pressClock_.getElapsedTime().asSeconds();
-    if (duration >= 5.f) {
+    if (getActiveTime() >= 5.f) {
         return true;
     }
     return false;
+}
+
+void Bird::setIsPaused(bool paused) {
+    if (paused) {
+        pauseClock_.restart();
+    } else {
+        pausedTime_ += pauseClock_.getElapsedTime().asSeconds();
+    }
+    isPaused_ = paused;
+}
+
+float Bird::getActiveTime() const {
+    return pressClock_.getElapsedTime().asSeconds() - pausedTime_;
+}
+
+bool Bird::getIsPaused() const {
+    return isPaused_;
 }
