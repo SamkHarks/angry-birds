@@ -53,7 +53,7 @@ void Object::update() {
     sprite.setPosition(position_pixels.x, position_pixels.y);
     float radians = body_->GetAngle();
     float deg = utils::RadiansToDegrees(radians);
-    sprite.setRotation(deg);
+    sprite.setRotation(-deg);
 }
 
 bool Object::isMoving() const {
