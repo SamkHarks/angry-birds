@@ -323,8 +323,25 @@ void World::handleResize() {
     background_.setScale(scaleFactor, scaleFactor);
     // Resize cannon properties
     cannon_->handleResize();
+    
+    // Update object positions
+    for (auto& object : objects_) {
+        object->update();
+    }
 }
 
 void World::handleMouseMove(const sf::Vector2f& mousePosition) {
     cannon_->handleMouseMove(mousePosition);
+}
+
+void World::handleKeyPress(const sf::Keyboard::Key& code) {
+    if (code == sf::Keyboard::Key::P || code == sf::Keyboard::Key::Escape) {
+        Bird* activeBird = GetBird();
+        if (activeBird && activeBird->isLaunched() && !activeBird->getIsPaused()) {
+            activeBird->setIsPaused(true);
+        } else if (activeBird && activeBird->getIsPaused()) {
+            activeBird->setIsPaused(false);
+        }
+    }
+
 }

@@ -42,16 +42,21 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (code) {
         case sf::Keyboard::Key::Left:
         case sf::Keyboard::Key::Right:
-        case sf::Keyboard::Key::Up:
-        case sf::Keyboard::Key::Down:
-            if (model_.getState() == GameModel::State::RUNNING) {
+            if (model_.isRunning()) {
                 view_.updateCamera(code);
             } else {
                 model_.handleKeyPress(code);
             }
             break;
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
         case sf::Keyboard::Key::Enter:
-            model_.setState();
+                model_.handleKeyPress(code);
+            break;
+        case sf::Keyboard::Key::P:
+        case sf::Keyboard::Key::Escape:
+            model_.handleKeyPress(code);
+            model_.getMenu<Pause>(Menu::Type::PAUSE).updatePosition(view_);
             break;
         default:
             break;
@@ -99,5 +104,5 @@ void GameController::handleResize(const sf::Event& event) {
         return; // Ignore resize event on startup
     }
     view_.handleResize(width, height);
-    model_.handleResize();
+    model_.handleResize(view_);
 }

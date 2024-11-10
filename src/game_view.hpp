@@ -9,7 +9,7 @@ class GameView: public sf::RenderWindow {
         GameView();
         void draw(const GameModel& model);
         void render(const GameModel& model);
-        void updateCamera(const GameModel& model);
+        void updateCamera(GameModel& model);
         void updateCamera(const sf::Keyboard::Key& code);
         void updateHUD(GameModel& model);
         void setGameView();

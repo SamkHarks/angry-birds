@@ -9,32 +9,30 @@ GameModel::GameModel() :
         menus_[Menu::Type::GAME_SELECTOR] = std::make_unique<GameSelector>();
         menus_[Menu::Type::SETTINGS] = std::make_unique<Settings>();
         menus_[Menu::Type::GAME_OVER] = std::make_unique<GameOver>();
+        menus_[Menu::Type::PAUSE] = std::make_unique<Pause>();
         currentMenu_ = menus_[Menu::Type::MAIN].get();  // Start with main menu
     }
 
 void GameModel::update() {
-    switch (state_) {
-        case State::RUNNING:
-            world_.step();
+    if (isRunning()) {
+        world_.step();
 
-            // Update the cannon if the bird is not launched
-            Bird* bird = world_.GetBird();
-            if (bird != nullptr && !bird->isLaunched()) {
-                world_.getCannon()->update();
-            }
+        // Update the cannon if the bird is not launched
+        Bird* bird = world_.GetBird();
+        if (bird != nullptr && !bird->isLaunched()) {
+            world_.getCannon()->update();
+        }
 
-            // Check if level is ended and handle level ending
-            if (world_.isSettled()) {
-                handleLevelEnd();
-            }
-            // Handle collisions
-            handleCollisions();
+        // Check if level is ended and handle level ending
+        if (world_.isSettled()) {
+            handleLevelEnd();
+        }
+        // Handle collisions
+        handleCollisions();
 
-            // Handle object state and bird state
-            handleObjectState();
-            handleBirdState();
-
-            break;
+        // Handle object state and bird state
+        handleObjectState();
+        handleBirdState();
     }
 }
 
@@ -112,12 +110,6 @@ Menu& GameModel::getMenu(const Menu::Type& type) {
     return *menus_.at(type);
 }
 
-template <typename T>
-T& GameModel::getMenu(Menu::Type type) {
-    static_assert(std::is_base_of<Menu, T>::value, "T must be derived from Menu");
-    return static_cast<T&>(getMenu(type));
-}
-
 void GameModel::setMenu(Menu::Type newMenuType) {
     currentMenu_ = menus_.at(newMenuType).get();
 }
@@ -128,7 +120,31 @@ void GameModel::switchMenu(Menu::Type type, State state) {
 }
 
 void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
-    currentMenu_->handleKeyPress(code);  
+    switch (code) {
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
+        case sf::Keyboard::Key::Left:
+        case sf::Keyboard::Key::Right:
+            if (!isRunning()) {
+                currentMenu_->handleKeyPress(code);
+            }
+            break;
+        case sf::Keyboard::Key::Enter:
+            setState();
+            break;
+        case sf::Keyboard::Key::P:
+        case sf::Keyboard::Key::Escape:
+            if (isRunning()) {
+                switchMenu(Menu::Type::PAUSE, State::PAUSED);
+                world_.handleKeyPress(code);
+            } else if (isPaused()) {
+                world_.handleKeyPress(code);
+                state_ = State::RUNNING;
+            }
+            break;
+        default:
+            break;
+    } 
 }
 
 // handle menu actions based on the current state and selected item
@@ -155,7 +171,7 @@ void GameModel::setState() {
 }
 
 void GameModel::handleMainMenuState() {
-   auto selectedItem = currentMenu_->getSelectedItem();
+    auto selectedItem = currentMenu_->getSelectedItem();
     if (selectedItem == 0) {
         auto& gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
         gameSelector.updateMenuItems();
@@ -316,9 +332,17 @@ void GameModel::handleSettingsState() {
     }
 }
 
-// TODO: Add implementation later
 void GameModel::handlePauseState() {
-
+    int selectedItem = currentMenu_->getSelectedItem();
+    if (selectedItem == 0) {
+        world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
+        state_ = State::RUNNING;
+    } else if (selectedItem == 1) {
+        switchMenu(Menu::Type::MAIN, State::MENU);
+        updateView_ = true; // Center the view back to default
+    } else if (selectedItem == 2) {
+        state_ = State::QUIT;
+    }
 }
 
 World &GameModel::getWorld() {
@@ -341,22 +365,26 @@ void GameModel::handleTextEntered(const sf::Uint32& unicode) {
 }
 
 void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
-   if (state_ == State::RUNNING) {
+   if (isRunning()) {
         world_.handleMouseMove(mousePosition);
     } else {
         currentMenu_->handleMouseMove(mousePosition);
     }
 }
 
-void GameModel::handleResize() {
-    world_.handleResize();
+void GameModel::handleResize(const sf::RenderWindow& window) {
     for (auto& menu : menus_) {
-        menu.second->handleResize();
+        if (menu.second->getType() == Menu::Type::PAUSE) {
+            menu.second->handleResize(window);
+        } else {
+            menu.second->handleResize();
+        }
     }
+    world_.handleResize();
 }
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
-   if (state_ == State::RUNNING) {
+   if (isRunning()) {
         world_.getCannon()->startLaunch();
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
@@ -366,9 +394,28 @@ void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
 }
 
 void GameModel::draw(sf::RenderWindow& window) const {
-    if (state_ == State::RUNNING) {
+    if (isRunning()) {
         world_.draw(window);
+    } else if (isPaused()) {
+        world_.draw(window);
+        currentMenu_->draw(window);
     } else {
         currentMenu_->draw(window);
     }
+}
+
+bool GameModel::isRunning() const {
+    return state_ == State::RUNNING;
+}
+
+bool GameModel::isPaused() const {
+    return state_ == State::PAUSED;
+}
+
+bool GameModel::updateView() const {
+    return updateView_;
+}
+
+void GameModel::setUpdateView(bool updateView) {
+    updateView_ = updateView;
 }

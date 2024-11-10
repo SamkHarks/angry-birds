@@ -5,6 +5,7 @@
 #include "game_over.hpp"
 #include "settings.hpp"
 #include "game_selector.hpp"
+#include "pause.hpp"
 #include "world.hpp"
 #include <type_traits>
 
@@ -26,7 +27,10 @@ class GameModel {
         void setState(State);
         void setState();
         template <typename T>
-        T& getMenu(Menu::Type type);
+        T& getMenu(Menu::Type type) {
+            static_assert(std::is_base_of<Menu, T>::value, "T must be derived from Menu");
+            return static_cast<T&>(getMenu(type));
+        }
         const Menu& getMenu(const Menu::Type& type) const;
         Menu& getMenu(const Menu::Type& type);
         void setMenu(Menu::Type newMenuType);
@@ -36,15 +40,20 @@ class GameModel {
         void launchBird();
         void handleTextEntered(const sf::Uint32& unicode);
         void handleMouseMove(const sf::Vector2f& mousePosition);
-        void handleResize();
+        void handleResize(const sf::RenderWindow& window);
         void handleMouseLeftClick(const sf::Vector2f& mousePosition);
         void draw(sf::RenderWindow& window) const;
         void switchMenu(Menu::Type type, State state);
+        bool isRunning() const;
+        bool isPaused() const;
+        bool updateView() const;
+        void setUpdateView(bool updateView);
     private:
         State state_;
         std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;
         Menu *currentMenu_;
         World world_;
+        bool updateView_ = false;
         void handleLevelEnd();
         void handleCollisions();
         void handleObjectState();

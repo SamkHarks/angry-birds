@@ -1,4 +1,5 @@
 #include "game_view.hpp"
+#include "game_model.hpp"
 #include "utils.hpp"
 
 GameView::GameView() : sf::RenderWindow(sf::VideoMode(VIEW.getWidth(), VIEW.getHeight()), "Angry Birds") {
@@ -21,9 +22,9 @@ void GameView::setGameView(const sf::View& view) {
     defaultCenter_ = view.getCenter();
 }
 
-void GameView::updateCamera(const GameModel& model) {
+void GameView::updateCamera(GameModel& model) {
     const World& world = model.getWorld();
-    if (model.getState() == GameModel::State::RUNNING) {
+    if (model.isRunning()) {
         const Bird* activeBird = world.GetBird();
         if (activeBird && activeBird->isMoving()) {
             sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
@@ -35,6 +36,10 @@ void GameView::updateCamera(const GameModel& model) {
             manualControl_ = true;
             updateView_ = true;
         }
+    } else if (model.updateView()) {
+        gameView_.setCenter(defaultCenter_);
+        updateView_ = true;
+        model.setUpdateView(false);
     }
 }
 
@@ -55,7 +60,7 @@ void GameView::updateCamera(const sf::Keyboard::Key& code) {
 
 // Update HUD elements to keep them in the same position
 void GameView::updateHUD(GameModel& model) {
-    if (model.getState() == GameModel::State::RUNNING) {
+    if (model.isRunning() || model.isPaused()) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
         world.getCannon()->updateTextPosition(*this);
@@ -78,17 +83,9 @@ void GameView::render(const GameModel& model) {
 }
 
 void GameView::draw(const GameModel& model) {
-    // TODO: Draw game objects here
-    switch (model.getState()) {
-        case GameModel::State::MENU:
-        case GameModel::State::GAME_SELECTOR:
-        case GameModel::State::SETTINGS:
-        case GameModel::State::GAME_OVER:
-        case GameModel::State::RUNNING:
-            model.draw(*this);
-            break;
-        case GameModel::State::QUIT:
-            this->close();
-            break;
+    if (model.getState() == GameModel::State::QUIT) {
+        this->close();
+    } else {
+        model.draw(*this);
     }
 }
