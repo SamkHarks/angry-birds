@@ -30,6 +30,7 @@ class Menu {
         virtual void handleKeyPress(const sf::Keyboard::Key& code);
         void updateMusic(sf::SoundSource::Status status);
         virtual void handleResize();
+        virtual void handleResize(const sf::RenderWindow&) {};
         virtual void handleTextEntered(const sf::Uint32& unicode) {}; // Handle text input, default is empty
         void updateMenuItems();
     private:
