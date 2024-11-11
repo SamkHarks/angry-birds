@@ -70,6 +70,7 @@ LevelSelector::LevelSelector() {
     // Load levels
     levels_.push_back({"Level 1", "level1.json", "level1.png"});
     levels_.push_back({"Level 2", "level2.json", "level2.png"});
+    levels_.push_back({"Level 3", "level3.json", "level2.png"});
 
     // Load stars
     stars_.resize(4);
@@ -310,12 +311,12 @@ void LevelSelector::updateLevel() {
 }
 
 void LevelSelector::handleKeyPress(const sf::Keyboard::Key& code) {
-    if (code == sf::Keyboard::Key::Left) {
+    if (code == sf::Keyboard::Key::Left && !isButtonDisabled(0)) {
         setSelectedItem(selectedItem_ == LevelSelector::Item::PREV
             ? LevelSelector::Item::NEXT
             : LevelSelector::Item::PREV
         );
-    } else if (code == sf::Keyboard::Key::Right) {
+    } else if (code == sf::Keyboard::Key::Right && !isButtonDisabled(1)) {
         setSelectedItem(selectedItem_ == LevelSelector::Item::NEXT
             ? LevelSelector::Item::PREV
             : LevelSelector::Item::NEXT
