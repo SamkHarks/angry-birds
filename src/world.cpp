@@ -58,8 +58,6 @@ void World::saveHighScore(int score) {
 }
 
 int World::getStars() const {
-    int pigsLeft = getRemainingPigCount();
-    int birdsLeft = getRemainingBirdCount();
     float maxScore = (totalPigCount_ + totalBirdCount_- 1) * 1000.f;
     int score = scoreManager_.getCurrentScore();
     float scoreRatio = score / maxScore;
