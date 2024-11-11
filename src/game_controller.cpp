@@ -51,7 +51,7 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
         case sf::Keyboard::Key::Up:
         case sf::Keyboard::Key::Down:
         case sf::Keyboard::Key::Enter:
-                model_.handleKeyPress(code);
+            model_.handleKeyPress(code);
             break;
         case sf::Keyboard::Key::P:
         case sf::Keyboard::Key::Escape:
