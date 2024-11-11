@@ -56,7 +56,9 @@ class LevelSelector {
         void setLevelIndex(int index);
         void setLevelStarIndex();
         void setLevelHighScore();
+        void setSignTexts();
         void drawStars(sf::RenderWindow& window) const;
+        bool isButtonDisabled(int index) const;
 };
 
 #endif // LEVEL_SELECTOR_HPP

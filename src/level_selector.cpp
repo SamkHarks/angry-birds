@@ -111,8 +111,11 @@ void LevelSelector::draw(sf::RenderWindow& window) const {
     for (const auto& menuItem : menuItems_) {
         window.draw(menuItem);
     }
-    for (const auto& button : buttons_) {
-        window.draw(button);
+    for (int i = 0; i < buttons_.size(); i++) {
+        if (isButtonDisabled(i)) {
+            continue;
+        }
+        window.draw(buttons_[i]);
     }
     window.draw(level_);
     for (const auto& sign : sign_) {
@@ -142,6 +145,9 @@ LevelSelector::Item LevelSelector::getItemAtPosition(const sf::Vector2f& mousePo
     }
     for (int i = 0; i < buttons_.size(); i++) {
         if (buttons_[i].getGlobalBounds().contains(mousePosition)) {
+            if (isButtonDisabled(i)) {
+                return Item::UNDEFINED;
+            }
             return i == 0 ? Item::PREV : Item::NEXT;
         }
     }
@@ -243,25 +249,35 @@ void LevelSelector::setPlayer(const std::shared_ptr<Player>& player) {
         return;
     }
     player_ = player;
-    int characterSize = 70;
-    int score = player->highScores.size() <= levelIndex_ ? 0 : player->highScores[levelIndex_];
-    const std::vector<std::string> texts = {player->name, "High Score:", std::to_string(score)};
-    auto setSingText = [&](int i) {
-        characterSize = i == 1 ? 30 : characterSize; // Set character size for high score at least 30 at start
-        signText_[i].setString(texts[i]);
-        signText_[i].setCharacterSize(characterSize);
-        while (signText_[i].getGlobalBounds().width > 160 && characterSize > 10) {
-            characterSize--;
+    // Player specific sign texts
+    setSignTexts();
+}
+
+void LevelSelector::setSignTexts() {
+    if (auto player = player_.lock()) {
+        int characterSize = 70;
+        int score = player->highScores.size() <= levelIndex_ ? 0 : player->highScores[levelIndex_];
+        const std::vector<std::string> texts = {player->name, "High Score:", std::to_string(score)};
+        // Helper lambda to set sign text
+        auto setSingText = [&](int i) {
+            characterSize = i == 1 ? 30 : characterSize; // Set character size for high score at least 30 at start
+            signText_[i].setString(texts[i]);
             signText_[i].setCharacterSize(characterSize);
+            // Find correct size for the sign text
+            while (signText_[i].getGlobalBounds().width > 160 && characterSize > 10) {
+                characterSize--;
+                signText_[i].setCharacterSize(characterSize);
+            }
+            sf::FloatRect textBounds = signText_[i].getGlobalBounds();
+            signText_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
+            int signIndex = i == 2 ? i - 1 : i;
+            int yOffset = i == 2 ? 20 : 0;
+            signText_[i].setPosition(sign_[signIndex].getPosition().x, sign_[signIndex].getPosition().y + yOffset);
+        };
+        // Set sign text
+        for (int i = 0; i < 3; ++i) {
+            setSingText(i);
         }
-        sf::FloatRect textBounds = signText_[i].getGlobalBounds();
-        signText_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
-        int signIndex = i == 2 ? i - 1 : i;
-        int yOffset = i == 2 ? 20 : 0;
-        signText_[i].setPosition(sign_[signIndex].getPosition().x, sign_[signIndex].getPosition().y + yOffset);
-    };
-    for (int i = 0; i < 3; ++i) {
-        setSingText(i);
     }
 }
 
@@ -315,4 +331,19 @@ void LevelSelector::handleKeyPress(const sf::Keyboard::Key& code) {
             : LevelSelector::Item::BACK
         );
     }
+}
+
+bool LevelSelector::isButtonDisabled(int index) const {
+    if (auto player = player_.lock()) {
+        switch (index) {
+            case 0:
+                return levelIndex_ == 0;
+            case 1:
+                return levelIndex_ == levels_.size() - 1 || player->levelsCompleted <= levelIndex_;
+            default:
+                return false;
+        } 
+    }
+    return true;
+
 }
