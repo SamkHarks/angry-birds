@@ -17,8 +17,8 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - User selector (Create new users & load existing users)
 - Level end menu (Shows achieved stars, go to next level, go to main menu or exit)
 - Three birds with different powers - WIP (Not implemented)
-- Multiple levels with destructible environments (currently only 2 levels)
-- High score - WIP (save high scores for each user, menu for displaying high scores missing)
+- Multiple levels with destructible environments (currently 3 levels)
+- High score - WIP (save high scores for each user and view user's high score for each level, menu for displaying all high scores missing)
 - Sound effects and background music - WIP (currently menu has bg music and cannon has launch sound) 
 - Cross-platform support for Windows, Linux, and macOS
 
