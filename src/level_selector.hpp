@@ -38,6 +38,8 @@ class LevelSelector {
         void updateItem(bool isSelected);
         std::weak_ptr<Player> player_; // User selector is the owner
         std::vector<sf::Sprite> stars_;
+        std::vector<sf::Text> signText_;
+        std::vector<sf::RectangleShape> sign_;
         sf::RectangleShape level_;
         sf::Texture levelImage_;
         std::vector<sf::Text> menuItems_;

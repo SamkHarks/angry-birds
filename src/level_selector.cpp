@@ -3,6 +3,9 @@
 #include "resource_manager.hpp"
 
 const float STAR_SIZE = 100;
+const int SIGN_X_OFFSET = 530;
+const int SIGN_Y_OFFSET = 200;
+const int BUTTON_X_OFFSET = 280;
 
 LevelSelector::LevelSelector() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
@@ -32,8 +35,28 @@ LevelSelector::LevelSelector() {
     level_.setScale(0.27f, 0.27f);
     level_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
 
+    // Load name sign
+    sign_.resize(2);
+    signText_.resize(3);
+    for (int i = 0; i < 2; ++i) {
+        sign_[i].setSize(sf::Vector2f(320, 320));
+        std::string path = "/assets/images/wooden_sign" + std::to_string(i + 2) + ".png";
+        sign_[i].setTexture(&resourceManager.getTexture(path));
+        sign_[i].setOrigin(sign_[i].getGlobalBounds().width / 2, sign_[i].getGlobalBounds().height / 2);
+        int xOffset = i == 0 ? -SIGN_X_OFFSET : SIGN_X_OFFSET;
+        sign_[i].setPosition(SCREEN_CENTER.x + xOffset, SCREEN_CENTER.y + SIGN_Y_OFFSET);
+        signText_[i].setFont(font_);
+        signText_[i].setFillColor(sf::Color::White);
+        signText_[i].setOutlineColor(sf::Color::Black);
+        signText_[i].setOutlineThickness(3);
+    }
+    signText_[2].setFont(font_);
+    signText_[2].setFillColor(sf::Color::White);
+    signText_[2].setOutlineColor(sf::Color::Black);
+    signText_[2].setOutlineThickness(3);
+
     // Load arrow textures
-    leftArrow_ = resourceManager.getTexture("/assets/images/wooden_arrow.png");
+    leftArrow_ = resourceManager.getTexture("/assets/images/wooden_arrow2.png");
     rightArrow_ = resourceManager.getTexture("/assets/images/wooden_arrow.png");
     buttons_.resize(2);
     for (int i = 0; i < 2; ++i) {
@@ -41,10 +64,7 @@ LevelSelector::LevelSelector() {
         auto globalBounds = buttons_[i].getGlobalBounds();
         buttons_[i].setOrigin(globalBounds.width / 2, globalBounds.height / 2);
         buttons_[i].setTexture(i == 0 ? &leftArrow_ : &rightArrow_);
-        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
-        if (i == 0) {
-            buttons_[i].setRotation(180);
-        }
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -BUTTON_X_OFFSET : BUTTON_X_OFFSET), SCREEN_CENTER.y + 20);
     }
 
     // Load levels
@@ -74,12 +94,17 @@ void LevelSelector::handleResize() {
         menuItems_[i].setPosition(i == 0 ? SCREEN_CENTER.x - 50 : SCREEN_CENTER.x, (SCREEN_CENTER.y - 150) + i * 324);
     }
     for (int i = 0; i < buttons_.size(); i++) {
-        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -BUTTON_X_OFFSET : BUTTON_X_OFFSET), SCREEN_CENTER.y + 20);
     }
     level_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
     for (int i = 0; i < stars_.size(); i++) {
         stars_[i].setPosition(sf::Vector2f(SCREEN_CENTER.x + 100, SCREEN_CENTER.y - 140));
     }
+    for (int i = 0; i < 2; ++i) {
+        sign_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -SIGN_X_OFFSET : SIGN_X_OFFSET), SCREEN_CENTER.y + SIGN_Y_OFFSET);
+        signText_[i].setPosition(sign_[i].getPosition().x, sign_[i].getPosition().y);
+    }
+    signText_[2].setPosition(sign_[1].getPosition().x, sign_[1].getPosition().y + 20);
 }
 
 void LevelSelector::draw(sf::RenderWindow& window) const {
@@ -90,6 +115,12 @@ void LevelSelector::draw(sf::RenderWindow& window) const {
         window.draw(button);
     }
     window.draw(level_);
+    for (const auto& sign : sign_) {
+        window.draw(sign);
+    }
+    for (const auto& text : signText_) {
+        window.draw(text);
+    }
     drawStars(window);
 }
 
@@ -212,6 +243,26 @@ void LevelSelector::setPlayer(const std::shared_ptr<Player>& player) {
         return;
     }
     player_ = player;
+    int characterSize = 70;
+    int score = player->highScores.size() <= levelIndex_ ? 0 : player->highScores[levelIndex_];
+    const std::vector<std::string> texts = {player->name, "High Score:", std::to_string(score)};
+    auto setSingText = [&](int i) {
+        characterSize = i == 1 ? 30 : characterSize; // Set character size for high score at least 30 at start
+        signText_[i].setString(texts[i]);
+        signText_[i].setCharacterSize(characterSize);
+        while (signText_[i].getGlobalBounds().width > 160 && characterSize > 10) {
+            characterSize--;
+            signText_[i].setCharacterSize(characterSize);
+        }
+        sf::FloatRect textBounds = signText_[i].getGlobalBounds();
+        signText_[i].setOrigin(textBounds.width / 2, textBounds.height / 2);
+        int signIndex = i == 2 ? i - 1 : i;
+        int yOffset = i == 2 ? 20 : 0;
+        signText_[i].setPosition(sign_[signIndex].getPosition().x, sign_[signIndex].getPosition().y + yOffset);
+    };
+    for (int i = 0; i < 3; ++i) {
+        setSingText(i);
+    }
 }
 
 void LevelSelector::drawStars(sf::RenderWindow& window) const {
@@ -226,8 +277,18 @@ void LevelSelector::setLevelStarIndex() {
     }
 }
 
+void LevelSelector::setLevelHighScore() {
+    if (auto player = player_.lock()) {
+        int score = player->highScores.size() <= levelIndex_ ? 0 : player->highScores[levelIndex_];
+        signText_[2].setString(std::to_string(score));
+        sf::FloatRect textBounds = signText_[2].getGlobalBounds();
+        signText_[2].setOrigin(textBounds.width / 2, textBounds.height / 2);
+    }
+}
+
 void LevelSelector::updateLevel() {
     setLevelStarIndex();
+    setLevelHighScore();
     setLevelText();
     setLevelImage();
 }
