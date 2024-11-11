@@ -5,16 +5,17 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 
 ![Angry Birds](assets/images/level2.png)
 
+
 ## Features
 - **2D Physics Simulation** powered by **Box2D**
 - **Graphics Rendering** and **Input Handling** with **SFML**
 - **JSON (nlohmann/json)** for data formatting when storing and reading data
 - Main menu 
+- Pause Menu
+- Settings - WIP (currently only back button)
 - Level selector (Choose level for current user and see how many stars user has for each level)
 - User selector (Create new users & load existing users)
-- Settings - WIP (currently only back button)
 - Level end menu (Shows achieved stars, go to next level, go to main menu or exit)
-- Pause menu - WIP (Not implemented)
 - Three birds with different powers - WIP (Not implemented)
 - Multiple levels with destructible environments (currently only 2 levels)
 - High score - WIP (save high scores for each user, menu for displaying high scores missing)
