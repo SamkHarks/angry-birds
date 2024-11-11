@@ -59,11 +59,9 @@ UserSelector::UserSelector() : userLoader_(*this) {
         buttons_[i].setSize(sf::Vector2f(100, 100));
         auto globalBounds = buttons_[i].getGlobalBounds();
         buttons_[i].setOrigin(globalBounds.width / 2, globalBounds.height / 2);
-        buttons_[i].setTexture(&resourceManager.getTexture("/assets/images/wooden_arrow.png"));
-        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
-        if (i == 0) {
-            buttons_[i].setRotation(180);
-        }
+        std::string path = i == 0 ? "/assets/images/wooden_arrow2.png" : "/assets/images/wooden_arrow.png";
+        buttons_[i].setTexture(&resourceManager.getTexture(path));
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -280 : 280), SCREEN_CENTER.y + 20);
     }
     // load players
     userLoader_.loadPlayers();
@@ -89,7 +87,7 @@ void UserSelector::handleResize() {
         playerNames_[i].setPosition(SCREEN_CENTER.x - 200, (SCREEN_CENTER.y - 50) + (i % 3) * 50);
     }
     for (int i = 0; i < 2; ++i) {
-        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -270 : 280), SCREEN_CENTER.y + 20);
+        buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -280 : 280), SCREEN_CENTER.y + 20);
     }
 }
 
