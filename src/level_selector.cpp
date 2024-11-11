@@ -70,7 +70,7 @@ LevelSelector::LevelSelector() {
     // Load levels
     levels_.push_back({"Level 1", "level1.json", "level1.png"});
     levels_.push_back({"Level 2", "level2.json", "level2.png"});
-    levels_.push_back({"Level 3", "level3.json", "level2.png"});
+    levels_.push_back({"Level 3", "level3.json", "level3.png"});
 
     // Load stars
     stars_.resize(4);
