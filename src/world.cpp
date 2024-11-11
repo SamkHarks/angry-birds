@@ -63,7 +63,7 @@ int World::getStars() const {
     float scoreRatio = score / maxScore;
     if (scoreRatio >= 0.9) {
         return 3;
-    } else if (scoreRatio >= 0.6) {
+    } else if (scoreRatio >= 0.75) {
         return 2;
     } else if (scoreRatio >= 0.5) {
         return 1;
