@@ -88,6 +88,6 @@ void Pause::updateTitle(const sf::RenderWindow& window) {
 }
 
 const std::vector<std::string>& Pause::getButtonNames() const {
-    static const std::vector<std::string> buttonNames = { "Resume", "Main Menu", "Exit" };
+    static const std::vector<std::string> buttonNames = { "Resume", "Restart", "Main Menu", "Exit" };
     return buttonNames;
 }

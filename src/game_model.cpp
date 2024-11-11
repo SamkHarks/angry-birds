@@ -198,7 +198,6 @@ void GameModel::handleGameOverState() {
     }
     if (selectedItem == 0) {
         // Restart
-        world_.clearLevel();
         world_.resetLevel();
         state_ = State::RUNNING;
     } else if (selectedItem == nextLevelIndex) {
@@ -338,9 +337,12 @@ void GameModel::handlePauseState() {
         world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
         state_ = State::RUNNING;
     } else if (selectedItem == 1) {
+        world_.resetLevel();
+        state_ = State::RUNNING;
+    } else if (selectedItem == 2) {
         switchMenu(Menu::Type::MAIN, State::MENU);
         updateView_ = true; // Center the view back to default
-    } else if (selectedItem == 2) {
+    } else if (selectedItem == 3) {
         state_ = State::QUIT;
     }
 }
