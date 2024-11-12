@@ -80,13 +80,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, cons
 }
 
 void GameController::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
-    if (
-        button == sf::Mouse::Button::Left
-        && model_.getState() == GameModel::State::RUNNING
-        && model_.getWorld().getCannon()->isLaunching()
-    ) {
-        model_.launchBird();
-    }
+    model_.handleMouseRelease(button, mousePosition);
 }
 
 void GameController::handleMouseMove(const sf::Vector2f& mousePosition) {

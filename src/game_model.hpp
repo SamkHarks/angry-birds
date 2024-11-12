@@ -8,6 +8,7 @@
 #include "pause.hpp"
 #include "world.hpp"
 #include <type_traits>
+#include "level_editor.hpp"
 
 class GameModel {
     public:
@@ -21,6 +22,7 @@ class GameModel {
             LOADING,    // The game is loading resources or a new level.
             SETTINGS,   // The player is adjusting settings.
             GAME_OVER,  // The game has ended.
+            LEVEL_EDITOR, // The game is at level editor mode.
             QUIT,       // Quit game
         };
         const State& getState() const;
@@ -42,6 +44,7 @@ class GameModel {
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleResize(const sf::RenderWindow& window);
         void handleMouseLeftClick(const sf::Vector2f& mousePosition);
+        void handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition);
         void draw(sf::RenderWindow& window) const;
         void switchMenu(Menu::Type type, State state);
         bool isRunning() const;
@@ -53,6 +56,7 @@ class GameModel {
         std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;
         Menu *currentMenu_;
         World world_;
+        LevelEditor levelEditor_;
         bool updateView_ = false;
         void handleLevelEnd();
         void handleCollisions();

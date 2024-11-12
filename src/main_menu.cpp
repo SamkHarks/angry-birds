@@ -32,6 +32,6 @@ void MainMenu::draw(sf::RenderWindow& window) const {
 };
 
 const std::vector<std::string>& MainMenu::getButtonNames() const {
-    const static std::vector<std::string> buttonNames = { "Play", "Settings", "Exit" };
+    const static std::vector<std::string> buttonNames = { "Play", "Level Editor", "Settings", "Exit" };
     return buttonNames;
 }

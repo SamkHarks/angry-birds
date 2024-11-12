@@ -4,7 +4,8 @@
 
 GameModel::GameModel() :
     state_(State::MENU),
-    world_() {
+    world_(),
+    levelEditor_() {
         menus_[Menu::Type::MAIN] = std::make_unique<MainMenu>();
         menus_[Menu::Type::GAME_SELECTOR] = std::make_unique<GameSelector>();
         menus_[Menu::Type::SETTINGS] = std::make_unique<Settings>();
@@ -178,6 +179,8 @@ void GameModel::handleMainMenuState() {
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
         switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
     } else if (selectedItem == 1) {
+        state_ = State::LEVEL_EDITOR;
+    } else if (selectedItem == 2) {
         switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
     } else {
         state_ = State::QUIT;
@@ -367,8 +370,10 @@ void GameModel::handleTextEntered(const sf::Uint32& unicode) {
 }
 
 void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
-   if (isRunning()) {
+    if (isRunning()) {
         world_.handleMouseMove(mousePosition);
+    } else if (state_ == State::LEVEL_EDITOR) {
+        levelEditor_.handleMouseMove(mousePosition);
     } else {
         currentMenu_->handleMouseMove(mousePosition);
     }
@@ -386,13 +391,26 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
 }
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
-   if (isRunning()) {
+    if (isRunning()) {
         world_.getCannon()->startLaunch();
+    } else if (state_ == State::LEVEL_EDITOR) {
+        levelEditor_.handleMouseClick(mousePosition);
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
             setState();
         }
     }
+}
+
+void GameModel::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
+    if (button == sf::Mouse::Button::Left) {
+        if (isRunning() && world_.getCannon()->isLaunching()) {
+            launchBird();
+        } else if (state_ == State::LEVEL_EDITOR && levelEditor_.isDragging()) {
+            levelEditor_.handleMouseRelease();
+        }
+    }
+
 }
 
 void GameModel::draw(sf::RenderWindow& window) const {
@@ -401,6 +419,8 @@ void GameModel::draw(sf::RenderWindow& window) const {
     } else if (isPaused()) {
         world_.draw(window);
         currentMenu_->draw(window);
+    } else if (state_ == State::LEVEL_EDITOR) {
+        levelEditor_.draw(window);
     } else {
         currentMenu_->draw(window);
     }
