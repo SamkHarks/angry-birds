@@ -52,7 +52,7 @@ const int FRAME_RATE = 60.f;
 const float TIME_STEP = (1.0f / FRAME_RATE) / 2;
 const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
-const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
+const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.2f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
 const sf::Color LIME_GREEN(100, 255, 0);
 const int PLAYER_INDEX_START = 5;
