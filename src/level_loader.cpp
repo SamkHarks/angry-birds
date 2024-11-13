@@ -26,7 +26,8 @@ void to_json(json& j, const ShapeData& data) {
             {"shapeType", data.shapeType},
             {"density", data.density},
             {"friction", data.friction},
-            {"restitution", data.restitution}
+            {"restitution", data.restitution},
+            {"dimensions", {data.dimensions.x, data.dimensions.y}}
         };
     }
 }
@@ -36,6 +37,8 @@ void from_json(const json& j, ShapeData& data) {
     if (data.shapeType == b2Shape::e_circle) {
         j.at("shapePosition").get_to(data.shapePosition);
         data.radius = j.at("radius").get<float>();
+    } else {
+        j.at("dimensions").get_to(data.dimensions);
     }
     j.at("density").get_to(data.density);
     j.at("friction").get_to(data.friction);
@@ -160,10 +163,8 @@ void LevelLoader::createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, O
             break;
         }
         case b2Shape::Type::e_polygon:
-             if (type == Object::Type::Ground) {
-                shapes.polygon.SetAsBox(GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
-             } else if (type == Object::Type::Wall) {
-                shapes.polygon.SetAsBox(WALL_DIMENSONS.x, WALL_DIMENSONS.y);
+             if (type == Object::Type::Ground || type == Object::Type::Wall) {
+                shapes.polygon.SetAsBox(data.dimensions.x, data.dimensions.y);
              } else {
                 throw std::runtime_error("Invalid object type");
              }

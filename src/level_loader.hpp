@@ -18,7 +18,8 @@ struct ShapeData {
     float radius; // Radius of the circle
     float density; // Density of the object
     float friction; // Friction of the object
-    float restitution; // Restitution of the object
+    float restitution; // Restitution of the 
+    b2Vec2 dimensions; // Dimensions of the shape
 };
 
 struct ObjectData {
