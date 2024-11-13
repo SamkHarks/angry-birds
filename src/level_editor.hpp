@@ -14,6 +14,7 @@
 struct LevelObject {
     sf::Sprite sprite;
     ObjectData data;
+    ShapeData shapeData;
 };
 
 /**
@@ -43,6 +44,7 @@ class LevelEditor {
         void draw(sf::RenderWindow& window) const;
         int getItemAtPosition(const sf::Vector2f& mousePosition) const;
         bool handleMouseClick(const sf::Vector2f& mousePosition);
+        void handleKeyPress(const sf::Keyboard::Key& key);
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleMouseRelease();
         const int getSelectedItem() const;
@@ -59,12 +61,14 @@ class LevelEditor {
         sf::Vector2f dragOffset_;
         void updateItem(bool isSelected);
         ObjectData createObjectData(Object::Type type) const;
-        bool createLevelObject(const ObjectData&, LevelObject&) const;
+        ShapeData createShapeData(Object::Type type) const;
+        bool createLevelObject(const ObjectData&, const ShapeData&, LevelObject&) const;
         bool createSprite(const ObjectData& data, sf::Sprite&) const;
         void updateButtons();
         const int getObjectIndex() const;
         void updateObject();
         void checkPosition(LevelObject&);
+        b2Vec2 getDimensions(const LevelObject&) const;
 };
 
 #endif // LEVEL_EDITOR_HPP

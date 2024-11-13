@@ -7,7 +7,8 @@ const float PIG_RADIUS = 0.3;
 const sf::Vector2f PIG_INITIAL_POSITION(50,50);
 const sf::Vector2f WALL_INITIAL_POSITION(150,150);
 // half width and half height of the wall
-b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(sf::Vector2f(25.f, 150.f));
+sf::Vector2f WALL_INITIAL_SF_DIM(25, 150);
+b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(WALL_INITIAL_SF_DIM);
 
 LevelEditor::LevelEditor() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
@@ -50,7 +51,8 @@ LevelEditor::LevelEditor() {
 
     // Add ground
     ObjectData data = createObjectData(Object::Type::Ground);
-    if (!createLevelObject(data, ground_)) {
+    ShapeData shapeData = createShapeData(Object::Type::Ground);
+    if (!createLevelObject(data, shapeData, ground_)) {
         throw std::runtime_error("Failed to create ground object");
     }
 }
@@ -77,7 +79,14 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
         }
     }
     for (int i = 0; i < objects_.size(); i++) {
-        if (objects_[i].sprite.getGlobalBounds().contains(mousePosition)) {
+        // Get the sprite's inverse transform (to convert global coordinates to local)
+        sf::Transform inverseTransform = objects_[i].sprite.getInverseTransform();
+        
+        // Convert the global mouse position to the sprite's local coordinates
+        sf::Vector2f localMousePosition = inverseTransform.transformPoint(mousePosition);
+        
+        // Check if the local mouse position is within the sprite's local (unrotated) bounds
+        if (objects_[i].sprite.getLocalBounds().contains(localMousePosition)) {
             return BUTTONS + i;
         }
     }
@@ -99,6 +108,38 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition) {
     return false;
 }
 
+void LevelEditor::handleKeyPress(const sf::Keyboard::Key& key) {
+    if (convertIndexToItem() == Item::OBJECT && objects_[getObjectIndex()].data.type == Object::Type::Wall) {
+        sf::Sprite &sprite = objects_[getObjectIndex()].sprite;
+        float angle = sprite.getRotation();
+        const sf::Vector2f scale = sprite.getScale();
+        switch (key) {
+            case sf::Keyboard::Key::R:
+                sprite.setRotation(angle + 1);
+                break;
+            case sf::Keyboard::Key::T:
+                sprite.setRotation(angle - 1);
+                break;
+            case sf::Keyboard::Key::A:
+                sprite.setScale(scale.x - 0.1, scale.y);
+                break;
+            case sf::Keyboard::Key::D:
+                sprite.setScale(scale.x + 0.1, scale.y);
+                break;
+            case sf::Keyboard::Key::W:
+                sprite.setScale(scale.x, scale.y + 0.1);
+                break;
+            case sf::Keyboard::Key::S:
+                sprite.setScale(scale.x, scale.y - 0.1);
+                break;
+        }
+        if (angle != sprite.getRotation() || scale != sprite.getScale()) {
+            updateObject();
+        }
+
+    }
+}
+
 void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
     if (isDragging_) {
         objects_[getObjectIndex()].sprite.setPosition(mousePosition + dragOffset_);
@@ -118,7 +159,18 @@ void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
 void LevelEditor::updateObject() {
     LevelObject& object = objects_[getObjectIndex()];
     checkPosition(object);
-    object.data.position = utils::SfToB2Coords(object.sprite.getPosition());
+    b2Vec2 dimensions = getDimensions(object);
+    auto position = utils::SfToB2Coords(object.sprite.getPosition());
+    auto angle = utils::DegreesToRadians(object.sprite.getRotation());
+    if (object.data.position != position) {
+        object.data.position = position;
+    }
+    if (object.data.angle != angle) {
+        object.data.angle = angle;
+    }
+    if (object.shapeData.dimensions != dimensions) {
+        object.shapeData.dimensions = dimensions;
+    }
 }
 
 void LevelEditor::handleMouseRelease() {
@@ -127,6 +179,15 @@ void LevelEditor::handleMouseRelease() {
         isDragging_ = false;
         updateObject();
     }
+}
+
+b2Vec2 LevelEditor::getDimensions(const LevelObject& object) const {
+    auto scale = object.sprite.getScale();
+    auto width = object.sprite.getTextureRect().width;
+    auto height = object.sprite.getTextureRect().height;
+    auto newDimx = scale.x * width / (2 * SCALE);
+    auto newDimy = scale.y * height / (2 * SCALE);
+    return b2Vec2(newDimx, newDimy);
 }
 
 void LevelEditor::checkPosition(LevelObject& object) {
@@ -142,7 +203,9 @@ void LevelEditor::checkPosition(LevelObject& object) {
     } else if (newPosition.x > WORLD_WIDTH - halfWidth) {
         newPosition.x = WORLD_WIDTH - halfWidth;
     // Check if the object intersects the top of the screen
-    } else if (newPosition.y < halfHeight) {
+    } 
+    
+    if (newPosition.y < halfHeight) {
         newPosition.y = halfHeight;
     // Check if the object intersects the ground
     } else if (newPosition.y > VIEW.getHeight() - 50 - halfHeight) {
@@ -220,10 +283,10 @@ void LevelEditor::createObject() {
             objectCreated = true;
             break;
         case Item::PIG:
-            objectCreated = createLevelObject(createObjectData(Object::Type::Pig), object);
+            objectCreated = createLevelObject(createObjectData(Object::Type::Pig), createShapeData(Object::Type::Pig), object);
             break;
         case Item::WALL:
-            objectCreated = createLevelObject(createObjectData(Object::Type::Wall), object);
+            objectCreated = createLevelObject(createObjectData(Object::Type::Wall), createShapeData(Object::Type::Wall), object);
             break;
         default:
             break;
@@ -263,11 +326,44 @@ ObjectData LevelEditor::createObjectData(Object::Type type) const {
     return data;
 }
 
-bool LevelEditor::createLevelObject(const ObjectData& data, LevelObject& object) const {
+ShapeData LevelEditor::createShapeData(Object::Type type) const {
+    assert (type == Object::Type::Pig || type == Object::Type::Wall || type == Object::Type::Ground);
+    ShapeData data;
+    switch (type) {
+        case Object::Type::Pig:
+            data.shapeType = 0;
+            data.shapePosition = b2Vec2(0,0);
+            data.radius = PIG_RADIUS;
+            data.density = 1;
+            data.friction = 1;
+            data.restitution = 0.5;
+            break;
+        case Object::Type::Wall:
+            data.shapeType = 2;
+            data.dimensions = WALL_INITIAL_DIM;
+            data.density = 1;
+            data.friction = 1;
+            data.restitution = 0.4;
+            break;
+        case Object::Type::Ground:
+            data.shapeType = 2;
+            data.dimensions = GROUND_DIMENSIONS;
+            data.density = 1;
+            data.friction = 0.5;
+            data.restitution = 0.2;
+            break;
+        default:
+            break;
+    }
+    return data;
+}
+
+bool LevelEditor::createLevelObject(const ObjectData& data, const ShapeData& shapeData, LevelObject& object) const {
     sf::Sprite sprite;
     if (createSprite(data, sprite)) {
         object.sprite = sprite;
         object.data = data;
+        object.shapeData = shapeData;
         return true;
     }
     return false;
