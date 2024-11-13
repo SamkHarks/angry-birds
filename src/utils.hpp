@@ -56,6 +56,7 @@ const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
 const sf::Color LIME_GREEN(100, 255, 0);
 const int PLAYER_INDEX_START = 5;
+const b2Vec2 GROUND_DIMENSIONS = b2Vec2(VIEW.getWidth() / SCALE, 50.f / SCALE); // half width and half height of the ground
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 

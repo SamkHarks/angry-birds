@@ -50,6 +50,7 @@ class LevelEditor {
         Item convertIndexToItem() const;
         bool isDragging() const;
     private:
+        LevelObject ground_;
         std::vector<LevelObject> objects_;
         std::vector<Bird::Type> birdList_;
         std::vector<Button> buttons_;
@@ -63,6 +64,7 @@ class LevelEditor {
         void updateButtons();
         const int getObjectIndex() const;
         void updateObject();
+        void checkPosition(LevelObject&);
 };
 
 #endif // LEVEL_EDITOR_HPP

@@ -1,4 +1,5 @@
 #include "level_editor.hpp"
+#include "utils.hpp"
 
 const int BUTTONS = 5;
 const int SHAPE_SIZE = 53;
@@ -46,15 +47,24 @@ LevelEditor::LevelEditor() {
         Button button = {shape,text};
         buttons_.push_back(button);
     }
+
+    // Add ground
+    ObjectData data = createObjectData(Object::Type::Ground);
+    if (!createLevelObject(data, ground_)) {
+        throw std::runtime_error("Failed to create ground object");
+    }
 }
 
 
 void LevelEditor::draw(sf::RenderWindow& window) const {
+    // Draw ground
+    window.draw(ground_.sprite);
     // Draw buttons
     for (const auto& button : buttons_) {
         window.draw(button.shape);
         window.draw(button.text);
     }
+    // Draw objects
     for (const auto& object : objects_) {
         window.draw(object.sprite);
     }
@@ -106,12 +116,41 @@ void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
 }
 
 void LevelEditor::updateObject() {
-    objects_[getObjectIndex()].data.position = utils::SfToB2Coords(objects_[getObjectIndex()].sprite.getPosition());
+    LevelObject& object = objects_[getObjectIndex()];
+    checkPosition(object);
+    object.data.position = utils::SfToB2Coords(object.sprite.getPosition());
 }
 
 void LevelEditor::handleMouseRelease() {
-    isDragging_ = false;
-    updateObject();
+    // Item::OBJECT is only draggable
+    if (isDragging_) {
+        isDragging_ = false;
+        updateObject();
+    }
+}
+
+void LevelEditor::checkPosition(LevelObject& object) {
+    sf::Sprite& sprite = object.sprite;
+    auto newPosition = sprite.getPosition();
+    auto bounds = sprite.getGlobalBounds();
+    auto halfWidth = bounds.width / 2;
+    auto halfHeight = bounds.height / 2;
+    // Check if the object intersects 0
+    if (newPosition.x < halfWidth) {
+        newPosition.x = halfWidth;
+    // Check if the object intersects the right side of the screen
+    } else if (newPosition.x > WORLD_WIDTH - halfWidth) {
+        newPosition.x = WORLD_WIDTH - halfWidth;
+    // Check if the object intersects the top of the screen
+    } else if (newPosition.y < halfHeight) {
+        newPosition.y = halfHeight;
+    // Check if the object intersects the ground
+    } else if (newPosition.y > VIEW.getHeight() - 50 - halfHeight) {
+        newPosition.y = VIEW.getHeight() - 50 - halfHeight;
+    }
+    if (newPosition != sprite.getPosition()) {
+        sprite.setPosition(newPosition);
+    }
 }
 
 bool LevelEditor::isDragging() const {
@@ -197,8 +236,15 @@ void LevelEditor::createObject() {
 }
 
 ObjectData LevelEditor::createObjectData(Object::Type type) const {
-    assert (type == Object::Type::Pig || type == Object::Type::Wall);
+    assert (type == Object::Type::Pig || type == Object::Type::Wall || type == Object::Type::Ground);
     ObjectData data;
+    if (type == Object::Type::Ground) {
+        data.type = Object::Type::Ground;
+        data.position = b2Vec2(GROUND_DIMENSIONS.x, 0);
+        data.bodyType = b2BodyType::b2_staticBody;
+        return data; // Early return for ground object
+    }
+
     if (type == Object::Type::Pig) {
         data.type = Object::Type::Pig;
         data.position = utils::SfToB2Coords(PIG_INITIAL_POSITION);
@@ -248,6 +294,19 @@ bool LevelEditor::createSprite(const ObjectData& data, sf::Sprite& sprite) const
             sprite.setScale(scaleX, scaleY);
             sprite.setOrigin(width / 2.f, height / 2.f);
             sprite.setPosition(utils::B2ToSfCoords(data.position));
+            return true;
+        }
+        case Object::Type::Ground: {
+            sprite.setTexture(resourceManager.getTexture("/assets/images/ground.png"));
+            float width = static_cast<float>(sprite.getTextureRect().width);
+            float height = static_cast<float>(sprite.getTextureRect().height);
+            float heightSf = utils::B2ToSf(2.f * GROUND_DIMENSIONS.y);
+            float scaleX = utils::B2ToSf(2.f * GROUND_DIMENSIONS.x) / width;
+            float scaleY = heightSf / height;
+            float scaleSfactor = std::max(scaleX, scaleY);
+            sprite.setScale(scaleSfactor, scaleSfactor);
+            sf::Vector2f centerPosition = utils::B2ToSfCoords(data.position);
+            sprite.setPosition(0, centerPosition.y - heightSf);
             return true;
         }
         default:
