@@ -8,7 +8,8 @@ Ground::Ground(b2Body *body, float hx, float hy) : Object(body, Type::Ground, "/
     float heightSf = utils::B2ToSf(2.f * hy);
     float scaleX = utils::B2ToSf(2.f * hx) / width;
     float scaleY = heightSf / height;
-    sprite_.setScale(scaleX, scaleY);
+    float scaleFactor = utils::getScaleFactor(width, height, utils::B2ToSf(2.f * hx), heightSf);
+    sprite_.setScale(scaleFactor, scaleFactor);
     sf::Vector2f centerPosition = utils::B2ToSfCoords(body->GetPosition());
     sprite_.setPosition(0, centerPosition.y - heightSf);
 }

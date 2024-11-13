@@ -90,6 +90,8 @@ namespace utils
     float DegreesToRadians(const float degrees);
 
     float getDirection(const sf::Vector2f& difference);
+
+    float getScaleFactor(float originalWidth, float originalHeight, float newWidth, float newHeight);
 }
 
 #endif // UTILS_HPP

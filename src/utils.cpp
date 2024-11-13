@@ -109,4 +109,16 @@ namespace utils
         }
         return direction;
     }
+
+    float getScaleFactor(float originalWidth, float originalHeight, float targetWidth, float targetHeight) {
+        float scaleFactorX = targetWidth / originalWidth;
+        float scaleFactorY = targetHeight / originalHeight;
+        float scaleFactor;
+        if (scaleFactorX * originalHeight >= targetHeight) {
+            scaleFactor = scaleFactorX;
+        } else {
+            scaleFactor = scaleFactorY;
+        }
+        return scaleFactor;
+    }
 }
