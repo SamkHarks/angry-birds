@@ -211,10 +211,30 @@ void LevelEditor::checkPosition(LevelObject& object) {
     } else if (newPosition.y > VIEW.getHeight() - 50 - halfHeight) {
         newPosition.y = VIEW.getHeight() - 50 - halfHeight;
     }
+
     if (newPosition != sprite.getPosition()) {
         sprite.setPosition(newPosition);
     }
+    // Check if the object intersects other objects
+    bool isIntersecting = object.isIntersecting;
+    object.isIntersecting = false;
+    for (auto& otherObject : objects_) {
+        if (&object == &otherObject) {
+            continue; // Skip the current object
+        }
+        if (utils::checkOBBCollision(sprite, otherObject.sprite)) {
+           object.isIntersecting = true;
+           break;
+        }
+       
+    }
+    // Change the color of the object if it intersects with another object or restore the color
+    if (isIntersecting != object.isIntersecting) {
+        updateItem(true);
+    }
+    
 }
+
 
 bool LevelEditor::isDragging() const {
     return isDragging_;
@@ -240,7 +260,12 @@ void LevelEditor::updateItem(bool isSelected) {
         }
         case Item::OBJECT: {
             int index = getObjectIndex();
-            objects_[index].sprite.setColor(isSelected ? LIME_GREEN : sf::Color::White);
+            LevelObject& object = objects_[index];
+            if (object.isIntersecting) {
+                object.sprite.setColor(sf::Color::Red);
+            } else {
+                object.sprite.setColor(isSelected ? LIME_GREEN : sf::Color::White);
+            }
             break;
         }
         default:

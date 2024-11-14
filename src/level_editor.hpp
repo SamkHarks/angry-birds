@@ -15,6 +15,7 @@ struct LevelObject {
     sf::Sprite sprite;
     ObjectData data;
     ShapeData shapeData;
+    bool isIntersecting = false;
 };
 
 /**

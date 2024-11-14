@@ -18,6 +18,7 @@
 #endif
 
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 struct View {
 
@@ -92,6 +93,14 @@ namespace utils
     float getDirection(const sf::Vector2f& difference);
 
     float getScaleFactor(float originalWidth, float originalHeight, float newWidth, float newHeight);
+
+    std::array<sf::Vector2f, 4> getSpriteCorners(const sf::Sprite& sprite);
+
+    float projectOntoAxis(const sf::Vector2f& point, const sf::Vector2f& axis);
+
+    std::pair<float, float> getMinMaxProjection(const std::array<sf::Vector2f, 4>& corners, const sf::Vector2f& axis);
+
+    bool checkOBBCollision(const sf::Sprite& spriteA, const sf::Sprite& spriteB);
 }
 
 #endif // UTILS_HPP
