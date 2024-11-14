@@ -189,6 +189,7 @@ void GameModel::handleMainMenuState() {
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
         switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
     } else if (selectedItem == 1) {
+        currentMenu_->updateMusic(sf::SoundSource::Status::Stopped);
         state_ = State::LEVEL_EDITOR;
     } else if (selectedItem == 2) {
         switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
