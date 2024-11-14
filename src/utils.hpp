@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <string>
+#include <array>
 #include <box2d/box2d.h>
 #include <iostream>
 #ifdef _WIN32
