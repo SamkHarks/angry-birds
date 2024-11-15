@@ -149,6 +149,7 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
         case sf::Keyboard::Key::W:
         case sf::Keyboard::Key::D:
         case sf::Keyboard::Key::S:
+        case sf::Keyboard::Key::Delete:
             if (state_ == State::LEVEL_EDITOR) {
                 levelEditor_.handleKeyPress(code);
             }
@@ -156,6 +157,12 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
         default:
             break;
     } 
+}
+
+void GameModel::handleKeyRelease() {
+    if (state_ == State::LEVEL_EDITOR) {
+        levelEditor_.handleKeyRelease();
+    }
 }
 
 // handle menu actions based on the current state and selected item

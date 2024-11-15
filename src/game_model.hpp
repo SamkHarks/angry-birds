@@ -37,6 +37,7 @@ class GameModel {
         Menu& getMenu(const Menu::Type& type);
         void setMenu(Menu::Type newMenuType);
         void handleKeyPress(const sf::Keyboard::Key& code);
+        void handleKeyRelease();
         World &getWorld();
         const World &getWorld() const;
         void launchBird();

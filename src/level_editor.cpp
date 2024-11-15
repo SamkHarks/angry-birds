@@ -10,7 +10,7 @@ const sf::Vector2f WALL_INITIAL_POSITION(150,150);
 sf::Vector2f WALL_INITIAL_SF_DIM(25, 150);
 b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(WALL_INITIAL_SF_DIM);
 
-LevelEditor::LevelEditor() {
+LevelEditor::LevelEditor() : cannon_() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
     // Helper lambda for file paths
     auto getFilePath = [&](int i) {
@@ -70,6 +70,8 @@ void LevelEditor::draw(sf::RenderWindow& window) const {
     for (const auto& object : objects_) {
         window.draw(object.sprite);
     }
+    // Draw cannon to help place objects in the level
+    cannon_.draw(window);
 }
 
 int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
@@ -109,34 +111,81 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition) {
 }
 
 void LevelEditor::handleKeyPress(const sf::Keyboard::Key& key) {
-    if (convertIndexToItem() == Item::OBJECT && objects_[getObjectIndex()].data.type == Object::Type::Wall) {
-        sf::Sprite &sprite = objects_[getObjectIndex()].sprite;
-        float angle = sprite.getRotation();
-        const sf::Vector2f scale = sprite.getScale();
-        switch (key) {
-            case sf::Keyboard::Key::R:
-                sprite.setRotation(angle + 1);
+    Item item = convertIndexToItem();
+    switch (item) {
+        case Item::RED_BIRD:
+        case Item::BLUE_BIRD:
+        case Item::GREEN_BIRD:
+            if (key == sf::Keyboard::Key::Delete) {
+                updateButtons(false);
+                removeBird(getBirdType(item));
+            }
+            break;
+        case Item::OBJECT: {
+            // Delete pig or wall
+            if (key == sf::Keyboard::Key::Delete) {
+                updateButtons(false);
+                objects_.erase(objects_.begin() + getObjectIndex());
                 break;
-            case sf::Keyboard::Key::T:
-                sprite.setRotation(angle - 1);
-                break;
-            case sf::Keyboard::Key::A:
-                sprite.setScale(scale.x - 0.1, scale.y);
-                break;
-            case sf::Keyboard::Key::D:
-                sprite.setScale(scale.x + 0.1, scale.y);
-                break;
-            case sf::Keyboard::Key::W:
-                sprite.setScale(scale.x, scale.y + 0.1);
-                break;
-            case sf::Keyboard::Key::S:
-                sprite.setScale(scale.x, scale.y - 0.1);
-                break;
+            }
+            // Handle rotation and scaling of wall
+            if (objects_[getObjectIndex()].data.type == Object::Type::Wall) {
+                handleWallButtonPress(key);
+            }
+            break;
         }
-        if (angle != sprite.getRotation() || scale != sprite.getScale()) {
-            updateObject();
-        }
+    }
+}
 
+void LevelEditor::handleWallButtonPress(const sf::Keyboard::Key& key) {
+    sf::Sprite &sprite = objects_[getObjectIndex()].sprite;
+    float angle = sprite.getRotation();
+    const sf::Vector2f scale = sprite.getScale();
+    switch (key) {
+        case sf::Keyboard::Key::R:
+            sprite.setRotation(angle + 1);
+            break;
+        case sf::Keyboard::Key::T:
+            sprite.setRotation(angle - 1);
+            break;
+        case sf::Keyboard::Key::A:
+            if (scale.x < 0.15) {
+                break; // Prevent the object from becoming too small
+            }
+            sprite.setScale(scale.x - 0.05, scale.y);
+            break;
+        case sf::Keyboard::Key::D:
+            if (scale.x > 2.2) {
+                break; // Prevent the object from becoming too large
+            }
+            sprite.setScale(scale.x + 0.05, scale.y);
+            break;
+        case sf::Keyboard::Key::W:
+            if (scale.y > 2.2) {
+                break; // Prevent the object from becoming too large
+            }
+            sprite.setScale(scale.x, scale.y + 0.05);
+            break;
+        case sf::Keyboard::Key::S:
+            if (scale.y < 0.15) {
+                break; // Prevent the object from becoming too small
+            }
+            sprite.setScale(scale.x, scale.y - 0.05);
+            break;
+        default:
+            break;
+    }
+    // Set is pressed to true if the object has been rotated or scaled and update level object after key release
+    if (angle != sprite.getRotation() || scale != sprite.getScale()) {
+        isPressed_ = true;
+    }
+}
+
+// Update object after key release if it has been rotated or scaled
+void LevelEditor::handleKeyRelease() {
+    if (isPressed_) {
+        isPressed_ = false;
+        updateObject();
     }
 }
 
@@ -155,6 +204,27 @@ void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
         updateItem(true);
     }
 }
+
+void LevelEditor::removeBird(const Bird::Type& type) {
+    for (auto it = birdList_.begin(); it != birdList_.end(); ++it) {
+        // Find first bird of the given type and remove it and break
+        if (*it == type) {
+            birdList_.erase(it);
+            break;
+        }
+    }
+}
+
+Bird::Type LevelEditor::getBirdType(const Item &item) const {
+    assert(item == Item::RED_BIRD || item == Item::BLUE_BIRD || item == Item::GREEN_BIRD);
+    if (item == Item::RED_BIRD) {
+        return Bird::Type::Red;
+    } else if (item == Item::BLUE_BIRD) {
+        return Bird::Type::Blue;
+    } else {
+        return Bird::Type::Green;
+    }
+} 
 
 void LevelEditor::updateObject() {
     LevelObject& object = objects_[getObjectIndex()];
@@ -319,7 +389,7 @@ void LevelEditor::createObject() {
 
     if (objectCreated) {
         objects_.push_back(object);
-        updateButtons();
+        updateButtons(true);
     }
 }
 
@@ -435,9 +505,18 @@ bool LevelEditor::createSprite(const ObjectData& data, sf::Sprite& sprite) const
     }
 }
 
-void LevelEditor::updateButtons() {
-    int count = buttons_[selectedItem_].count++;
-    buttons_[selectedItem_].text.setString(std::to_string(++count));
+void LevelEditor::updateButtons(bool isAdded) {
+    Item item = convertIndexToItem();
+    int buttonIndex = selectedItem_;
+    if (item == Item::OBJECT) {
+        Object::Type type = objects_[getObjectIndex()].data.type;
+        buttonIndex = type == Object::Type::Pig ? 3 : 4;
+    }
+    if (!isAdded && buttons_[buttonIndex].count == 0) {
+        return; // Prevent negative count
+    }
+    int count = isAdded ? 1 + buttons_[buttonIndex].count++ : -1 + buttons_[buttonIndex].count--;
+    buttons_[buttonIndex].text.setString(std::to_string(count));
 }
 const int LevelEditor::getObjectIndex() const {
     assert(selectedItem_ >= BUTTONS && selectedItem_ < BUTTONS + objects_.size());

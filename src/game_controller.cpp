@@ -18,6 +18,9 @@ void GameController::handleEvent(const sf::Event& event, const sf::Vector2f& mou
         case sf::Event::KeyPressed:
             handleKeyPress(event.key.code);
             break;
+        case sf::Event::KeyReleased:
+            handleKeyRelease(event.key.code);
+            break;
         case sf::Event::MouseButtonPressed:
             handleMousePress(event.mouseButton.button, mousePosition);
             break;
@@ -57,12 +60,28 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
         case sf::Keyboard::Key::D:
         case sf::Keyboard::Key::W:
         case sf::Keyboard::Key::S:
+        case sf::Keyboard::Key::Delete:
             model_.handleKeyPress(code);
             break;
         case sf::Keyboard::Key::P:
         case sf::Keyboard::Key::Escape:
             model_.handleKeyPress(code);
             model_.getMenu<Pause>(Menu::Type::PAUSE).updatePosition(view_);
+            break;
+        default:
+            break;
+    }
+}
+
+void GameController::handleKeyRelease(const sf::Keyboard::Key& code) {
+    switch (code) {
+        case sf::Keyboard::Key::R:
+        case sf::Keyboard::Key::T:
+        case sf::Keyboard::Key::A:
+        case sf::Keyboard::Key::D:
+        case sf::Keyboard::Key::W:
+        case sf::Keyboard::Key::S:
+            model_.handleKeyRelease();
             break;
         default:
             break;

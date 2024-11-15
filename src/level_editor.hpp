@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "level_loader.hpp"
+#include "cannon.hpp"
 
 
 /**
@@ -46,6 +47,7 @@ class LevelEditor {
         int getItemAtPosition(const sf::Vector2f& mousePosition) const;
         bool handleMouseClick(const sf::Vector2f& mousePosition);
         void handleKeyPress(const sf::Keyboard::Key& key);
+        void handleKeyRelease();
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleMouseRelease();
         const int getSelectedItem() const;
@@ -54,22 +56,27 @@ class LevelEditor {
         bool isDragging() const;
     private:
         LevelObject ground_;
+        Cannon cannon_;
         std::vector<LevelObject> objects_;
         std::vector<Bird::Type> birdList_;
         std::vector<Button> buttons_;
         int selectedItem_ = 0;
         bool isDragging_ = false;
+        bool isPressed_ = false;
         sf::Vector2f dragOffset_;
         void updateItem(bool isSelected);
         ObjectData createObjectData(Object::Type type) const;
         ShapeData createShapeData(Object::Type type) const;
         bool createLevelObject(const ObjectData&, const ShapeData&, LevelObject&) const;
         bool createSprite(const ObjectData& data, sf::Sprite&) const;
-        void updateButtons();
+        void updateButtons(bool isAdded);
         const int getObjectIndex() const;
         void updateObject();
         void checkPosition(LevelObject&);
         b2Vec2 getDimensions(const LevelObject&) const;
+        void handleWallButtonPress(const sf::Keyboard::Key& key);
+        void removeBird(const Bird::Type& type);
+        Bird::Type getBirdType(const Item& item) const;
 };
 
 #endif // LEVEL_EDITOR_HPP
