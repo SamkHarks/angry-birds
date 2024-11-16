@@ -1,31 +1,12 @@
 #include "cannon.hpp"
-#include "utils.hpp"
 #include <iomanip>
 #include <sstream>
-#include "resource_manager.hpp"
 
 Cannon::Cannon() {
-    if (!utils::loadFromFile(barrelTexture_, "/assets/images/cannon_barrel.png")) {
-        throw std::runtime_error("Failed to load texture file: /assets/images/cannon_barrel.png");
-    }
-    if (!utils::loadFromFile(wheelsTexture_, "/assets/images/cannon_wheel.png")) {
-        throw std::runtime_error("Failed to load texture file: /assets/images/cannon_wheel.png");
-    }
     ResourceManager& resourceManager = ResourceManager::getInstance();
     font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
-    barrelSprite_.setTexture(barrelTexture_);
-    int width = barrelSprite_.getTextureRect().width;
-    int height = barrelSprite_.getTextureRect().height;
-    barrelSprite_.setScale(2.f * SCALE / width, 2.f * SCALE / height);
-    barrelSprite_.setOrigin(width / 2.f, height / 2.f);
-    barrelSprite_.setPosition(utils::B2ToSfCoords(BIRD_INITIAL_POSITION));
 
-    wheelsSprite_.setTexture(wheelsTexture_);
-    width = wheelsSprite_.getTextureRect().width;
-    height = wheelsSprite_.getTextureRect().height;
-    wheelsSprite_.setScale(2.f * SCALE / width, 2.f * SCALE / height);
-    wheelsSprite_.setOrigin(width / 2.f, height / 2.f);
-    wheelsSprite_.setPosition(utils::B2ToSfCoords(b2Vec2(BIRD_INITIAL_POSITION.x, BIRD_INITIAL_POSITION.y - 0.2f)));
+    cannon_.init();
 
     powerText_.setFont(font_);
     powerText_.setString("Power: 0 %");   
@@ -41,18 +22,17 @@ Cannon::Cannon() {
 }
 
 void Cannon::handleResize() {
-    barrelSprite_.setPosition(utils::B2ToSfCoords(BIRD_INITIAL_POSITION));
-    wheelsSprite_.setPosition(utils::B2ToSfCoords(b2Vec2(BIRD_INITIAL_POSITION.x, BIRD_INITIAL_POSITION.y - 0.2f)));
+    cannon_.barrelSprite.setPosition(utils::B2ToSfCoords(BIRD_INITIAL_POSITION));
+    cannon_.wheelsSprite.setPosition(utils::B2ToSfCoords(b2Vec2(BIRD_INITIAL_POSITION.x, BIRD_INITIAL_POSITION.y - 0.2f)));
 }
 
 void Cannon::draw(sf::RenderWindow &window) const {
     window.draw(powerText_);
-    window.draw(barrelSprite_);
-    window.draw(wheelsSprite_);
+    cannon_.draw(window);
 }
 
 void Cannon::setAngle(float angle) {
-    barrelSprite_.setRotation(angle);
+    cannon_.barrelSprite.setRotation(angle);
 }
 
 void Cannon::setPower(float duration) {
@@ -77,7 +57,7 @@ void Cannon::launchBird(Bird* bird) {
     launchSound_.play();
     // Activate bird's body in b2World
     bird->getBody()->SetEnabled(true);
-    float direction = -barrelSprite_.getRotation();
+    float direction = -cannon_.barrelSprite.getRotation();
     float x = cos(utils::DegreesToRadians(direction)) * power_;
     float y = sin(utils::DegreesToRadians(direction)) * power_;
     bird->getBody()->ApplyLinearImpulseToCenter(b2Vec2(x, y), true);
