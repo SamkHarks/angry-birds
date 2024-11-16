@@ -45,14 +45,14 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (code) {
         case sf::Keyboard::Key::Left:
         case sf::Keyboard::Key::Right:
-            if (model_.isRunning()) {
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
+            if (model_.isRunning() || model_.isLevelEditor()) {
                 view_.updateCamera(code);
             } else {
                 model_.handleKeyPress(code);
             }
             break;
-        case sf::Keyboard::Key::Up:
-        case sf::Keyboard::Key::Down:
         case sf::Keyboard::Key::Enter:
         case sf::Keyboard::Key::R:
         case sf::Keyboard::Key::T:
