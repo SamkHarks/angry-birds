@@ -50,6 +50,7 @@ class GameModel {
         void switchMenu(Menu::Type type, State state);
         bool isRunning() const;
         bool isPaused() const;
+        bool isLevelEditor() const;
         bool updateView() const;
         void setUpdateView(bool updateView);
     private:

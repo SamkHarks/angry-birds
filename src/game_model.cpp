@@ -150,7 +150,7 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
         case sf::Keyboard::Key::D:
         case sf::Keyboard::Key::S:
         case sf::Keyboard::Key::Delete:
-            if (state_ == State::LEVEL_EDITOR) {
+            if (isLevelEditor()) {
                 levelEditor_.handleKeyPress(code);
             }
             break;
@@ -160,7 +160,7 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
 }
 
 void GameModel::handleKeyRelease() {
-    if (state_ == State::LEVEL_EDITOR) {
+    if (isLevelEditor()) {
         levelEditor_.handleKeyRelease();
     }
 }
@@ -390,7 +390,7 @@ void GameModel::handleTextEntered(const sf::Uint32& unicode) {
 void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
     if (isRunning()) {
         world_.handleMouseMove(mousePosition);
-    } else if (state_ == State::LEVEL_EDITOR) {
+    } else if (isLevelEditor()) {
         levelEditor_.handleMouseMove(mousePosition);
     } else {
         currentMenu_->handleMouseMove(mousePosition);
@@ -411,7 +411,7 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
     if (isRunning()) {
         world_.getCannon()->startLaunch();
-    } else if (state_ == State::LEVEL_EDITOR) {
+    } else if (isLevelEditor()) {
         levelEditor_.handleMouseClick(mousePosition);
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
@@ -424,7 +424,7 @@ void GameModel::handleMouseRelease(const sf::Mouse::Button& button, const sf::Ve
     if (button == sf::Mouse::Button::Left) {
         if (isRunning() && world_.getCannon()->isLaunching()) {
             launchBird();
-        } else if (state_ == State::LEVEL_EDITOR && levelEditor_.isDragging()) {
+        } else if (isLevelEditor()) {
             levelEditor_.handleMouseRelease();
         }
     }
@@ -437,7 +437,7 @@ void GameModel::draw(sf::RenderWindow& window) const {
     } else if (isPaused()) {
         world_.draw(window);
         currentMenu_->draw(window);
-    } else if (state_ == State::LEVEL_EDITOR) {
+    } else if (isLevelEditor()) {
         levelEditor_.draw(window);
     } else {
         currentMenu_->draw(window);
@@ -458,4 +458,8 @@ bool GameModel::updateView() const {
 
 void GameModel::setUpdateView(bool updateView) {
     updateView_ = updateView;
+}
+
+bool GameModel::isLevelEditor() const {
+    return state_ == State::LEVEL_EDITOR;
 }
