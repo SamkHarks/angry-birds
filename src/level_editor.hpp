@@ -56,7 +56,7 @@ class LevelEditor {
         bool isDragging() const;
     private:
         LevelObject ground_;
-        Cannon cannon_;
+        CannonSprites cannon_;
         std::vector<LevelObject> objects_;
         std::vector<Bird::Type> birdList_;
         std::vector<Button> buttons_;

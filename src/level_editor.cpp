@@ -10,7 +10,7 @@ const sf::Vector2f WALL_INITIAL_POSITION(150,150);
 sf::Vector2f WALL_INITIAL_SF_DIM(25, 150);
 b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(WALL_INITIAL_SF_DIM);
 
-LevelEditor::LevelEditor() : cannon_() {
+LevelEditor::LevelEditor() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
     // Helper lambda for file paths
     auto getFilePath = [&](int i) {
@@ -55,6 +55,9 @@ LevelEditor::LevelEditor() : cannon_() {
     if (!createLevelObject(data, shapeData, ground_)) {
         throw std::runtime_error("Failed to create ground object");
     }
+
+    // Add cannon
+    cannon_.init();
 }
 
 
@@ -226,15 +229,19 @@ Bird::Type LevelEditor::getBirdType(const Item &item) const {
     }
 } 
 
+// Update LevelObject's data and shapeData after modifying the object's sprite
 void LevelEditor::updateObject() {
     LevelObject& object = objects_[getObjectIndex()];
     checkPosition(object);
-    b2Vec2 dimensions = getDimensions(object);
     auto position = utils::SfToB2Coords(object.sprite.getPosition());
-    auto angle = utils::DegreesToRadians(object.sprite.getRotation());
     if (object.data.position != position) {
         object.data.position = position;
     }
+    if (object.data.type == Object::Type::Pig) {
+        return; // Pigs cannot be rotated or scaled in the level editor
+    }
+    b2Vec2 dimensions = getDimensions(object);
+    auto angle = utils::DegreesToRadians(object.sprite.getRotation());
     if (object.data.angle != angle) {
         object.data.angle = angle;
     }
@@ -266,6 +273,7 @@ void LevelEditor::checkPosition(LevelObject& object) {
     auto bounds = sprite.getGlobalBounds();
     auto halfWidth = bounds.width / 2;
     auto halfHeight = bounds.height / 2;
+    auto worldTop = -VIEW.getHeight() + 200;
     // Check if the object intersects 0
     if (newPosition.x < halfWidth) {
         newPosition.x = halfWidth;
@@ -275,8 +283,8 @@ void LevelEditor::checkPosition(LevelObject& object) {
     // Check if the object intersects the top of the screen
     } 
     
-    if (newPosition.y < halfHeight) {
-        newPosition.y = halfHeight;
+    if (newPosition.y < worldTop + halfHeight) {
+        newPosition.y = worldTop + halfHeight;
     // Check if the object intersects the ground
     } else if (newPosition.y > VIEW.getHeight() - 50 - halfHeight) {
         newPosition.y = VIEW.getHeight() - 50 - halfHeight;
