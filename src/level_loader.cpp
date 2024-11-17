@@ -430,7 +430,7 @@ void LevelLoader::loadLevel(const std::string& fileName) {
 LevelCreator::LevelCreator() {}
 
 void LevelCreator::createLevel(const std::vector<Bird::Type>& birdList, const std::vector<LevelObject>& objects) const {
-    int levelCount = countFilesInDirectory();
+    int levelCount = utils::countFilesInDirectory();
     std::string fileName = "level" + std::to_string(levelCount + 1) + ".json";
     std::string path = utils::getExecutablePath() + "/assets/levels/";
     std::ofstream file(path + fileName);
@@ -500,4 +500,14 @@ json LevelCreator::createObjects(const std::vector<LevelObject>& objects) const 
         objectsArray.push_back(objectJson);
     }
     return objectsArray;
+}
+
+void LevelCreator::captureScreenShot(sf::RenderWindow& window) const {
+    sf::Texture texture;
+    texture.create(window.getSize().x, window.getSize().y);
+    texture.update(window);
+    sf::Image image = texture.copyToImage();
+    std::string path = utils::getExecutablePath() + "/assets/screenshots/";
+    std::string fileName = "level" + std::to_string(utils::countFilesInDirectory() + 1) + ".png";
+    image.saveToFile(path + fileName);
 }

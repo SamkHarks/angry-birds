@@ -557,3 +557,15 @@ void LevelEditor::saveLevel() const {
     levelCreator_.createLevel(birdList_, levelObjects);
 
 }
+
+void LevelEditor::captureLevelImage(sf::RenderWindow& window) const {
+    if (birdList_.empty() || objects_.empty()) {
+        return ; // No birds in the level
+    }
+    for (const auto& object : objects_) {
+        if (object.isIntersecting) {
+            return; // Wall is intersecting with another object
+        }
+    }
+    levelCreator_.captureScreenShot(window);
+}

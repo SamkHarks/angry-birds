@@ -78,21 +78,8 @@ class LevelCreator {
     public:
         LevelCreator();
         void createLevel(const std::vector<Bird::Type>& birdList, const std::vector<LevelObject>& objects) const;
+        void captureScreenShot(sf::RenderWindow& window) const;
     private:
-        int countFilesInDirectory() const {
-            // Get the path of the folder containing the levels
-            std::string folderPath = utils::getExecutablePath() + "/assets/levels/";
-            int fileCount = 0;
-
-            // Iterate through the directory and count the regular files, which are level<i>.json, where i = 1,2,3,...
-            for (const auto& entry : fs::directory_iterator(folderPath)) {
-                if (entry.is_regular_file()) {
-                    fileCount++;
-                }
-            }
-
-            return fileCount;
-        }
         json createBirdObject() const;
         json createBirds(const std::vector<Bird::Type>& birdList) const;
         json createObjects(const std::vector<LevelObject>& objects) const;

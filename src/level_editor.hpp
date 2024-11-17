@@ -42,6 +42,7 @@ class LevelEditor {
         Item convertIndexToItem() const;
         bool isDragging() const;
         void saveLevel() const;
+        void captureLevelImage(sf::RenderWindow& window) const;
     private:
         LevelCreator levelCreator_;
         LevelObject ground_;
