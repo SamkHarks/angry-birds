@@ -6,6 +6,9 @@
 #include <fstream>
 #include "score.hpp"
 #include <nlohmann/json.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using json = nlohmann::json;
 
@@ -41,6 +44,19 @@ struct Shapes {
     b2PolygonShape polygon;
 };
 
+/**
+ * @brief Level objects used for creating level
+ * 
+ * @param sprite The sprite representing the visual appearance of the object
+ * @param data The data representing the object's properties and used for saving to the level file
+ */
+struct LevelObject {
+    sf::Sprite sprite;
+    ObjectData data;
+    ShapeData shapeData;
+    bool isIntersecting = false;
+};
+
 class LevelLoader {
     public:
         LevelLoader(World& level);
@@ -52,10 +68,34 @@ class LevelLoader {
         std::vector<Bird::Type> readBirdList(json levelJson); 
         b2Body* createBody(const ObjectData& data);
         void createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, Object::Type& type, Shapes &shapes);
-        void createObject(Object::Type objType, b2Body* body, b2FixtureDef& fixtureDef);
+        void createObject(Object::Type objType, b2Body* body, b2FixtureDef& fixtureDef, const ShapeData& shapeData);
         void createBird(Bird::Type birdType, b2Body* body, b2FixtureDef& fixtureDef);
         void setLevelName(json levelJson);
         void loadSfmlObjects(std::vector<Bird::Type>& birdList);
+};
+
+class LevelCreator {
+    public:
+        LevelCreator();
+        void createLevel(const std::vector<Bird::Type>& birdList, const std::vector<LevelObject>& objects) const;
+    private:
+        int countFilesInDirectory() const {
+            // Get the path of the folder containing the levels
+            std::string folderPath = utils::getExecutablePath() + "/assets/levels/";
+            int fileCount = 0;
+
+            // Iterate through the directory and count the regular files, which are level<i>.json, where i = 1,2,3,...
+            for (const auto& entry : fs::directory_iterator(folderPath)) {
+                if (entry.is_regular_file()) {
+                    fileCount++;
+                }
+            }
+
+            return fileCount;
+        }
+        json createBirdObject() const;
+        json createBirds(const std::vector<Bird::Type>& birdList) const;
+        json createObjects(const std::vector<LevelObject>& objects) const;
 };
 
 #endif
