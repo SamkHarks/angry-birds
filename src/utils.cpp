@@ -200,4 +200,19 @@ namespace utils
         // If we didn't find a separating axis, then the OBBs must be colliding
         return true;
     }
+
+    int countFilesInDirectory() {
+        // Get the path of the folder containing the levels
+        std::string folderPath = utils::getExecutablePath() + "/assets/levels/";
+        int fileCount = 0;
+
+        // Iterate through the directory and count the regular files, which are level<i>.json, where i = 1,2,3,...
+        for (const auto& entry : fs::directory_iterator(folderPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".json" && entry.path().filename().string().find("level") != std::string::npos) {
+                fileCount++;
+            }
+        }
+
+        return fileCount;
+    }
 }

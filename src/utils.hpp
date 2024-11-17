@@ -20,6 +20,9 @@
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 struct View {
 
@@ -102,6 +105,8 @@ namespace utils
     std::pair<float, float> getMinMaxProjection(const std::array<sf::Vector2f, 4>& corners, const sf::Vector2f& axis);
 
     bool checkOBBCollision(const sf::Sprite& spriteA, const sf::Sprite& spriteB);
+
+    int countFilesInDirectory();
 }
 
 #endif // UTILS_HPP
