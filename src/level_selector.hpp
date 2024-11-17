@@ -34,6 +34,7 @@ class LevelSelector {
         void updateLevel();
         void setPlayer(const std::shared_ptr<Player>& player);
         void handleKeyPress(const sf::Keyboard::Key& code);
+        void addNewLevel();
     private:
         void updateItem(bool isSelected);
         std::weak_ptr<Player> player_; // User selector is the owner
@@ -59,6 +60,7 @@ class LevelSelector {
         void setSignTexts();
         void drawStars(sf::RenderWindow& window) const;
         bool isButtonDisabled(int index) const;
+        void loadLevels();
 };
 
 #endif // LEVEL_SELECTOR_HPP
