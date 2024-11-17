@@ -12,7 +12,7 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - **JSON (nlohmann/json)** for data formatting when storing and reading data
 - Main menu 
 - Pause Menu
-- Level editor - WIP Level Editor with a user-friendly UI, featuring built-in collision detection to prevent overlapping objects. The editor automatically generates a preview screenshot for the level, which is used in the level selection menu. It seamlessly integrates new levels into the game, eliminating the need to manually define object positions in files, reducing errors and speeding up level creation.
+- Level editor - WIP with a user-friendly UI, featuring built-in collision detection to prevent overlapping objects. The editor automatically generates a preview screenshot for the level, which is used in the level selection menu. It seamlessly integrates new levels into the game, eliminating the need to manually define object positions in files, reducing errors and speeding up level creation.
 - Settings - WIP (currently only back button)
 - Level selector (Choose level for current user and see how many stars user has for each level)
 - User selector (Create new users & load existing users)
