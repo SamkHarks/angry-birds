@@ -53,6 +53,7 @@ class GameModel {
         bool isLevelEditor() const;
         bool updateView() const;
         void setUpdateView(bool updateView);
+        LevelEditor& getLevelEditor();
     private:
         State state_;
         std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;

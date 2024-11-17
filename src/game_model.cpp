@@ -131,7 +131,12 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
             }
             break;
         case sf::Keyboard::Key::Enter:
-            setState();
+            // TODO: Remove Enter later from editor and add a save button to the UI instead
+            if (isLevelEditor()) {
+                levelEditor_.handleKeyPress(code);
+            } else {
+                setState();
+            }
             break;
         case sf::Keyboard::Key::P:
         case sf::Keyboard::Key::Escape:
@@ -256,6 +261,7 @@ void GameModel::handleGameSelectorScreenState() {
             break;
         }
         case GameSelector::Item::CONTINUE:
+            gameSelector.getLevelSelector().addNewLevel();
             gameSelector.getLevelSelector().updateLevel();
             gameSelector.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
             break;
@@ -462,4 +468,9 @@ void GameModel::setUpdateView(bool updateView) {
 
 bool GameModel::isLevelEditor() const {
     return state_ == State::LEVEL_EDITOR;
+}
+
+
+LevelEditor& GameModel::getLevelEditor() {
+    return levelEditor_;
 }
