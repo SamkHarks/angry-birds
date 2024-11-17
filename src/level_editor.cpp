@@ -133,7 +133,7 @@ void LevelEditor::handleKeyPress(const sf::Keyboard::Key& key) {
             // Delete pig or wall
             if (key == sf::Keyboard::Key::Delete) {
                 updateButtons(false);
-                objects_.erase(objects_.begin() + getObjectIndex());
+                removeObject();
                 break;
             }
             // Handle rotation and scaling of wall
@@ -223,6 +223,19 @@ void LevelEditor::removeBird(const Bird::Type& type) {
     }
 }
 
+void LevelEditor::removeObject() {
+    auto index = getObjectIndex();
+    auto id = objects_[index].id;
+    bool isChanged = false;
+    for (auto &object : objects_) {
+        isChanged = object.intersectingObjects.erase(id) || isChanged;
+    }
+    objects_.erase(objects_.begin() + index);
+    if (isChanged) {
+        updateIntersectingColors();
+    }
+}
+
 Bird::Type LevelEditor::getBirdType(const Item &item) const {
     assert(item == Item::RED_BIRD || item == Item::BLUE_BIRD || item == Item::GREEN_BIRD);
     if (item == Item::RED_BIRD) {
@@ -299,21 +312,24 @@ void LevelEditor::checkPosition(LevelObject& object) {
         sprite.setPosition(newPosition);
     }
     // Check if the object intersects other objects
-    bool isIntersecting = object.isIntersecting;
-    object.isIntersecting = false;
+    bool isChanged = false;
     for (auto& otherObject : objects_) {
         if (&object == &otherObject) {
             continue; // Skip the current object
         }
         if (utils::checkOBBCollision(sprite, otherObject.sprite)) {
-           object.isIntersecting = true;
-           break;
+            auto first = object.intersectingObjects.insert(otherObject.id).second;
+            auto second = otherObject.intersectingObjects.insert(object.id).second;
+            isChanged = isChanged || first || second;
+        } else {
+            auto first = object.intersectingObjects.erase(otherObject.id);
+            auto second = otherObject.intersectingObjects.erase(object.id);
+            isChanged = isChanged || first || second;
         }
-       
     }
-    // Change the color of the object if it intersects with another object or restore the color
-    if (isIntersecting != object.isIntersecting) {
-        updateItem(true);
+    // Update colors if the intersecting status has changed
+    if (isChanged) {
+        updateIntersectingColors();
     }
     
 }
@@ -344,7 +360,7 @@ void LevelEditor::updateItem(bool isSelected) {
         case Item::OBJECT: {
             int index = getObjectIndex();
             LevelObject& object = objects_[index];
-            if (object.isIntersecting) {
+            if (object.isIntersecting()) {
                 object.sprite.setColor(sf::Color::Red);
             } else {
                 object.sprite.setColor(isSelected ? LIME_GREEN : sf::Color::White);
@@ -355,6 +371,19 @@ void LevelEditor::updateItem(bool isSelected) {
             break;
     }
 
+}
+
+void LevelEditor::updateIntersectingColors() {
+    for (int i = 0; i < objects_.size(); i++) {
+        LevelObject& object = objects_[i];
+        if (object.isIntersecting()) {
+            object.sprite.setColor(sf::Color::Red);
+        } else if (i + BUTTONS == selectedItem_) {
+            object.sprite.setColor(LIME_GREEN);
+        } else {
+            object.sprite.setColor(sf::Color::White);
+        }
+    }
 }
 
 LevelEditor::Item LevelEditor::convertIndexToItem() const {
@@ -469,12 +498,13 @@ ShapeData LevelEditor::createShapeData(Object::Type type) const {
     return data;
 }
 
-bool LevelEditor::createLevelObject(const ObjectData& data, const ShapeData& shapeData, LevelObject& object) const {
+bool LevelEditor::createLevelObject(const ObjectData& data, const ShapeData& shapeData, LevelObject& object) {
     sf::Sprite sprite;
     if (createSprite(data, sprite)) {
         object.sprite = sprite;
         object.data = data;
         object.shapeData = shapeData;
+        object.id = NEXT_ID++;
         return true;
     }
     return false;
@@ -544,8 +574,8 @@ void LevelEditor::saveLevel() const {
         return ; // No birds in the level
     }
     for (const auto& object : objects_) {
-        if (object.isIntersecting) {
-            return; // Wall is intersecting with another object
+        if (object.isIntersecting()) {
+            return; // Wall or pig is intersecting with another object
         }
     }
     std::vector<LevelObject> levelObjects;
@@ -563,8 +593,8 @@ void LevelEditor::captureLevelImage(sf::RenderWindow& window) const {
         return ; // No birds in the level
     }
     for (const auto& object : objects_) {
-        if (object.isIntersecting) {
-            return; // Wall is intersecting with another object
+        if (object.isIntersecting()) {
+            return; // Wall or pig is intersecting with another object
         }
     }
     levelCreator_.captureScreenShot(window);

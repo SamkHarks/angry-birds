@@ -55,9 +55,10 @@ class LevelEditor {
         bool isPressed_ = false;
         sf::Vector2f dragOffset_;
         void updateItem(bool isSelected);
+        void updateIntersectingColors();
         ObjectData createObjectData(Object::Type type) const;
         ShapeData createShapeData(Object::Type type) const;
-        bool createLevelObject(const ObjectData&, const ShapeData&, LevelObject&) const;
+        bool createLevelObject(const ObjectData&, const ShapeData&, LevelObject&);
         bool createSprite(const ObjectData& data, sf::Sprite&) const;
         void updateButtons(bool isAdded);
         const int getObjectIndex() const;
@@ -66,7 +67,9 @@ class LevelEditor {
         b2Vec2 getDimensions(const LevelObject&) const;
         void handleWallButtonPress(const sf::Keyboard::Key& key);
         void removeBird(const Bird::Type& type);
+        void removeObject();
         Bird::Type getBirdType(const Item& item) const;
+        int NEXT_ID = 0; // Next object ID
 };
 
 #endif // LEVEL_EDITOR_HPP

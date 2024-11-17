@@ -7,6 +7,7 @@
 #include "score.hpp"
 #include <nlohmann/json.hpp>
 #include <filesystem>
+#include <unordered_set>
 
 namespace fs = std::filesystem;
 
@@ -49,12 +50,19 @@ struct Shapes {
  * 
  * @param sprite The sprite representing the visual appearance of the object
  * @param data The data representing the object's properties and used for saving to the level file
+ * @param shapeData The shape data representing the object's shape
+ * @param isIntersecting Whether the object is intersecting with another object
+ * @param intersectingObjects The list of objects that the object is intersecting with
  */
 struct LevelObject {
+    int id;
     sf::Sprite sprite;
     ObjectData data;
     ShapeData shapeData;
-    bool isIntersecting = false;
+    bool isIntersecting() const {
+        return !intersectingObjects.empty();
+    }
+    std::unordered_set<int> intersectingObjects = {};
 };
 
 class LevelLoader {
