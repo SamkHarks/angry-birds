@@ -7,19 +7,6 @@
 
 
 /**
- * @brief Level objects used for creating level
- * 
- * @param sprite The sprite representing the visual appearance of the object
- * @param data The data representing the object's properties and used for saving to the level file
- */
-struct LevelObject {
-    sf::Sprite sprite;
-    ObjectData data;
-    ShapeData shapeData;
-    bool isIntersecting = false;
-};
-
-/**
  * @brief Initializes a Button struct with the given sprite and text.
  * 
  * @param shape The shape to be used for the button.
@@ -54,7 +41,9 @@ class LevelEditor {
         void createObject();
         Item convertIndexToItem() const;
         bool isDragging() const;
+        void saveLevel() const;
     private:
+        LevelCreator levelCreator_;
         LevelObject ground_;
         CannonSprites cannon_;
         std::vector<LevelObject> objects_;

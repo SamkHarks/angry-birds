@@ -10,7 +10,7 @@ const sf::Vector2f WALL_INITIAL_POSITION(150,150);
 sf::Vector2f WALL_INITIAL_SF_DIM(25, 150);
 b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(WALL_INITIAL_SF_DIM);
 
-LevelEditor::LevelEditor() {
+LevelEditor::LevelEditor() : levelCreator_() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
     // Helper lambda for file paths
     auto getFilePath = [&](int i) {
@@ -114,6 +114,11 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition) {
 }
 
 void LevelEditor::handleKeyPress(const sf::Keyboard::Key& key) {
+    // TODO: Remove Enter later and add a save button to the UI instead
+    if (key == sf::Keyboard::Key::Enter) {
+        saveLevel();
+        return;
+    }
     Item item = convertIndexToItem();
     switch (item) {
         case Item::RED_BIRD:
@@ -243,7 +248,7 @@ void LevelEditor::updateObject() {
     b2Vec2 dimensions = getDimensions(object);
     auto angle = utils::DegreesToRadians(object.sprite.getRotation());
     if (object.data.angle != angle) {
-        object.data.angle = angle;
+        object.data.angle = -angle;
     }
     if (object.shapeData.dimensions != dimensions) {
         object.shapeData.dimensions = dimensions;
@@ -372,18 +377,19 @@ LevelEditor::Item LevelEditor::convertIndexToItem() const {
 void LevelEditor::createObject() {
     LevelObject object;
     bool objectCreated = false;
+    bool birdCreated = false;
     switch (convertIndexToItem()) {
         case Item::RED_BIRD:
             birdList_.push_back(Bird::Type::Red);
-            objectCreated = true;
+            birdCreated = true;
             break;
         case Item::GREEN_BIRD:
             birdList_.push_back(Bird::Type::Green);
-            objectCreated = true;
+            birdCreated = true;
             break;
         case Item::BLUE_BIRD:
             birdList_.push_back(Bird::Type::Blue);
-            objectCreated = true;
+            birdCreated = true;
             break;
         case Item::PIG:
             objectCreated = createLevelObject(createObjectData(Object::Type::Pig), createShapeData(Object::Type::Pig), object);
@@ -397,6 +403,8 @@ void LevelEditor::createObject() {
 
     if (objectCreated) {
         objects_.push_back(object);
+        updateButtons(true);
+    } else if (birdCreated) {
         updateButtons(true);
     }
 }
@@ -529,4 +537,23 @@ void LevelEditor::updateButtons(bool isAdded) {
 const int LevelEditor::getObjectIndex() const {
     assert(selectedItem_ >= BUTTONS && selectedItem_ < BUTTONS + objects_.size());
     return selectedItem_ - BUTTONS;
+}
+
+void LevelEditor::saveLevel() const {
+    if (birdList_.empty() || objects_.empty()) {
+        return ; // No birds in the level
+    }
+    for (const auto& object : objects_) {
+        if (object.isIntersecting) {
+            return; // Wall is intersecting with another object
+        }
+    }
+    std::vector<LevelObject> levelObjects;
+    levelObjects.push_back(ground_);
+    for (const auto& object : objects_) {
+        levelObjects.push_back(object);
+    }
+    
+    levelCreator_.createLevel(birdList_, levelObjects);
+
 }
