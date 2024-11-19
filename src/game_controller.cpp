@@ -54,14 +54,6 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
             }
             break;
         case sf::Keyboard::Key::Enter:
-            // TODO: Remove Enter later from editor and add a save button to the UI instead
-            if (model_.isLevelEditor()) {
-                model_.getLevelEditor().captureLevelImage(view_);
-                model_.handleKeyPress(code);
-            } else {
-                model_.handleKeyPress(code);
-            }
-            break;
         case sf::Keyboard::Key::R:
         case sf::Keyboard::Key::T:
         case sf::Keyboard::Key::A:
@@ -99,7 +91,7 @@ void GameController::handleKeyRelease(const sf::Keyboard::Key& code) {
 void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition) {
     switch (mouseButton) {
         case sf::Mouse::Button::Left:
-            model_.handleMouseLeftClick(mousePosition);
+            model_.handleMouseLeftClick(mousePosition, view_);
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions

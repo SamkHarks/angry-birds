@@ -86,7 +86,7 @@ class LevelCreator {
     public:
         LevelCreator();
         void createLevel(const std::vector<Bird::Type>& birdList, const std::vector<LevelObject>& objects) const;
-        void captureScreenShot(sf::RenderWindow& window) const;
+        void captureScreenShot(const sf::RenderWindow& window) const;
     private:
         json createBirdObject() const;
         json createBirds(const std::vector<Bird::Type>& birdList) const;

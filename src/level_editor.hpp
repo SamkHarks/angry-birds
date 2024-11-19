@@ -12,11 +12,34 @@
  * 
  * @param shape The shape to be used for the button.
  * @param text The text to be displayed on the button.
+ * @param count the count of items created with the button.
  */
 struct Button {
     sf::RectangleShape shape;
     sf::Text text;
     int count = 0;
+};
+
+/**
+ * @brief A Icon button represented only by a shape.
+ * 
+ * This button does not contain text, making it useful for icons or 
+ * purely graphical buttons in the editor, e,g. save button.
+ */
+struct IconButton {
+    sf::RectangleShape shape;
+};
+
+/**
+ * @brief A container that holds groups of different types of buttons.
+ * 
+ * The `ButtonGroup` can hold both standard `Button` types (with text)
+ * and `IconButton` types (without text). This can be used for organizing 
+ * various UI elements in the level editor.
+ */
+struct ButtonGroup {
+    std::vector<Button> editorButtons;
+    std::vector<IconButton> iconButtons;
 };
 
 struct Notifications {
@@ -145,18 +168,21 @@ struct Notifications {
 class LevelEditor {
     public:
         enum class Item {
+            // Buttons
             RED_BIRD,
             BLUE_BIRD,
             GREEN_BIRD,
             PIG,
             WALL,
+            SAVE,
+            // Objects
             OBJECT,
             UNDEFINED
         };
         LevelEditor();
         void draw(sf::RenderWindow& window) const;
         int getItemAtPosition(const sf::Vector2f& mousePosition) const;
-        bool handleMouseClick(const sf::Vector2f& mousePosition);
+        bool handleMouseClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window);
         void handleKeyPress(const sf::Keyboard::Key& key);
         void handleKeyRelease();
         void handleMouseMove(const sf::Vector2f& mousePosition);
@@ -165,8 +191,8 @@ class LevelEditor {
         void createObject();
         Item convertIndexToItem() const;
         bool isDragging() const;
-        void saveLevel();
-        void captureLevelImage(sf::RenderWindow& window) const;
+        void saveLevel(const sf::RenderWindow& window);
+        void captureLevelImage(const sf::RenderWindow& window);
         void update();
     private:
         Notifications notifications_;
@@ -175,7 +201,7 @@ class LevelEditor {
         CannonSprites cannon_;
         std::vector<LevelObject> objects_;
         std::vector<Bird::Type> birdList_;
-        std::vector<Button> buttons_;
+        ButtonGroup buttonGroups_;
         int selectedItem_ = 0;
         bool isDragging_ = false;
         bool isPressed_ = false;
@@ -188,6 +214,7 @@ class LevelEditor {
         bool createSprite(const ObjectData& data, sf::Sprite&) const;
         void updateButtons(bool isAdded);
         const int getObjectIndex() const;
+        const int getIconButtonIndex() const;
         void updateObject();
         void checkPosition(LevelObject&);
         b2Vec2 getDimensions(const LevelObject&) const;

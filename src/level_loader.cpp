@@ -502,12 +502,12 @@ json LevelCreator::createObjects(const std::vector<LevelObject>& objects) const 
     return objectsArray;
 }
 
-void LevelCreator::captureScreenShot(sf::RenderWindow& window) const {
+void LevelCreator::captureScreenShot(const sf::RenderWindow& window) const {
     sf::Texture texture;
     texture.create(window.getSize().x, window.getSize().y);
     texture.update(window);
     sf::Image image = texture.copyToImage();
     std::string path = utils::getExecutablePath() + "/assets/screenshots/";
-    std::string fileName = "level" + std::to_string(utils::countFilesInDirectory() + 1) + ".png";
+    std::string fileName = "level" + std::to_string(utils::countFilesInDirectory()) + ".png";
     image.saveToFile(path + fileName);
 }

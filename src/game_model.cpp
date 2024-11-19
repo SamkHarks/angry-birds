@@ -133,12 +133,7 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
             }
             break;
         case sf::Keyboard::Key::Enter:
-            // TODO: Remove Enter later from editor and add a save button to the UI instead
-            if (isLevelEditor()) {
-                levelEditor_.handleKeyPress(code);
-            } else {
                 setState();
-            }
             break;
         case sf::Keyboard::Key::P:
         case sf::Keyboard::Key::Escape:
@@ -416,11 +411,11 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
     world_.handleResize();
 }
 
-void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
+void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window) {
     if (isRunning()) {
         world_.getCannon()->startLaunch();
     } else if (isLevelEditor()) {
-        levelEditor_.handleMouseClick(mousePosition);
+        levelEditor_.handleMouseClick(mousePosition, window);
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
             setState();

@@ -44,7 +44,7 @@ class GameModel {
         void handleTextEntered(const sf::Uint32& unicode);
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleResize(const sf::RenderWindow& window);
-        void handleMouseLeftClick(const sf::Vector2f& mousePosition);
+        void handleMouseLeftClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window);
         void handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition);
         void draw(sf::RenderWindow& window) const;
         void switchMenu(Menu::Type type, State state);

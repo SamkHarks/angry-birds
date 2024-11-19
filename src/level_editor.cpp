@@ -1,7 +1,9 @@
 #include "level_editor.hpp"
 #include "utils.hpp"
 
-const int BUTTONS = 5;
+const int EDITOR_BUTTONS = 5;
+const int ICON_BUTTONS = 1;
+const int BUTTONS = EDITOR_BUTTONS + ICON_BUTTONS;
 const int SHAPE_SIZE = 53;
 const float PIG_RADIUS = 0.3;
 const sf::Vector2f PIG_INITIAL_POSITION(50,50);
@@ -25,29 +27,51 @@ LevelEditor::LevelEditor() : levelCreator_() {
                 return "/assets/images/pig.png";
             case 4:
                 return "/assets/images/box.png";
+            case 5:
+                return "/assets/images/save_button1.png";
             default:
                 return "";
         }
     };
     int offset = VIEW.getCenter().x - 200;
     sf::Font &font = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+    int characterSize = 40;
+    int shapeY = 15;
+    int y = 60;
+    std::vector<Button> editorButtons;
+    std::vector<IconButton> iconButtons;
     for (int i = 0; i < BUTTONS; ++i) {
         sf::RectangleShape shape;
         shape.setTexture(&resourceManager.getTexture(getFilePath(i)));
+        // Save button
+        if (i == 5) {;
+            shape.setSize(sf::Vector2f(SHAPE_SIZE*1.5, SHAPE_SIZE * 1.5));
+            shape.setPosition(20, shapeY);
+            IconButton saveButton = {shape};
+            iconButtons.push_back(saveButton);
+            break;
+        }
+        // Create editor buttons
+        std::string buttonText = "0";
+        int x = offset + (i < 3 ? 20 : 15);
         shape.setSize(sf::Vector2f(SHAPE_SIZE, SHAPE_SIZE));
-        shape.setPosition(offset, 15);
+        shape.setPosition(offset, shapeY);
         sf::Text text;
         text.setFont(font);
-        text.setCharacterSize(40);
+        text.setCharacterSize(characterSize);
         text.setFillColor(sf::Color::White);
         text.setOutlineColor(sf::Color::Black);
         text.setOutlineThickness(2);
-        text.setString(std::to_string(0));
-        text.setPosition(offset + (i < 3 ? 20 : 15), 60);
+        text.setString(buttonText);
+        text.setPosition(x,y);
         offset += 80;
         Button button = {shape,text};
-        buttons_.push_back(button);
+        editorButtons.push_back(button);
     }
+
+    // Add buttons to buttonGroups
+    buttonGroups_.editorButtons = editorButtons;
+    buttonGroups_.iconButtons = iconButtons;
 
     // Add ground
     ObjectData data = createObjectData(Object::Type::Ground);
@@ -66,10 +90,14 @@ LevelEditor::LevelEditor() : levelCreator_() {
 void LevelEditor::draw(sf::RenderWindow& window) const {
     // Draw ground
     window.draw(ground_.sprite);
-    // Draw buttons
-    for (const auto& button : buttons_) {
+    // Draw editor buttons
+    for (const auto& button : buttonGroups_.editorButtons) {
         window.draw(button.shape);
         window.draw(button.text);
+    }
+    // Draw icon buttons
+    for (const auto& button : buttonGroups_.iconButtons) {
+        window.draw(button.shape);
     }
     // Draw objects
     for (const auto& object : objects_) {
@@ -89,11 +117,6 @@ void LevelEditor::update() {
 }
 
 int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
-    for (int i = 0; i < BUTTONS; i++) {
-        if (buttons_[i].shape.getGlobalBounds().contains(mousePosition) || buttons_[i].text.getGlobalBounds().contains(mousePosition)) {
-            return i;
-        }
-    }
     for (int i = 0; i < objects_.size(); i++) {
         // Get the sprite's inverse transform (to convert global coordinates to local)
         sf::Transform inverseTransform = objects_[i].sprite.getInverseTransform();
@@ -106,16 +129,31 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
             return BUTTONS + i;
         }
     }
+    const auto& editorButtons = buttonGroups_.editorButtons;
+    for (int i = 0; i < EDITOR_BUTTONS; i++) {
+        if (editorButtons[i].shape.getGlobalBounds().contains(mousePosition) || editorButtons[i].text.getGlobalBounds().contains(mousePosition)) {
+            return i;
+        }
+    }
+
+    for (int i = 0; i < ICON_BUTTONS; i++) {
+        if (buttonGroups_.iconButtons[i].shape.getGlobalBounds().contains(mousePosition)) {
+            return EDITOR_BUTTONS + i;
+        }
+    }
     return -1;
 }
 
-bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition) {
+bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window) {
     int itemIndex = getItemAtPosition(mousePosition);
     if (itemIndex >= 0) {
         selectedItem_ = itemIndex;
-        if (convertIndexToItem() == Item::OBJECT) {
+        Item item = convertIndexToItem();
+        if (item == Item::OBJECT) {
             isDragging_ = true;
             dragOffset_ = objects_[getObjectIndex()].sprite.getPosition() - mousePosition;
+        } else if (item == Item::SAVE) {
+            saveLevel(window);
         } else {
             createObject();
         }
@@ -125,11 +163,6 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition) {
 }
 
 void LevelEditor::handleKeyPress(const sf::Keyboard::Key& key) {
-    // TODO: Remove Enter later and add a save button to the UI instead
-    if (key == sf::Keyboard::Key::Enter) {
-        saveLevel();
-        return;
-    }
     Item item = convertIndexToItem();
     switch (item) {
         case Item::RED_BIRD:
@@ -362,10 +395,16 @@ void LevelEditor::updateItem(bool isSelected) {
         case Item::GREEN_BIRD:
         case Item::PIG:
         case Item::WALL: {
-            buttons_[selectedItem_].text.setFillColor(isSelected ? LIME_GREEN : sf::Color::White);
-            auto bounds = buttons_[selectedItem_].shape.getGlobalBounds();
+            auto& editorButtons = buttonGroups_.editorButtons;
+            editorButtons[selectedItem_].text.setFillColor(isSelected ? LIME_GREEN : sf::Color::White);
             auto scale = isSelected ? 1.05f : 1.f;
-            buttons_[selectedItem_].shape.setScale(scale, scale);
+            editorButtons[selectedItem_].shape.setScale(scale, scale);
+            break;
+        }
+        case Item::SAVE: {
+            int index = getIconButtonIndex();
+            auto scale = isSelected ? 1.05f : 1.f;
+            buttonGroups_.iconButtons[index].shape.setScale(scale, scale);
             break;
         }
         case Item::OBJECT: {
@@ -404,6 +443,7 @@ LevelEditor::Item LevelEditor::convertIndexToItem() const {
         case 2:
         case 3:
         case 4:
+        case 5:
             return static_cast<Item>(selectedItem_);
         default:
             if (selectedItem_ >= BUTTONS && selectedItem_ < objects_.size() + BUTTONS) {
@@ -564,23 +604,32 @@ bool LevelEditor::createSprite(const ObjectData& data, sf::Sprite& sprite) const
 
 void LevelEditor::updateButtons(bool isAdded) {
     Item item = convertIndexToItem();
+    if (item == Item::UNDEFINED || item == Item::SAVE) {
+        return; // Don't update buttons for undefined items or save button
+    }
     int buttonIndex = selectedItem_;
     if (item == Item::OBJECT) {
         Object::Type type = objects_[getObjectIndex()].data.type;
         buttonIndex = type == Object::Type::Pig ? 3 : 4;
     }
-    if (!isAdded && buttons_[buttonIndex].count == 0) {
+    auto & editorButtons = buttonGroups_.editorButtons;
+    if (!isAdded && editorButtons[buttonIndex].count == 0) {
         return; // Prevent negative count
     }
-    int count = isAdded ? 1 + buttons_[buttonIndex].count++ : -1 + buttons_[buttonIndex].count--;
-    buttons_[buttonIndex].text.setString(std::to_string(count));
+    int count = isAdded ? 1 + editorButtons[buttonIndex].count++ : -1 + editorButtons[buttonIndex].count--;
+    editorButtons[buttonIndex].text.setString(std::to_string(count));
 }
 const int LevelEditor::getObjectIndex() const {
     assert(selectedItem_ >= BUTTONS && selectedItem_ < BUTTONS + objects_.size());
     return selectedItem_ - BUTTONS;
 }
 
-void LevelEditor::saveLevel() {
+const int LevelEditor::getIconButtonIndex() const {
+    assert(selectedItem_ >= EDITOR_BUTTONS && selectedItem_ < EDITOR_BUTTONS + ICON_BUTTONS);
+    return selectedItem_ - EDITOR_BUTTONS;
+}
+
+void LevelEditor::saveLevel(const sf::RenderWindow& window) {
     bool noPigs = true;
     bool hasErrors = false;
     for (const auto& object : objects_) {
@@ -614,27 +663,11 @@ void LevelEditor::saveLevel() {
     }
     
     levelCreator_.createLevel(birdList_, levelObjects);
-    notifications_.addNotification("Level saved successfully", Notifications::Type::MESSAGE);
+    levelCreator_.captureScreenShot(window);
+    notifications_.addNotification("Level and screenshot saved successfully", Notifications::Type::MESSAGE);
 }
 
-void LevelEditor::captureLevelImage(sf::RenderWindow& window) const {
-    if (birdList_.empty()) {
-        return ; // No birds in the level
-    }
-    bool noPigs = true;
-    for (const auto& object : objects_) {
-        if (object.data.type == Object::Type::Pig) {
-            noPigs = false;
-            break;
-        }
-    }
-    if (noPigs) {
-        return; // No pigs in the level
-    }
-    for (const auto& object : objects_) {
-        if (object.isIntersecting()) {
-            return; // Wall or pig is intersecting with another object
-        }
-    }
+void LevelEditor::captureLevelImage(const sf::RenderWindow& window) {
     levelCreator_.captureScreenShot(window);
+    notifications_.addNotification("Screenshot saved successfully", Notifications::Type::MESSAGE);
 }
