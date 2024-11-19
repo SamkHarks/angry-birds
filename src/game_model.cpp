@@ -34,6 +34,8 @@ void GameModel::update() {
         // Handle object state and bird state
         handleObjectState();
         handleBirdState();
+    } else if (isLevelEditor()) {
+        levelEditor_.update();
     }
 }
 

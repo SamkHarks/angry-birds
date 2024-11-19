@@ -58,6 +58,8 @@ LevelEditor::LevelEditor() : levelCreator_() {
 
     // Add cannon
     cannon_.init();
+
+    notifications_.init();
 }
 
 
@@ -75,6 +77,15 @@ void LevelEditor::draw(sf::RenderWindow& window) const {
     }
     // Draw cannon to help place objects in the level
     cannon_.draw(window);
+    // Draw notifications if any
+    notifications_.draw(window);
+}
+
+void LevelEditor::update() {
+    // clear errors after 5 seconds
+    if (notifications_.isDisplayed() && notifications_.clock.getElapsedTime().asSeconds() > 5) {
+        notifications_.clearNotifications();
+    }
 }
 
 int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
@@ -569,14 +580,32 @@ const int LevelEditor::getObjectIndex() const {
     return selectedItem_ - BUTTONS;
 }
 
-void LevelEditor::saveLevel() const {
-    if (birdList_.empty() || objects_.empty()) {
-        return ; // No birds in the level
+void LevelEditor::saveLevel() {
+    bool noPigs = true;
+    bool hasErrors = false;
+    for (const auto& object : objects_) {
+        if (object.data.type == Object::Type::Pig) {
+            noPigs = false;
+            break;
+        }
+    }
+    if (noPigs) {
+        notifications_.addNotification("Level should contain at least one Pig", Notifications::Type::ERROR);
+        hasErrors = true;
+    }
+    if (birdList_.empty()) {
+        hasErrors = true;
+        notifications_.addNotification("Level should contain at least one Bird", Notifications::Type::ERROR);
     }
     for (const auto& object : objects_) {
         if (object.isIntersecting()) {
-            return; // Wall or pig is intersecting with another object
+            hasErrors = true;
+            notifications_.addNotification("Objects cannot overlap each other", Notifications::Type::ERROR);
+            break;
         }
+    }
+    if (hasErrors) {
+        return; // Early exit with errors
     }
     std::vector<LevelObject> levelObjects;
     levelObjects.push_back(ground_);
@@ -585,12 +614,22 @@ void LevelEditor::saveLevel() const {
     }
     
     levelCreator_.createLevel(birdList_, levelObjects);
-
+    notifications_.addNotification("Level saved successfully", Notifications::Type::MESSAGE);
 }
 
 void LevelEditor::captureLevelImage(sf::RenderWindow& window) const {
-    if (birdList_.empty() || objects_.empty()) {
+    if (birdList_.empty()) {
         return ; // No birds in the level
+    }
+    bool noPigs = true;
+    for (const auto& object : objects_) {
+        if (object.data.type == Object::Type::Pig) {
+            noPigs = false;
+            break;
+        }
+    }
+    if (noPigs) {
+        return; // No pigs in the level
     }
     for (const auto& object : objects_) {
         if (object.isIntersecting()) {
