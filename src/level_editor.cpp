@@ -590,17 +590,17 @@ void LevelEditor::saveLevel() {
         }
     }
     if (noPigs) {
-        notifications_.addNotification("Level should contain at least one Pig", Notifications::Type::ERROR);
+        notifications_.addNotification("Level should contain at least one Pig", Notifications::Type::ERROR_MESSAGE);
         hasErrors = true;
     }
     if (birdList_.empty()) {
         hasErrors = true;
-        notifications_.addNotification("Level should contain at least one Bird", Notifications::Type::ERROR);
+        notifications_.addNotification("Level should contain at least one Bird", Notifications::Type::ERROR_MESSAGE);
     }
     for (const auto& object : objects_) {
         if (object.isIntersecting()) {
             hasErrors = true;
-            notifications_.addNotification("Objects cannot overlap each other", Notifications::Type::ERROR);
+            notifications_.addNotification("Objects cannot overlap each other", Notifications::Type::ERROR_MESSAGE);
             break;
         }
     }

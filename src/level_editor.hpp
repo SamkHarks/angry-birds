@@ -27,7 +27,7 @@ struct Notifications {
     sf::Clock clock;
     enum class Type {
         MESSAGE,
-        ERROR,
+        ERROR_MESSAGE,
         EMPTY
     };
     Type currentType = Type::EMPTY;
@@ -48,7 +48,7 @@ struct Notifications {
         if (!newId) {
             return; // Prevent duplicate notifications
         }
-        bool isError = Type::ERROR == type;
+        bool isError = Type::ERROR_MESSAGE == type;
         std::vector<sf::Text>& container = isError ? errors : messages;
         sf::Text text;
         setupText(text, message);
@@ -73,7 +73,7 @@ struct Notifications {
     void draw(sf::RenderWindow& window) const {
         if (Type::EMPTY != currentType) {
             window.draw(background);
-            if (Type::ERROR == currentType) {
+            if (Type::ERROR_MESSAGE == currentType) {
                 for (const auto& error : errors) {
                     window.draw(error);
                 }
