@@ -1,77 +1,13 @@
 #include "level_editor.hpp"
 #include "utils.hpp"
 
-const int EDITOR_BUTTONS = 5;
-const int ICON_BUTTONS = 1;
-const int BUTTONS = EDITOR_BUTTONS + ICON_BUTTONS;
-const int SHAPE_SIZE = 53;
-const float PIG_RADIUS = 0.3;
-const sf::Vector2f PIG_INITIAL_POSITION(210,320);
-const sf::Vector2f WALL_INITIAL_POSITION(380, 460);
 // half width and half height of the wall
 sf::Vector2f WALL_INITIAL_SF_DIM(25, 150);
 b2Vec2 WALL_INITIAL_DIM = utils::SfToB2(WALL_INITIAL_SF_DIM);
 
 LevelEditor::LevelEditor() : levelCreator_() {
-    ResourceManager& resourceManager = ResourceManager::getInstance();
-    // Helper lambda for file paths
-    auto getFilePath = [&](int i) {
-        switch (i) {
-            case 0:
-                return "/assets/images/red_bird.png";
-            case 1:
-                return "/assets/images/blue_bird.png";
-            case 2:
-                return "/assets/images/green_bird.png";
-            case 3:
-                return "/assets/images/pig.png";
-            case 4:
-                return "/assets/images/box.png";
-            case 5:
-                return "/assets/images/save_button1.png";
-            default:
-                return "";
-        }
-    };
-    int offset = VIEW.getCenter().x - 200;
-    sf::Font &font = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
-    int characterSize = 40;
-    int shapeY = 15;
-    int y = 60;
-    std::vector<Button> editorButtons;
-    std::vector<IconButton> iconButtons;
-    for (int i = 0; i < BUTTONS; ++i) {
-        sf::RectangleShape shape;
-        shape.setTexture(&resourceManager.getTexture(getFilePath(i)));
-        // Save button
-        if (i == 5) {;
-            shape.setSize(sf::Vector2f(SHAPE_SIZE*1.5, SHAPE_SIZE * 1.5));
-            shape.setPosition(20, shapeY);
-            IconButton saveButton = {shape};
-            iconButtons.push_back(saveButton);
-            break;
-        }
-        // Create editor buttons
-        std::string buttonText = "0";
-        int x = offset + (i < 3 ? 20 : 15);
-        shape.setSize(sf::Vector2f(SHAPE_SIZE, SHAPE_SIZE));
-        shape.setPosition(offset, shapeY);
-        sf::Text text;
-        text.setFont(font);
-        text.setCharacterSize(characterSize);
-        text.setFillColor(sf::Color::White);
-        text.setOutlineColor(sf::Color::Black);
-        text.setOutlineThickness(2);
-        text.setString(buttonText);
-        text.setPosition(x,y);
-        offset += 80;
-        Button button = {shape,text};
-        editorButtons.push_back(button);
-    }
-
-    // Add buttons to buttonGroups
-    buttonGroups_.editorButtons = editorButtons;
-    buttonGroups_.iconButtons = iconButtons;
+    // Initialize buttons
+    buttonGroups_.init();
 
     // Add ground
     ObjectData data = createObjectData(Object::Type::Ground);
@@ -82,7 +18,7 @@ LevelEditor::LevelEditor() : levelCreator_() {
 
     // Add cannon
     cannon_.init();
-
+    // Initialize notifications
     notifications_.init();
 }
 
@@ -101,10 +37,11 @@ void LevelEditor::draw(sf::RenderWindow& window) const {
     }
     // Draw objects
     for (const auto& object : objects_) {
-        window.draw(object.sprite);
-        if (object.deleteButton.getTexture()) {
+        if (object.showDeleteButton) {
             window.draw(object.deleteButton);
         }
+        window.draw(object.sprite);
+
     }
     // Draw cannon to help place objects in the level
     cannon_.draw(window);
@@ -130,7 +67,7 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
         // Check if the local mouse position is within the sprite's local (unrotated) bounds
         if (objects_[i].sprite.getLocalBounds().contains(localMousePosition)) {
             return BUTTONS + i;
-        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition)) {
+        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition) && objects_[i].showDeleteButton) {
             return BUTTONS + objects_.size() + i;
         }
     }
@@ -161,6 +98,9 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition, const sf::
             dragOffsets_.deleteDragOffset = objects_[index].deleteButton.getPosition() - mousePosition;
         } else if (item == Item::SAVE) {
             saveLevel(window);
+        } else if (item == Item::SETTINGS) {
+            // TODO: Implement settings
+            std::cout<<"Settings button clicked"<<std::endl;
         } else if (item == Item::DELETE_OBJECT) {
             updateButtons(false);
             removeObject();
@@ -440,6 +380,7 @@ void LevelEditor::updateItem(bool isSelected) {
             editorButtons[selectedItem_].shape.setScale(scale, scale);
             break;
         }
+        case Item::SETTINGS:
         case Item::SAVE: {
             int index = getIconButtonIndex();
             auto scale = isSelected ? 1.05f : 1.f;
@@ -490,6 +431,7 @@ LevelEditor::Item LevelEditor::convertIndexToItem() const {
         case 3:
         case 4:
         case 5:
+        case 6:
             return static_cast<Item>(selectedItem_);
         default: {
             int size = objects_.size();
@@ -601,6 +543,9 @@ ShapeData LevelEditor::createShapeData(Object::Type type) const {
 }
 
 sf::Sprite LevelEditor::addDeleteButton(const sf::Sprite& sprite, const Object::Type& type) {
+    if (type == Object::Type::Ground) {
+        return sf::Sprite(); // Ground objects do not have delete buttons
+    }
     sf::Sprite deleteButton;
     deleteButton.setTexture(ResourceManager::getInstance().getTexture("/assets/images/delete_button1.png"));
     deleteButton.setScale(0.5, 0.5);
@@ -676,8 +621,8 @@ bool LevelEditor::createSprite(const ObjectData& data, sf::Sprite& sprite) const
 
 void LevelEditor::updateButtons(bool isAdded) {
     Item item = convertIndexToItem();
-    if (item == Item::UNDEFINED || item == Item::SAVE || item == Item::OBJECT) {
-        return; // Don't update buttons for undefined items or save button
+    if (item == Item::UNDEFINED || item == Item::SAVE || item == Item::OBJECT || item == Item::SETTINGS) {
+        return; // Don't update buttons for undefined items or save/settings buttons and objects
     }
     int buttonIndex = selectedItem_;
     if (item == Item::DELETE_OBJECT) {

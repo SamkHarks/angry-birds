@@ -6,6 +6,15 @@
 #include "cannon.hpp"
 #include <unordered_set>
 
+// Constants
+const int EDITOR_BUTTONS = 5;
+const int ICON_BUTTONS = 2;
+const int BUTTONS = EDITOR_BUTTONS + ICON_BUTTONS;
+const int SHAPE_SIZE = 53;
+const float PIG_RADIUS = 0.3;
+const sf::Vector2f PIG_INITIAL_POSITION(210,320);
+const sf::Vector2f WALL_INITIAL_POSITION(380, 460);
+
 
 /**
  * @brief Initializes a Button struct with the given sprite and text.
@@ -40,6 +49,62 @@ struct IconButton {
 struct ButtonGroup {
     std::vector<Button> editorButtons;
     std::vector<IconButton> iconButtons;
+    void init() {
+        ResourceManager& resourceManager = ResourceManager::getInstance();
+        // Helper lambda for file paths
+        auto getFilePath = [&](int i) {
+            switch (i) {
+                case 0:
+                    return "/assets/images/red_bird.png";
+                case 1:
+                    return "/assets/images/blue_bird.png";
+                case 2:
+                    return "/assets/images/green_bird.png";
+                case 3:
+                    return "/assets/images/pig.png";
+                case 4:
+                    return "/assets/images/box.png";
+                case 5:
+                    return "/assets/images/save_button1.png";
+                case 6:
+                    return "/assets/images/settings_button.png";
+                default:
+                    return "";
+            }
+        };
+        int offset = VIEW.getCenter().x - 200;
+        sf::Font &font = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+        int characterSize = 40; int shapeY = 15; int shapeX = 20; int y = 60;
+        for (int i = 0; i < BUTTONS; ++i) {
+            sf::RectangleShape shape;
+            shape.setTexture(&resourceManager.getTexture(getFilePath(i)));
+            // Create icon buttons
+            if (i >= EDITOR_BUTTONS) {;
+                shape.setSize(sf::Vector2f(SHAPE_SIZE*1.5, SHAPE_SIZE * 1.5));
+                shape.setPosition(shapeX, shapeY);
+                IconButton iconButton = {shape};
+                iconButtons.push_back(iconButton);
+                shapeX += 90;
+                continue;
+            }
+            // Create editor buttons
+            std::string buttonText = "0";
+            int x = offset + (i < 3 ? 20 : 15);
+            shape.setSize(sf::Vector2f(SHAPE_SIZE, SHAPE_SIZE));
+            shape.setPosition(offset, shapeY);
+            sf::Text text;
+            text.setFont(font);
+            text.setCharacterSize(characterSize);
+            text.setFillColor(sf::Color::White);
+            text.setOutlineColor(sf::Color::Black);
+            text.setOutlineThickness(2);
+            text.setString(buttonText);
+            text.setPosition(x,y);
+            offset += 80;
+            Button button = {shape,text};
+            editorButtons.push_back(button);
+        }
+    }
 };
 
 struct Notifications {
@@ -180,6 +245,7 @@ class LevelEditor {
             PIG,
             WALL,
             SAVE,
+            SETTINGS,
             // Objects
             OBJECT,
             DELETE_OBJECT,
