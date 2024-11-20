@@ -49,6 +49,7 @@ struct Shapes {
  * @brief Level objects used for creating level
  * 
  * @param sprite The sprite representing the visual appearance of the object
+ * @param deleteButton The sprite representing the delete button for the object
  * @param data The data representing the object's properties and used for saving to the level file
  * @param shapeData The shape data representing the object's shape
  * @param isIntersecting Whether the object is intersecting with another object
@@ -57,6 +58,7 @@ struct Shapes {
 struct LevelObject {
     int id;
     sf::Sprite sprite;
+    sf::Sprite deleteButton;
     ObjectData data;
     ShapeData shapeData;
     bool isIntersecting() const {

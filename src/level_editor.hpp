@@ -165,6 +165,11 @@ struct Notifications {
         }
 };
 
+struct DragOffsets {
+    sf::Vector2f objectDragOffset;
+    sf::Vector2f deleteDragOffset;
+};
+
 class LevelEditor {
     public:
         enum class Item {
@@ -177,6 +182,7 @@ class LevelEditor {
             SAVE,
             // Objects
             OBJECT,
+            DELETE_OBJECT,
             UNDEFINED
         };
         LevelEditor();
@@ -206,6 +212,7 @@ class LevelEditor {
         bool isDragging_ = false;
         bool isPressed_ = false;
         sf::Vector2f dragOffset_;
+        DragOffsets dragOffsets_;
         void updateItem(bool isSelected);
         void updateIntersectingColors();
         ObjectData createObjectData(Object::Type type) const;
@@ -213,7 +220,7 @@ class LevelEditor {
         bool createLevelObject(const ObjectData&, const ShapeData&, LevelObject&);
         bool createSprite(const ObjectData& data, sf::Sprite&) const;
         void updateButtons(bool isAdded);
-        const int getObjectIndex() const;
+        const int getObjectIndex(const Item& item) const;
         const int getIconButtonIndex() const;
         void updateObject();
         void checkPosition(LevelObject&);
@@ -223,6 +230,8 @@ class LevelEditor {
         void removeObject();
         Bird::Type getBirdType(const Item& item) const;
         int NEXT_ID = 0; // Next object ID
+        sf::Sprite addDeleteButton(const sf::Sprite& sprite, const Object::Type& type);
+        void setDeleteButtonPosition(const sf::Sprite& newSprite, LevelObject& object);
 };
 
 #endif // LEVEL_EDITOR_HPP
