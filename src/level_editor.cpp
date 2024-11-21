@@ -74,7 +74,10 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
         // Check if the local mouse position is within the sprite's local (unrotated) bounds
         if (objects_[i].sprite.getLocalBounds().contains(localMousePosition)) {
             return BUTTONS + i;
-        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition) && objects_[i].hasDeleteButton) {
+        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition)
+            && settings_.isChecked(CheckboxGroup::Type::SHOW_DELETE_BUTTONS)
+            && objects_[i].hasDeleteButton
+        ) {
             return BUTTONS + objects_.size() + i;
         }
     }
