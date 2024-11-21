@@ -55,7 +55,7 @@ struct Shapes {
  * @param isIntersecting Whether the object is intersecting with another object
  * @param intersectingObjects The list of objects that the object is intersecting with
  * @param id The unique ID of the object
- * @param showDeleteButton Whether the delete button should be shown
+ * @param hasDeleteButton Whether the object has a delete button
  */
 struct LevelObject {
     int id;
@@ -67,7 +67,7 @@ struct LevelObject {
         return !intersectingObjects.empty();
     }
     std::unordered_set<int> intersectingObjects = {};
-    bool showDeleteButton = false;
+    bool hasDeleteButton = true;
 };
 
 class LevelLoader {

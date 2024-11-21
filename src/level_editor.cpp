@@ -9,6 +9,10 @@ LevelEditor::LevelEditor() : levelCreator_() {
     // Initialize buttons
     buttonGroups_.init();
 
+    // Initialize Settings
+    const IconButton& iconButton = buttonGroups_.iconButtons[1];
+    settings_.init(iconButton);
+
     // Add ground
     ObjectData data = createObjectData(Object::Type::Ground);
     ShapeData shapeData = createShapeData(Object::Type::Ground);
@@ -37,7 +41,7 @@ void LevelEditor::draw(sf::RenderWindow& window) const {
     }
     // Draw objects
     for (const auto& object : objects_) {
-        if (object.showDeleteButton) {
+        if (settings_.isChecked(CheckboxGroup::Type::SHOW_DELETE_BUTTONS) && object.hasDeleteButton) {
             window.draw(object.deleteButton);
         }
         window.draw(object.sprite);
@@ -47,13 +51,16 @@ void LevelEditor::draw(sf::RenderWindow& window) const {
     cannon_.draw(window);
     // Draw notifications if any
     notifications_.draw(window);
+    // Draw settings if open
+    settings_.draw(window);
 }
 
 void LevelEditor::update() {
     // clear errors after 5 seconds
     if (notifications_.isDisplayed() && notifications_.clock.getElapsedTime().asSeconds() > 5) {
         notifications_.clearNotifications();
-    }
+    } 
+    settings_.update(selectedItem_ == static_cast<int>(Item::SETTINGS));
 }
 
 int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
@@ -67,7 +74,7 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
         // Check if the local mouse position is within the sprite's local (unrotated) bounds
         if (objects_[i].sprite.getLocalBounds().contains(localMousePosition)) {
             return BUTTONS + i;
-        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition) && objects_[i].showDeleteButton) {
+        } else if (objects_[i].deleteButton.getGlobalBounds().contains(mousePosition) && objects_[i].hasDeleteButton) {
             return BUTTONS + objects_.size() + i;
         }
     }
@@ -82,6 +89,10 @@ int LevelEditor::getItemAtPosition(const sf::Vector2f& mousePosition) const {
         if (buttonGroups_.iconButtons[i].shape.getGlobalBounds().contains(mousePosition)) {
             return EDITOR_BUTTONS + i;
         }
+    }
+    // Check if settings box is clicked and return the index
+    if (settings_.isHovered(mousePosition)) {
+        return static_cast<int>(Item::SETTINGS);
     }
     return -1;
 }
@@ -99,8 +110,7 @@ bool LevelEditor::handleMouseClick(const sf::Vector2f& mousePosition, const sf::
         } else if (item == Item::SAVE) {
             saveLevel(window);
         } else if (item == Item::SETTINGS) {
-            // TODO: Implement settings
-            std::cout<<"Settings button clicked"<<std::endl;
+            settings_.handleMouseClick(mousePosition);
         } else if (item == Item::DELETE_OBJECT) {
             updateButtons(false);
             removeObject();
@@ -203,12 +213,12 @@ void LevelEditor::handleKeyRelease() {
 }
 
 void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
-    if (isPressed_) return; // Prevent object from being dragged while rotating or scaling
     if (isDragging_) {
         int index = getObjectIndex(Item::OBJECT);
         objects_[index].sprite.setPosition(mousePosition + dragOffsets_.objectDragOffset);
         objects_[index].deleteButton.setPosition(mousePosition + dragOffsets_.deleteDragOffset);
     } else {
+        if (isPressed_) return; // Prevent object from being unselected while rotating or scaling
         int hoveredItem = getItemAtPosition(mousePosition);
         if (hoveredItem == -1) {
             updateItem(false);
@@ -218,6 +228,9 @@ void LevelEditor::handleMouseMove(const sf::Vector2f& mousePosition) {
         updateItem(false);
         selectedItem_ = hoveredItem;
         updateItem(true);
+        // Handle settings hover
+        const Item item = convertIndexToItem();
+        if (item == Item::SETTINGS) settings_.handleMouseMove(mousePosition);
     }
 }
 
@@ -573,6 +586,7 @@ bool LevelEditor::createLevelObject(const ObjectData& data, const ShapeData& sha
         object.shapeData = shapeData;
         object.id = NEXT_ID++;
         object.deleteButton = addDeleteButton(sprite, data.type);
+        object.hasDeleteButton = object.data.type != Object::Type::Ground;
         return true;
     }
     return false;

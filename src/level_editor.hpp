@@ -235,6 +235,161 @@ struct DragOffsets {
     sf::Vector2f deleteDragOffset;
 };
 
+struct Checkbox {
+    sf::RectangleShape shape;
+    sf::RectangleShape checkmark;
+    sf::Text text;
+    bool checked = false;
+};
+
+struct CheckboxGroup {
+    
+    enum class Type {
+        SHOW_DELETE_BUTTONS
+    };
+    
+    sf::RectangleShape background;
+    void init(const IconButton& button) {
+        iconButton = button;
+        int backgroundPositionY = 100;
+        int padding = 20;
+        int basePositionY = backgroundPositionY + padding;
+        int gap = 50;
+        int size = 30;
+        ResourceManager& resourceManager = ResourceManager::getInstance();
+        sf::Font& font = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
+        sf::Vector2f center = VIEW.getCenter();
+        std::vector<std::string> texts = { "Show delete buttons" }; // TODO: Add more checkboxes
+        sf::RectangleShape checkmark;
+        checkmark.setSize(sf::Vector2f(size, size));
+        checkmark.setTexture(&resourceManager.getTexture("/assets/images/checkmark.png"));
+        // Get the maximum width of the text & set Text
+        int shapeX = 0;
+        std::vector<sf::Text> sfTexts;
+        for (int i = 0; i < texts.size(); ++i) {
+            sf::Text text;
+            text.setFont(font);
+            text.setCharacterSize(size);
+            text.setFillColor(sf::Color::White);
+            text.setOutlineColor(sf::Color::Black);
+            text.setOutlineThickness(2);
+            text.setString(texts[i]);
+            text.setPosition(padding * 2, basePositionY + i * gap);
+            sfTexts.push_back(text);
+            auto bounds = text.getGlobalBounds();
+            shapeX = bounds.left + bounds.width + padding > shapeX ? bounds.left + bounds.width + padding : shapeX;
+        }
+        // Create checkboxes
+        int width = 0;
+        int height = 2 * padding;
+        for (int i = 0; i < texts.size(); ++i) {
+            sf::Text& text = sfTexts[i];
+            auto bounds = text.getGlobalBounds();
+            // Create the checkbox shape
+            sf::RectangleShape shape;
+            shape.setSize(sf::Vector2f(size, size));
+            shape.setPosition(shapeX, text.getPosition().y);
+            checkmark = checkmark;
+            checkmark.setPosition(shape.getPosition());
+            Checkbox checkbox = { shape, checkmark, text };
+            checkBoxes[static_cast<Type>(i)] = checkbox;
+            // Update the width of the background
+            int newWidth = bounds.width + checkbox.shape.getSize().x + 3 * padding;
+            if (newWidth > width) {
+                width = newWidth;
+            }
+            // Update the height of the background
+            height += i > 0 ? (gap - size) + size : size;
+        }
+
+        background.setSize(sf::Vector2f(width, height));
+        background.setFillColor(sf::Color(0, 0, 0, 200));
+        background.setPosition(padding, backgroundPositionY);
+    }
+    bool isHovered(const sf::Vector2f& mousePosition) const {
+        return isOpen && background.getGlobalBounds().contains(mousePosition);
+    }
+    void draw(sf::RenderWindow& window) const {
+        if (isOpen) {
+            window.draw(background);
+            for (const auto& checkboxPair : checkBoxes) {
+                const auto& checkbox = checkboxPair.second;
+                window.draw(checkbox.shape);
+                window.draw(checkbox.text);
+                if (checkbox.checked) {
+                    window.draw(checkbox.checkmark);
+                }
+            }
+        }
+    }
+    void handleMouseClick(const sf::Vector2f& mousePosition) {
+        if (iconButton.shape.getGlobalBounds().contains(mousePosition)) {
+            isOpen = !isOpen; // Toggle the settings open/close
+            return;
+        }
+        int index = getItemAtPosition(mousePosition);
+        if (index == -1) {
+            return; // No item clicked
+        }
+        // Set the checkbox to checked/unchecked
+        Type type = static_cast<Type>(index);
+        checkBoxes[type].checked = !checkBoxes[type].checked;
+    }
+    void handleMouseMove(const sf::Vector2f& mousePosition) {
+        int index = getItemAtPosition(mousePosition);
+        if (index == -1) {
+            updateHoveredItem(false);
+            hoveredIndex = -1;
+            return;
+        }
+        updateHoveredItem(false);
+        hoveredIndex = index;
+        updateHoveredItem(true);
+    }
+    bool isChecked(Type type) const {
+        return checkBoxes.at(type).checked;
+    }
+    bool getIsOpen() const {
+        return isOpen;
+    }
+    void update(bool isSelected) {
+        if (isOpen && !isSelected) {
+            updateHoveredItem(false); // ensure no item has hover effect when settings is not selected
+        }
+    }
+    private:
+        bool isOpen = false;
+        IconButton iconButton;
+        std::unordered_map<Type, Checkbox> checkBoxes;
+        int hoveredIndex = -1;
+        //std::vector<Checkbox> checkboxes;
+        void updateHoveredItem(bool isHovered) {
+            if (hoveredIndex == -1) return;
+            Checkbox& checkbox = checkBoxes[static_cast<Type>(hoveredIndex)];
+            if (isHovered) {
+                checkbox.shape.setScale(1.05f, 1.05f);
+                checkbox.checkmark.setScale(1.05f, 1.05f);
+                checkbox.text.setFillColor(LIME_GREEN);
+            } else {
+                checkbox.shape.setScale(1.f, 1.f);
+                checkbox.checkmark.setScale(1.f, 1.f);
+                checkbox.text.setFillColor(sf::Color::White);
+            }
+        }
+        // get checkbox index
+        int getItemAtPosition(const sf::Vector2f& mousePosition) const {
+            for (int i = 0; i < checkBoxes.size(); i++) {
+                const Type type = static_cast<Type>(i); 
+                if (checkBoxes.at(type).shape.getGlobalBounds().contains(mousePosition)
+                || checkBoxes.at(type).text.getGlobalBounds().contains(mousePosition)
+                || checkBoxes.at(type).checkmark.getGlobalBounds().contains(mousePosition)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+};
+
 class LevelEditor {
     public:
         enum class Item {
@@ -267,6 +422,7 @@ class LevelEditor {
         void captureLevelImage(const sf::RenderWindow& window);
         void update();
     private:
+        CheckboxGroup settings_;
         Notifications notifications_;
         LevelCreator levelCreator_;
         LevelObject ground_;
