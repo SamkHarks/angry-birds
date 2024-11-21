@@ -49,18 +49,28 @@ void GameView::updateCamera(const sf::Keyboard::Key& code) {
     }
     if (code == sf::Keyboard::Key::Left) {
         auto centerPosition = gameView_.getCenter();
-        gameView_.setCenter(std::max(centerPosition.x - 10, defaultCenter_.x), defaultCenter_.y);
+        gameView_.setCenter(std::max(centerPosition.x - 10, defaultCenter_.x), centerPosition.y);
         updateView_ = true;
     } else if (code == sf::Keyboard::Key::Right) {
         auto centerPosition = gameView_.getCenter();
-        gameView_.setCenter(std::min(centerPosition.x + 10, WORLD_WIDTH - (gameView_.getSize().x*0.5f)), defaultCenter_.y);
+        gameView_.setCenter(std::min(centerPosition.x + 10, WORLD_WIDTH - (gameView_.getSize().x*0.5f)), centerPosition.y);
+        updateView_ = true;
+    } else if (code == sf::Keyboard::Key::Up) {
+        auto centerPosition = gameView_.getCenter();
+        auto height = VIEW.getHeight();
+        auto worldTop = -height + 200; // Take into account how worlds bg is positioned
+        gameView_.setCenter(centerPosition.x, std::max(centerPosition.y - 10, worldTop + (0.5f*height)));
+        updateView_ = true;
+    } else if (code == sf::Keyboard::Key::Down) {
+        auto centerPosition = gameView_.getCenter();
+        gameView_.setCenter(centerPosition.x, std::min(centerPosition.y + 10, defaultCenter_.y));
         updateView_ = true;
     }
 }
 
 // Update HUD elements to keep them in the same position
 void GameView::updateHUD(GameModel& model) {
-    if (model.isRunning() || model.isPaused()) {
+    if (model.isRunning() || model.isPausedAtRunning()) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
         world.getCannon()->updateTextPosition(*this);

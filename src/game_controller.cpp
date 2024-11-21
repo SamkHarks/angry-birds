@@ -18,6 +18,9 @@ void GameController::handleEvent(const sf::Event& event, const sf::Vector2f& mou
         case sf::Event::KeyPressed:
             handleKeyPress(event.key.code);
             break;
+        case sf::Event::KeyReleased:
+            handleKeyRelease(event.key.code);
+            break;
         case sf::Event::MouseButtonPressed:
             handleMousePress(event.mouseButton.button, mousePosition);
             break;
@@ -42,15 +45,22 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     switch (code) {
         case sf::Keyboard::Key::Left:
         case sf::Keyboard::Key::Right:
-            if (model_.isRunning()) {
+        case sf::Keyboard::Key::Up:
+        case sf::Keyboard::Key::Down:
+            if (model_.isRunning() || model_.isLevelEditor()) {
                 view_.updateCamera(code);
             } else {
                 model_.handleKeyPress(code);
             }
             break;
-        case sf::Keyboard::Key::Up:
-        case sf::Keyboard::Key::Down:
         case sf::Keyboard::Key::Enter:
+        case sf::Keyboard::Key::R:
+        case sf::Keyboard::Key::T:
+        case sf::Keyboard::Key::A:
+        case sf::Keyboard::Key::D:
+        case sf::Keyboard::Key::W:
+        case sf::Keyboard::Key::S:
+        case sf::Keyboard::Key::Delete:
             model_.handleKeyPress(code);
             break;
         case sf::Keyboard::Key::P:
@@ -63,10 +73,25 @@ void GameController::handleKeyPress(const sf::Keyboard::Key& code) {
     }
 }
 
+void GameController::handleKeyRelease(const sf::Keyboard::Key& code) {
+    switch (code) {
+        case sf::Keyboard::Key::R:
+        case sf::Keyboard::Key::T:
+        case sf::Keyboard::Key::A:
+        case sf::Keyboard::Key::D:
+        case sf::Keyboard::Key::W:
+        case sf::Keyboard::Key::S:
+            model_.handleKeyRelease();
+            break;
+        default:
+            break;
+    }
+}
+
 void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition) {
     switch (mouseButton) {
         case sf::Mouse::Button::Left:
-            model_.handleMouseLeftClick(mousePosition);
+            model_.handleMouseLeftClick(mousePosition, view_);
             break;
         case sf::Mouse::Button::Right:
             // TODO: Implement mouse right actions
@@ -80,13 +105,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, cons
 }
 
 void GameController::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
-    if (
-        button == sf::Mouse::Button::Left
-        && model_.getState() == GameModel::State::RUNNING
-        && model_.getWorld().getCannon()->isLaunching()
-    ) {
-        model_.launchBird();
-    }
+    model_.handleMouseRelease(button, mousePosition);
 }
 
 void GameController::handleMouseMove(const sf::Vector2f& mousePosition) {

@@ -144,6 +144,7 @@ const std::vector<std::string>& GameSelector::getButtonNames() const {
 
 void GameSelector::initializeLevelSelector() {
     levelSelector_.setPlayer(userSelector_.getPlayer());
+    levelSelector_.addNewLevel(); // TODO: Check if changes are needed
     levelSelector_.updateLevel();
     setScreen(GameSelector::Screen::LEVEL_SELECTOR);
 }

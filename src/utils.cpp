@@ -109,4 +109,110 @@ namespace utils
         }
         return direction;
     }
+
+    float getScaleFactor(float originalWidth, float originalHeight, float targetWidth, float targetHeight) {
+        float scaleFactorX = targetWidth / originalWidth;
+        float scaleFactorY = targetHeight / originalHeight;
+        float scaleFactor;
+        if (scaleFactorX * originalHeight >= targetHeight) {
+            scaleFactor = scaleFactorX;
+        } else {
+            scaleFactor = scaleFactorY;
+        }
+        return scaleFactor;
+    }
+
+    
+    // Function to get the global coordinates of the 4 corners of a sprite
+    std::array<sf::Vector2f, 4> getSpriteCorners(const sf::Sprite& sprite) {
+        sf::FloatRect bounds = sprite.getLocalBounds();  // Get the untransformed local bounds (width and height)
+
+        // Compute the 4 corners in local space, relative to the origin
+        sf::Vector2f topLeft(0.f, 0.f);
+        sf::Vector2f topRight(bounds.width, 0.f);
+        sf::Vector2f bottomLeft(0.f, bounds.height);
+        sf::Vector2f bottomRight(bounds.width, bounds.height);
+
+        // Transform these points to global space using the sprite's transform
+        sf::Transform transform = sprite.getTransform();
+        std::array<sf::Vector2f, 4> corners = {
+            transform.transformPoint(topLeft),
+            transform.transformPoint(topRight),
+            transform.transformPoint(bottomLeft),
+            transform.transformPoint(bottomRight)
+        };
+
+        return corners;
+    }
+
+
+    // Helper function to project a point onto an axis
+    float projectOntoAxis(const sf::Vector2f& point, const sf::Vector2f& axis) {
+        float dotProduct = (point.x * axis.x) + (point.y * axis.y);
+        float axisLengthSquared = (axis.x * axis.x) + (axis.y * axis.y);
+        return dotProduct / std::sqrt(axisLengthSquared);
+    }
+
+    // Helper function to find the minimum and maximum projection of a box on an axis
+    std::pair<float, float> getMinMaxProjection(const std::array<sf::Vector2f, 4>& corners, const sf::Vector2f& axis) {
+        float min = projectOntoAxis(corners[0], axis);
+        float max = min;
+
+        for (const auto& corner : corners) {
+            float projection = projectOntoAxis(corner, axis);
+            if (projection < min) min = projection;
+            if (projection > max) max = projection;
+        }
+
+        return { min, max };
+    }
+
+    // SAT collision detection between two sprites
+    bool checkOBBCollision(const sf::Sprite& spriteA, const sf::Sprite& spriteB) {
+        // Get the corners of both sprites
+        auto cornersA = getSpriteCorners(spriteA);
+        auto cornersB = getSpriteCorners(spriteB);
+
+        // Define potential separating axes (normals of the edges)
+        std::array<sf::Vector2f, 4> axes = {
+            sf::Vector2f(cornersA[1].x - cornersA[0].x, cornersA[1].y - cornersA[0].y),  // Edge 1 of sprite A
+            sf::Vector2f(cornersA[1].x - cornersA[3].x, cornersA[1].y - cornersA[3].y),  // Edge 2 of sprite A
+            sf::Vector2f(cornersB[1].x - cornersB[0].x, cornersB[1].y - cornersB[0].y),  // Edge 1 of sprite B
+            sf::Vector2f(cornersB[1].x - cornersB[3].x, cornersB[1].y - cornersB[3].y)   // Edge 2 of sprite B
+        };
+
+        // For each axis, project the corners of both sprites and check for overlap
+        for (const auto& axis : axes) {
+            // Normalize the axis
+            float length = std::sqrt(axis.x * axis.x + axis.y * axis.y);
+            sf::Vector2f normalizedAxis = sf::Vector2f(axis.x / length, axis.y / length);
+
+            // Get the min/max projections of both sprites onto this axis
+            auto [minA, maxA] = getMinMaxProjection(cornersA, normalizedAxis);
+            auto [minB, maxB] = getMinMaxProjection(cornersB, normalizedAxis);
+
+            // If there is no overlap between the projections, no collision
+            if (maxA < minB || maxB < minA) {
+                return false;  // Separating axis found, so no collision
+            }
+        }
+
+        // If we didn't find a separating axis, then the OBBs must be colliding
+        return true;
+    }
+
+    int countFilesInDirectory() {
+        // Get the path of the folder containing the levels
+        std::string folderPath = utils::getExecutablePath() + "/assets/levels/";
+        int fileCount = 0;
+
+        // Iterate through the directory and count the regular files, which are level<i>.json, where i = 1,2,3,...
+        for (const auto& entry : fs::directory_iterator(folderPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".json" && entry.path().filename().string().find("level") != std::string::npos) {
+                fileCount++;
+            }
+        }
+
+        return fileCount;
+    }
 }

@@ -3,8 +3,6 @@
 #include "world.hpp"
 #include "resource_manager.hpp"
 
-// half width and half height of the ground
-b2Vec2 GROUND_DIMENSIONS = utils::SfToB2(sf::Vector2f(VIEW.getWidth(), 50.f));
 // half width and half height of the wall
 b2Vec2 WALL_DIMENSONS = utils::SfToB2(sf::Vector2f(25.f, 150.f));
 
@@ -28,7 +26,8 @@ void to_json(json& j, const ShapeData& data) {
             {"shapeType", data.shapeType},
             {"density", data.density},
             {"friction", data.friction},
-            {"restitution", data.restitution}
+            {"restitution", data.restitution},
+            {"dimensions", {data.dimensions.x, data.dimensions.y}}
         };
     }
 }
@@ -38,6 +37,8 @@ void from_json(const json& j, ShapeData& data) {
     if (data.shapeType == b2Shape::e_circle) {
         j.at("shapePosition").get_to(data.shapePosition);
         data.radius = j.at("radius").get<float>();
+    } else {
+        j.at("dimensions").get_to(data.dimensions);
     }
     j.at("density").get_to(data.density);
     j.at("friction").get_to(data.friction);
@@ -50,21 +51,25 @@ void to_json(json& j, const ObjectData& data) {
         // Early return for ground object
         j = json{
             {"type", "G"},
+            {"bodyType", data.bodyType}
         };
         return;
+    } else if (data.type == Object::Type::Pig) {
+        j["type"] = "P";
+    } else if (data.type == Object::Type::Wall) {
+        j["type"] = "W";
+    } else {
+        j["type"] = "B";
     }
-    j = json{
-        {"type", data.type},
-        {"position", {data.position.x, data.position.y}},
-        {"angle", data.angle},
-        {"angularVelocity", data.angularVelocity},
-        {"linearVelocity", {data.linearVelocity.x, data.linearVelocity.y}},
-        {"angularDamping", data.angularDamping},
-        {"linearDamping", data.linearDamping},
-        {"gravityScale", data.gravityScale},
-        {"bodyType", data.bodyType},
-        {"awake", data.awake}
-    };
+    j["position"] = {data.position.x, data.position.y};
+    j["angle"] = data.angle;
+    j["angularVelocity"] = data.angularVelocity;
+    j["linearVelocity"] = {data.linearVelocity.x, data.linearVelocity.y};
+    j["angularDamping"] = data.angularDamping;
+    j["linearDamping"] = data.linearDamping;
+    j["gravityScale"] = data.gravityScale;
+    j["bodyType"] = data.bodyType;
+    j["awake"] = data.awake;
 }
 
 void from_json(const json& j, ObjectData& data) {
@@ -162,10 +167,8 @@ void LevelLoader::createFixtureShape(ShapeData data, b2FixtureDef& fixtureDef, O
             break;
         }
         case b2Shape::Type::e_polygon:
-             if (type == Object::Type::Ground) {
-                shapes.polygon.SetAsBox(GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
-             } else if (type == Object::Type::Wall) {
-                shapes.polygon.SetAsBox(WALL_DIMENSONS.x, WALL_DIMENSONS.y);
+             if (type == Object::Type::Ground || type == Object::Type::Wall) {
+                shapes.polygon.SetAsBox(data.dimensions.x, data.dimensions.y);
              } else {
                 throw std::runtime_error("Invalid object type");
              }
@@ -210,7 +213,8 @@ void LevelLoader::createBird(Bird::Type birdType, b2Body* body, b2FixtureDef& fi
 void LevelLoader::createObject(
     Object::Type objType,
     b2Body* body,
-    b2FixtureDef& fixtureDef
+    b2FixtureDef& fixtureDef,
+    const ShapeData& shapeData
 ) {
     Object *object = nullptr;
     switch (objType) {
@@ -218,7 +222,7 @@ void LevelLoader::createObject(
             // Bird is created with createBird function
             break;
         case Object::Type::Ground:
-            object = new Ground(body, GROUND_DIMENSIONS.x, GROUND_DIMENSIONS.y);
+            object = new Ground(body, shapeData.dimensions.x, shapeData.dimensions.y);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Pig:
@@ -226,7 +230,7 @@ void LevelLoader::createObject(
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         case Object::Type::Wall:
-            object = new Wall(body, WALL_DIMENSONS.x, WALL_DIMENSONS.y);
+            object = new Wall(body, shapeData.dimensions.x, shapeData.dimensions.y);
             fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(object);
             break;
         default:
@@ -411,7 +415,7 @@ void LevelLoader::loadLevel(const std::string& fileName) {
         Shapes shapes;
         ShapeData shapeData = jsonShape.template get<ShapeData>();
         createFixtureShape(shapeData, fixtureDef, data.type, shapes);
-        createObject(data.type, body, fixtureDef);
+        createObject(data.type, body, fixtureDef, shapeData);
         body->CreateFixture(&fixtureDef);
     }
     // Set the total bird and pig count
@@ -419,4 +423,91 @@ void LevelLoader::loadLevel(const std::string& fileName) {
     level_.totalPigCount_ = level_.getRemainingPigCount();
     // Load resources
     loadSfmlObjects(birdList);
+}
+
+
+// LevelCreator class implementation
+LevelCreator::LevelCreator() {}
+
+void LevelCreator::createLevel(const std::vector<Bird::Type>& birdList, const std::vector<LevelObject>& objects) const {
+    int levelCount = utils::countFilesInDirectory();
+    std::string fileName = "level" + std::to_string(levelCount + 1) + ".json";
+    std::string path = utils::getExecutablePath() + "/assets/levels/";
+    std::ofstream file(path + fileName);
+    if(!file.is_open()) {
+        throw std::runtime_error("Failed to open file for writing: " + path + fileName);
+    }
+    json levelJson;
+    levelJson["id"] = levelCount;
+    levelJson["highScores"] = json::array();
+    levelJson["birds"] = createBirds(birdList);
+    levelJson["objects"] = createObjects(objects);
+    file << levelJson.dump(4);
+    file.close();
+}
+
+json LevelCreator::createBirdObject() const {
+    json birdJson;
+    ObjectData data;
+    data.type = Object::Type::Bird;
+    data.position = BIRD_INITIAL_POSITION;
+    data.angle = 0;
+    data.angularVelocity = 0;
+    data.linearVelocity = b2Vec2(0, 0);
+    data.angularDamping = 0;
+    data.linearDamping = 0;
+    data.gravityScale = 1;
+    data.bodyType = b2BodyType::b2_dynamicBody;
+    data.awake = false;
+    birdJson["body"] = data;
+    ShapeData shapeData;
+    shapeData.shapeType = b2Shape::e_circle;
+    shapeData.shapePosition = b2Vec2_zero;
+    shapeData.radius = 0.3f;
+    shapeData.density = 1;
+    shapeData.friction = 1;
+    shapeData.restitution = 0.4;
+    birdJson["shape"] = shapeData;
+
+    return birdJson;
+}
+
+json LevelCreator::createBirds(const std::vector<Bird::Type>& birdList) const {
+    json birdsJson;
+    json birdsArray = json::array();
+    for (const auto& bird : birdList) {
+        if (bird == Bird::Type::Red) {
+            birdsArray.push_back("R");
+        } else if (bird == Bird::Type::Blue) {
+            birdsArray.push_back("L");
+        } else if (bird == Bird::Type::Green) {
+            birdsArray.push_back("G");
+        } else {
+            throw std::runtime_error("Invalid bird type. Should be one of R, L, G");
+        }
+    }
+    birdsJson["list"] = birdsArray;
+    birdsJson["object"] = createBirdObject();
+    return birdsJson;
+}
+
+json LevelCreator::createObjects(const std::vector<LevelObject>& objects) const {
+    json objectsArray = json::array();
+    for (const auto& object : objects) {
+        json objectJson;
+        objectJson["body"] = object.data;
+        objectJson["shape"] = object.shapeData;
+        objectsArray.push_back(objectJson);
+    }
+    return objectsArray;
+}
+
+void LevelCreator::captureScreenShot(const sf::RenderWindow& window) const {
+    sf::Texture texture;
+    texture.create(window.getSize().x, window.getSize().y);
+    texture.update(window);
+    sf::Image image = texture.copyToImage();
+    std::string path = utils::getExecutablePath() + "/assets/screenshots/";
+    std::string fileName = "level" + std::to_string(utils::countFilesInDirectory()) + ".png";
+    image.saveToFile(path + fileName);
 }

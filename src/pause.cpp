@@ -88,6 +88,24 @@ void Pause::updateTitle(const sf::RenderWindow& window) {
 }
 
 const std::vector<std::string>& Pause::getButtonNames() const {
-    static const std::vector<std::string> buttonNames = { "Resume", "Restart", "Main Menu", "Exit" };
-    return buttonNames;
+    if (pausedState_ == PausedState::RUNNING) {
+        static const std::vector<std::string> buttonNames = { "Resume", "Restart", "Main Menu", "Exit" };
+        return buttonNames;
+    } else {
+        static const std::vector<std::string> buttonNames = { "Resume", "Main Menu", "Exit" }; // TODO: Add possibility to load created level
+        return buttonNames;
+    }
+
+}
+
+Pause::PausedState Pause::getPausedState() const {
+    return pausedState_;
+}
+
+bool Pause::isPausedAtRunning() const {
+    return pausedState_ == PausedState::RUNNING;
+}
+
+void Pause::setPausedState(Pause::PausedState pausedState) {
+    pausedState_ = pausedState;
 }

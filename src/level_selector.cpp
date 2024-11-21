@@ -28,7 +28,7 @@ LevelSelector::LevelSelector() {
     }
 
     // Load level image
-    levelImage_ = resourceManager.getTexture("/assets/images/level1.png");
+    levelImage_ = resourceManager.getTexture("/assets/screenshots/level1.png");
     level_.setSize(sf::Vector2f(VIEW.getWidth(),VIEW.getHeight()));
     level_.setTexture(&levelImage_);
     level_.setOrigin(level_.getGlobalBounds().width / 2, level_.getGlobalBounds().height / 2);
@@ -68,9 +68,7 @@ LevelSelector::LevelSelector() {
     }
 
     // Load levels
-    levels_.push_back({"Level 1", "level1.json", "level1.png"});
-    levels_.push_back({"Level 2", "level2.json", "level2.png"});
-    levels_.push_back({"Level 3", "level3.json", "level3.png"});
+    loadLevels();
 
     // Load stars
     stars_.resize(4);
@@ -221,7 +219,7 @@ void LevelSelector::setLevelText() {
 }
 
 void LevelSelector::setLevelImage() {
-    levelImage_ = ResourceManager::getInstance().getTexture("/assets/images/" + levels_[levelIndex_].image);
+    levelImage_ = ResourceManager::getInstance().getTexture("/assets/screenshots/" + levels_[levelIndex_].image);
     level_.setTexture(&levelImage_);
 }
 
@@ -236,7 +234,10 @@ void LevelSelector::setLevel(Item item) {
 }
 
 bool LevelSelector::hasNextLevel() const {
-    return levelIndex_ < levels_.size() - 1;
+    if (auto player = player_.lock()) {
+        return levelIndex_ < player->levelsCompleted && levelIndex_ < levels_.size() - 1;
+    }
+    return false;
 }
 
 Level& LevelSelector::getNextLevel() {
@@ -347,4 +348,63 @@ bool LevelSelector::isButtonDisabled(int index) const {
     }
     return true;
 
+}
+
+// TODO: Rethink function logic later
+void LevelSelector::loadLevels() {
+    std::string path = utils::getExecutablePath();
+    std::string levelsPath = path + "/assets/levels/";
+    std::string screenShotPath = path + "/assets/screenshots/";
+    std::vector<std::string> levelFiles;
+    std::vector<std::string> screenShotFiles;
+    int levelCount = 0;
+    int screenShotCount = 0;
+    // Go through the directory and find all the level files
+    for (const auto& entry : fs::directory_iterator(levelsPath)) {
+        if (entry.is_regular_file()) {
+            auto fileName = entry.path().filename().string();
+            if (fileName.find("level") != std::string::npos && fileName.find(".json") != std::string::npos) {
+                levelCount++;
+                levelFiles.push_back(fileName);
+            }
+        }
+    }
+    // Go through the directory and find all the screenshot files
+    for (const auto& entry : fs::directory_iterator(screenShotPath)) {
+        if (entry.is_regular_file()) {
+            auto fileName = entry.path().filename().string();
+            if (fileName.find("level") != std::string::npos && fileName.find(".png") != std::string::npos) {
+                screenShotCount++;
+                screenShotFiles.push_back(fileName);
+            }
+        }
+    }
+
+    if (levelCount != screenShotCount) {
+        throw std::runtime_error("Level count does not match screenshot count");
+    }
+
+    std::sort(levelFiles.begin(), levelFiles.end());
+    std::sort(screenShotFiles.begin(), screenShotFiles.end());
+
+
+    for (int i = 0; i < levelCount; i++) {
+        levels_.push_back({ "Level " + std::to_string(i + 1), levelFiles[i], screenShotFiles[i] });
+    }
+
+}
+
+void LevelSelector::addNewLevel() {
+    int fileCount = utils::countFilesInDirectory();
+    int levelCount = levels_.size();
+    if (levels_.empty()) {
+        loadLevels();
+    } else {
+        // Add all the new levels
+        while (fileCount > levelCount) {
+            ++levelCount;
+            Level newLevel = { "Level " + std::to_string(levelCount), "level" + std::to_string(levelCount) + ".json", "level" + std::to_string(levelCount) + ".png" };
+            levels_.push_back(newLevel);
+        }
+    }
 }

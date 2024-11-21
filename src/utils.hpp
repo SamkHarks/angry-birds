@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <string>
+#include <array>
 #include <box2d/box2d.h>
 #include <iostream>
 #ifdef _WIN32
@@ -18,6 +19,10 @@
 #endif
 
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 struct View {
 
@@ -52,10 +57,11 @@ const int FRAME_RATE = 60.f;
 const float TIME_STEP = (1.0f / FRAME_RATE) / 2;
 const int VELOCITY_ITERATIONS = 6;
 const int POSITION_ITERATIONS = 2;
-const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.3f);
+const b2Vec2 BIRD_INITIAL_POSITION = b2Vec2(3.f, 1.2f);
 const float IS_SETTLED_THRESHOLD = 0.01f;
 const sf::Color LIME_GREEN(100, 255, 0);
 const int PLAYER_INDEX_START = 5;
+const b2Vec2 GROUND_DIMENSIONS = b2Vec2(VIEW.getWidth() / SCALE, 50.f / SCALE); // half width and half height of the ground
 
 std::istream &operator>>(std::istream &input, b2Vec2 &vector);
 
@@ -89,6 +95,18 @@ namespace utils
     float DegreesToRadians(const float degrees);
 
     float getDirection(const sf::Vector2f& difference);
+
+    float getScaleFactor(float originalWidth, float originalHeight, float newWidth, float newHeight);
+
+    std::array<sf::Vector2f, 4> getSpriteCorners(const sf::Sprite& sprite);
+
+    float projectOntoAxis(const sf::Vector2f& point, const sf::Vector2f& axis);
+
+    std::pair<float, float> getMinMaxProjection(const std::array<sf::Vector2f, 4>& corners, const sf::Vector2f& axis);
+
+    bool checkOBBCollision(const sf::Sprite& spriteA, const sf::Sprite& spriteB);
+
+    int countFilesInDirectory();
 }
 
 #endif // UTILS_HPP

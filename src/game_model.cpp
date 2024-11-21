@@ -4,7 +4,8 @@
 
 GameModel::GameModel() :
     state_(State::MENU),
-    world_() {
+    world_(),
+    levelEditor_() {
         menus_[Menu::Type::MAIN] = std::make_unique<MainMenu>();
         menus_[Menu::Type::GAME_SELECTOR] = std::make_unique<GameSelector>();
         menus_[Menu::Type::SETTINGS] = std::make_unique<Settings>();
@@ -33,11 +34,14 @@ void GameModel::update() {
         // Handle object state and bird state
         handleObjectState();
         handleBirdState();
+    } else if (isLevelEditor()) {
+        levelEditor_.update();
     }
 }
 
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
+    updateView_ = true; // Force view update to center the view
     switchMenu(Menu::Type::GAME_OVER, State::GAME_OVER);
     auto &gameOverMenu = getMenu<GameOver>(Menu::Type::GAME_OVER);
     auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
@@ -130,21 +134,42 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
             }
             break;
         case sf::Keyboard::Key::Enter:
-            setState();
+                setState();
             break;
         case sf::Keyboard::Key::P:
         case sf::Keyboard::Key::Escape:
             if (isRunning()) {
                 switchMenu(Menu::Type::PAUSE, State::PAUSED);
                 world_.handleKeyPress(code);
-            } else if (isPaused()) {
+            } else if (isPausedAtRunning()) {
                 world_.handleKeyPress(code);
                 state_ = State::RUNNING;
+            } else if (isLevelEditor()) {
+                switchMenu(Menu::Type::PAUSE, State::PAUSED);
+            } else if (isPaused()) {
+                state_ = State::LEVEL_EDITOR;
+            }
+            break;
+        case sf::Keyboard::Key::R:
+        case sf::Keyboard::Key::T:
+        case sf::Keyboard::Key::A:
+        case sf::Keyboard::Key::W:
+        case sf::Keyboard::Key::D:
+        case sf::Keyboard::Key::S:
+        case sf::Keyboard::Key::Delete:
+            if (isLevelEditor()) {
+                levelEditor_.handleKeyPress(code);
             }
             break;
         default:
             break;
     } 
+}
+
+void GameModel::handleKeyRelease() {
+    if (isLevelEditor()) {
+        levelEditor_.handleKeyRelease();
+    }
 }
 
 // handle menu actions based on the current state and selected item
@@ -176,8 +201,17 @@ void GameModel::handleMainMenuState() {
         auto& gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
         gameSelector.updateMenuItems();
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
+        auto& pauseMenu = getMenu<Pause>(Menu::Type::PAUSE);
+        pauseMenu.setPausedState(Pause::PausedState::RUNNING);
+        pauseMenu.updateMenuItems();
         switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
     } else if (selectedItem == 1) {
+        currentMenu_->updateMusic(sf::SoundSource::Status::Stopped);
+        auto& pauseMenu = getMenu<Pause>(Menu::Type::PAUSE);
+        pauseMenu.setPausedState(Pause::PausedState::LEVEL_EDITOR);
+        pauseMenu.updateMenuItems();
+        state_ = State::LEVEL_EDITOR;
+    } else if (selectedItem == 2) {
         switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
     } else {
         state_ = State::QUIT;
@@ -235,6 +269,7 @@ void GameModel::handleGameSelectorScreenState() {
             break;
         }
         case GameSelector::Item::CONTINUE:
+            gameSelector.getLevelSelector().addNewLevel();
             gameSelector.getLevelSelector().updateLevel();
             gameSelector.setScreen(GameSelector::Screen::LEVEL_SELECTOR);
             break;
@@ -332,19 +367,37 @@ void GameModel::handleSettingsState() {
 }
 
 void GameModel::handlePauseState() {
-    int selectedItem = currentMenu_->getSelectedItem();
-    if (selectedItem == 0) {
-        world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
-        state_ = State::RUNNING;
-    } else if (selectedItem == 1) {
-        world_.resetLevel();
-        state_ = State::RUNNING;
-    } else if (selectedItem == 2) {
-        switchMenu(Menu::Type::MAIN, State::MENU);
-        updateView_ = true; // Center the view back to default
-    } else if (selectedItem == 3) {
-        state_ = State::QUIT;
+    switch (getMenu<Pause>(Menu::Type::PAUSE).getPausedState()) {
+        case Pause::PausedState::RUNNING: {
+            int selectedItem = currentMenu_->getSelectedItem();
+            if (selectedItem == 0) {
+                world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
+                state_ = State::RUNNING;
+            } else if (selectedItem == 1) {
+                world_.resetLevel();
+                state_ = State::RUNNING;
+            } else if (selectedItem == 2) {
+                switchMenu(Menu::Type::MAIN, State::MENU);
+                updateView_ = true; // Center the view back to default
+            } else if (selectedItem == 3) {
+                state_ = State::QUIT;
+            }
+            break;
+        }
+        case Pause::PausedState::LEVEL_EDITOR: {
+            int selectedItem = currentMenu_->getSelectedItem();
+            if (selectedItem == 0) {
+                state_ = State::LEVEL_EDITOR;
+            } else if (selectedItem == 1) {
+                switchMenu(Menu::Type::MAIN, State::MENU);
+                updateView_ = true; // Center the view back to default
+            } else if (selectedItem == 2) {
+                state_ = State::QUIT;
+            }
+            break;
+        }
     }
+
 }
 
 World &GameModel::getWorld() {
@@ -367,8 +420,10 @@ void GameModel::handleTextEntered(const sf::Uint32& unicode) {
 }
 
 void GameModel::handleMouseMove(const sf::Vector2f& mousePosition) {
-   if (isRunning()) {
+    if (isRunning()) {
         world_.handleMouseMove(mousePosition);
+    } else if (isLevelEditor()) {
+        levelEditor_.handleMouseMove(mousePosition);
     } else {
         currentMenu_->handleMouseMove(mousePosition);
     }
@@ -385,9 +440,11 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
     world_.handleResize();
 }
 
-void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
-   if (isRunning()) {
+void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window) {
+    if (isRunning()) {
         world_.getCannon()->startLaunch();
+    } else if (isLevelEditor()) {
+        levelEditor_.handleMouseClick(mousePosition, window);
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
             setState();
@@ -395,11 +452,27 @@ void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition) {
     }
 }
 
+void GameModel::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
+    if (button == sf::Mouse::Button::Left) {
+        if (isRunning() && world_.getCannon()->isLaunching()) {
+            launchBird();
+        } else if (isLevelEditor()) {
+            levelEditor_.handleMouseRelease();
+        }
+    }
+
+}
+
 void GameModel::draw(sf::RenderWindow& window) const {
     if (isRunning()) {
         world_.draw(window);
-    } else if (isPaused()) {
+    } else if (isPausedAtRunning()) {
         world_.draw(window);
+        currentMenu_->draw(window);
+    } else if (isLevelEditor()) {
+        levelEditor_.draw(window);
+    } else if (isPaused()) {
+        levelEditor_.draw(window);
         currentMenu_->draw(window);
     } else {
         currentMenu_->draw(window);
@@ -414,10 +487,23 @@ bool GameModel::isPaused() const {
     return state_ == State::PAUSED;
 }
 
+bool GameModel::isPausedAtRunning() const {
+    return isPaused() && getMenu<Pause>(Menu::Type::PAUSE).getPausedState() == Pause::PausedState::RUNNING;
+}
+
 bool GameModel::updateView() const {
     return updateView_;
 }
 
 void GameModel::setUpdateView(bool updateView) {
     updateView_ = updateView;
+}
+
+bool GameModel::isLevelEditor() const {
+    return state_ == State::LEVEL_EDITOR;
+}
+
+
+LevelEditor& GameModel::getLevelEditor() {
+    return levelEditor_;
 }

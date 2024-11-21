@@ -161,6 +161,7 @@ const MenuItemLayout& Menu::getMenuItemLayout() const {
 
 void Menu::updateMenuItems() {
     const std::vector<std::string>& buttonNames = getButtonNames();
+    // TODO: Fix bool check, button amount can be same but the buttons can be different
     if (buttonNames.size() == buttonAmount_ || buttonNames.empty()) {
         return; // No need to update if the amount of buttons is the same or empty
     }

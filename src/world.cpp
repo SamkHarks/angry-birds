@@ -9,10 +9,12 @@ World::World() : gravity_(0.0f, -9.8f), levelLoader_(*this), scoreManager_() {
     world_ = new b2World(gravity_);
     cannon_ = new Cannon();
     int height = VIEW.getHeight();
-    background_image_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
-    background_.setSize(sf::Vector2f(VIEW.getWidth() * 2, height * 1.8f));
+    background_image_ = ResourceManager::getInstance().getTexture("/assets/images/background2.jpg");
+    auto size = background_image_.getSize();
+    auto scaleFactor = utils::getScaleFactor(size.x, size.y, VIEW.getWidth() * 2.f, height * 1.8f);
+    background_.setSize(sf::Vector2f(size.x * scaleFactor, size.y * scaleFactor));
     background_.setTexture(&background_image_);
-    background_.setPosition(0,-height+200);
+    background_.setPosition(0,-height+ 200);
 }
 
 World::~World() {
@@ -319,6 +321,7 @@ void World::handleResize() {
 
     // Apply the scaling to the background (this scales both axes proportionally)
     background_.setScale(scaleFactor, scaleFactor);
+    background_.setPosition(0, -VIEW.getHeight() + 200);
     // Resize cannon properties
     cannon_->handleResize();
     

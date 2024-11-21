@@ -13,6 +13,7 @@ class GameController {
         GameView& view_;
         // Handle different types of events
         void handleKeyPress(const sf::Keyboard::Key& code);
+        void handleKeyRelease(const sf::Keyboard::Key& code);
         void handleMousePress(const sf::Mouse::Button& mouseButton, const sf::Vector2f& mousePosition);
         void handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition);
         void handleMouseMove(const sf::Vector2f& mousePosition);
