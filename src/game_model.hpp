@@ -33,6 +33,11 @@ class GameModel {
             static_assert(std::is_base_of<Menu, T>::value, "T must be derived from Menu");
             return static_cast<T&>(getMenu(type));
         }
+        template <typename T>
+        const T& getMenu(Menu::Type type) const {
+            static_assert(std::is_base_of<Menu, T>::value, "T must be derived from Menu");
+            return static_cast<const T&>(getMenu(type));
+        }
         const Menu& getMenu(const Menu::Type& type) const;
         Menu& getMenu(const Menu::Type& type);
         void setMenu(Menu::Type newMenuType);
@@ -50,6 +55,7 @@ class GameModel {
         void switchMenu(Menu::Type type, State state);
         bool isRunning() const;
         bool isPaused() const;
+        bool isPausedAtRunning() const;
         bool isLevelEditor() const;
         bool updateView() const;
         void setUpdateView(bool updateView);

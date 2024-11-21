@@ -70,7 +70,7 @@ void GameView::updateCamera(const sf::Keyboard::Key& code) {
 
 // Update HUD elements to keep them in the same position
 void GameView::updateHUD(GameModel& model) {
-    if (model.isRunning() || model.isPaused()) {
+    if (model.isRunning() || model.isPausedAtRunning()) {
         World& world = model.getWorld();
         world.getScore().updatePosition(*this);
         world.getCannon()->updateTextPosition(*this);

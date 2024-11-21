@@ -140,9 +140,13 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
             if (isRunning()) {
                 switchMenu(Menu::Type::PAUSE, State::PAUSED);
                 world_.handleKeyPress(code);
-            } else if (isPaused()) {
+            } else if (isPausedAtRunning()) {
                 world_.handleKeyPress(code);
                 state_ = State::RUNNING;
+            } else if (isLevelEditor()) {
+                switchMenu(Menu::Type::PAUSE, State::PAUSED);
+            } else if (isPaused()) {
+                state_ = State::LEVEL_EDITOR;
             }
             break;
         case sf::Keyboard::Key::R:
@@ -196,9 +200,15 @@ void GameModel::handleMainMenuState() {
         auto& gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
         gameSelector.updateMenuItems();
         gameSelector.setScreen(GameSelector::Screen::GAME_SELECTOR);
+        auto& pauseMenu = getMenu<Pause>(Menu::Type::PAUSE);
+        pauseMenu.setPausedState(Pause::PausedState::RUNNING);
+        pauseMenu.updateMenuItems();
         switchMenu(Menu::Type::GAME_SELECTOR, State::GAME_SELECTOR);
     } else if (selectedItem == 1) {
         currentMenu_->updateMusic(sf::SoundSource::Status::Stopped);
+        auto& pauseMenu = getMenu<Pause>(Menu::Type::PAUSE);
+        pauseMenu.setPausedState(Pause::PausedState::LEVEL_EDITOR);
+        pauseMenu.updateMenuItems();
         state_ = State::LEVEL_EDITOR;
     } else if (selectedItem == 2) {
         switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
@@ -356,19 +366,37 @@ void GameModel::handleSettingsState() {
 }
 
 void GameModel::handlePauseState() {
-    int selectedItem = currentMenu_->getSelectedItem();
-    if (selectedItem == 0) {
-        world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
-        state_ = State::RUNNING;
-    } else if (selectedItem == 1) {
-        world_.resetLevel();
-        state_ = State::RUNNING;
-    } else if (selectedItem == 2) {
-        switchMenu(Menu::Type::MAIN, State::MENU);
-        updateView_ = true; // Center the view back to default
-    } else if (selectedItem == 3) {
-        state_ = State::QUIT;
+    switch (getMenu<Pause>(Menu::Type::PAUSE).getPausedState()) {
+        case Pause::PausedState::RUNNING: {
+            int selectedItem = currentMenu_->getSelectedItem();
+            if (selectedItem == 0) {
+                world_.handleKeyPress(sf::Keyboard::Key::P); // Unpause
+                state_ = State::RUNNING;
+            } else if (selectedItem == 1) {
+                world_.resetLevel();
+                state_ = State::RUNNING;
+            } else if (selectedItem == 2) {
+                switchMenu(Menu::Type::MAIN, State::MENU);
+                updateView_ = true; // Center the view back to default
+            } else if (selectedItem == 3) {
+                state_ = State::QUIT;
+            }
+            break;
+        }
+        case Pause::PausedState::LEVEL_EDITOR: {
+            int selectedItem = currentMenu_->getSelectedItem();
+            if (selectedItem == 0) {
+                state_ = State::LEVEL_EDITOR;
+            } else if (selectedItem == 1) {
+                switchMenu(Menu::Type::MAIN, State::MENU);
+                updateView_ = true; // Center the view back to default
+            } else if (selectedItem == 2) {
+                state_ = State::QUIT;
+            }
+            break;
+        }
     }
+
 }
 
 World &GameModel::getWorld() {
@@ -437,11 +465,14 @@ void GameModel::handleMouseRelease(const sf::Mouse::Button& button, const sf::Ve
 void GameModel::draw(sf::RenderWindow& window) const {
     if (isRunning()) {
         world_.draw(window);
-    } else if (isPaused()) {
+    } else if (isPausedAtRunning()) {
         world_.draw(window);
         currentMenu_->draw(window);
     } else if (isLevelEditor()) {
         levelEditor_.draw(window);
+    } else if (isPaused()) {
+        levelEditor_.draw(window);
+        currentMenu_->draw(window);
     } else {
         currentMenu_->draw(window);
     }
@@ -453,6 +484,10 @@ bool GameModel::isRunning() const {
 
 bool GameModel::isPaused() const {
     return state_ == State::PAUSED;
+}
+
+bool GameModel::isPausedAtRunning() const {
+    return isPaused() && getMenu<Pause>(Menu::Type::PAUSE).getPausedState() == Pause::PausedState::RUNNING;
 }
 
 bool GameModel::updateView() const {
