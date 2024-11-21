@@ -41,6 +41,7 @@ void GameModel::update() {
 
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
+    updateView_ = true; // Force view update to center the view
     switchMenu(Menu::Type::GAME_OVER, State::GAME_OVER);
     auto &gameOverMenu = getMenu<GameOver>(Menu::Type::GAME_OVER);
     auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
