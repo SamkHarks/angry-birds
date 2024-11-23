@@ -14,6 +14,9 @@ class Game {
         GameModel model_;
         GameView view_;
         GameController controller_;
+        float elapsedTime_ = 0;
+        sf::Clock timer;
+        void controlFrameRate();
 };
 
 #endif // GAME_HPP
