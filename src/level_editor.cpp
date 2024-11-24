@@ -728,3 +728,9 @@ void LevelEditor::captureLevelImage(const sf::RenderWindow& window) {
     levelCreator_.captureScreenShot(window);
     notifications_.addNotification("Screenshot saved successfully", Notifications::Type::MESSAGE);
 }
+
+void LevelEditor::updateHUD(const sf::RenderWindow& window) {
+    buttonGroups_.updatePosition(window);
+    settings_.updatePosition(window);
+    notifications_.updatePosition(window);
+}

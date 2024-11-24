@@ -125,6 +125,24 @@ struct ButtonGroup {
             offset += 80;
         }
     }
+
+    void updatePosition(const sf::RenderWindow& window) {
+        int offset = VIEW.getCenter().x - 200;
+        int y = 60; int shapeY = 15; int shapeX = 20;
+        for (int i = 0; i < BUTTONS; ++i) {
+            sf::RectangleShape& shape = i >= EDITOR_BUTTONS ? iconButtons[i - EDITOR_BUTTONS].shape : editorButtons[i].shape;
+             if (i >= EDITOR_BUTTONS) {;
+                shape.setPosition(window.mapPixelToCoords(sf::Vector2i(shapeX, shapeY)));
+                shapeX += 90;
+                continue;
+            }
+            int x = offset + (i < 3 ? 20 : 15);
+            shape.setPosition(window.mapPixelToCoords(sf::Vector2i(offset, shapeY)));
+            sf::Text& text = editorButtons[i].text;
+            text.setPosition(window.mapPixelToCoords(sf::Vector2i(x, y)));
+            offset += 80;
+        }
+    }
 };
 
 struct Notifications {
@@ -195,12 +213,17 @@ struct Notifications {
     void init() {
         background.setOutlineColor(sf::Color::Black);
         background.setOutlineThickness(3);
-        background.setPosition(VIEW.getCenter().x, 150);
+        background.setPosition(VIEW.getCenter().x, Y_POSITION);
     }
     void handleResize() {
-        background.setPosition(VIEW.getCenter().x, 150);
+        background.setPosition(VIEW.getCenter().x, Y_POSITION);
         updateTextPositions(true, messages);
         updateTextPositions(true, errors);
+    }
+    void updatePosition(const sf::RenderWindow& window) {
+        background.setPosition(window.mapPixelToCoords(sf::Vector2i(VIEW.getCenter().x, Y_POSITION)));
+        updateTextPositions(errors, window);
+        updateTextPositions(messages, window);
     }
     
     private:
@@ -211,6 +234,7 @@ struct Notifications {
         const int HORIZONTAL_PADDING = 40; // Horizontal padding around the text
         const int MARGIN = 10;       // Margin between messages
         const int TEXT_SIZE = 40;    // Text character size
+        const int Y_POSITION = 150; // background position
         // helper methods
         void setupText(sf::Text& text, const std::string& message) {
             text.setFont(ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
@@ -236,14 +260,29 @@ struct Notifications {
         }
         void updateTextPositions(bool updatePositions, std::vector<sf::Text>& container) {
             if (updatePositions) {
+                int x = (background.getPosition().x - width/2) + (HORIZONTAL_PADDING / 2);
                 for (auto& item : container) {
-                    item.setPosition((background.getPosition().x - width/2) + (HORIZONTAL_PADDING / 2), item.getPosition().y);
+                    item.setPosition(x, item.getPosition().y);
                 }
+            }
+        }
+        void updateTextPositions(std::vector<sf::Text>& container, const sf::RenderWindow& window) {
+            int size = container.size();
+            int x = (VIEW.getCenter().x - width / 2) + (HORIZONTAL_PADDING / 2);
+            int y = 0;
+            for (int i = 0; i < size; ++i) {
+                sf::Text& item = container[i];
+                auto top = item.getLocalBounds().top;
+                if (i == 0) {
+                    y = Y_POSITION + VERITCAL_PADDING - top;
+                } else {
+                    y += TEXT_SIZE + MARGIN;
+                }
+                item.setPosition(window.mapPixelToCoords(sf::Vector2i(x, y)));
             }
         }
         void pushNewText(sf::Text& text, std::vector<sf::Text>& container) {
             auto localBounds = text.getLocalBounds();
-    
             // Calculate Y based on the previous containers's Y position or the top of the background
             auto y = container.empty() 
                     ? background.getPosition().y + VERITCAL_PADDING - localBounds.top
@@ -338,6 +377,25 @@ struct CheckboxGroup {
             shape.setPosition(shapeX, text.getPosition().y);
             checkmark.setPosition(shape.getPosition());
         }
+    }
+    void updatePosition(const sf::RenderWindow& window) {
+        int offset = VIEW.getCenter().x - 200;
+        int basePositionY = backgroundPositionY + padding;
+        int gap = 50;
+        for (int i = 0; i < checkBoxes.size(); ++i) {
+            Checkbox& checkbox = checkBoxes[static_cast<Type>(i)];
+            sf::Text& text = checkbox.text;
+            sf::RectangleShape &checkmark = checkbox.checkmark;
+            sf::RectangleShape &shape = checkbox.shape;
+            int y = basePositionY + i * gap;
+            auto position = window.mapPixelToCoords(sf::Vector2i(shapeX, y));
+            shape.setPosition(position);
+            checkmark.setPosition(position);
+            text.setPosition(window.mapPixelToCoords(sf::Vector2i(padding * 2, y)));
+        }
+        iconButton.shape.setPosition(window.mapPixelToCoords(sf::Vector2i(110, 15)));
+        background.setPosition(window.mapPixelToCoords(sf::Vector2i(padding, backgroundPositionY)));
+        
     }
     bool isHovered(const sf::Vector2f& mousePosition) const {
         return isOpen && background.getGlobalBounds().contains(mousePosition);
@@ -457,6 +515,7 @@ class LevelEditor {
         void saveLevel(const sf::RenderWindow& window);
         void captureLevelImage(const sf::RenderWindow& window);
         void update();
+        void updateHUD(const sf::RenderWindow& window);
     private:
         CheckboxGroup settings_;
         Notifications notifications_;
