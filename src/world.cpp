@@ -346,3 +346,9 @@ void World::handleKeyPress(const sf::Keyboard::Key& code) {
     }
 
 }
+
+void World::updateHUD(const sf::RenderWindow& window) {
+    scoreManager_.updatePosition(window);
+    cannon_->updateTextPosition(window);
+    updateRemainingCountPositions(window);
+}

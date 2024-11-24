@@ -55,6 +55,7 @@ class World {
         void handleResize();
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleKeyPress(const sf::Keyboard::Key& code);
+        void updateHUD(const sf::RenderWindow& window);
     private:
         b2World *world_;
         b2Vec2 gravity_;
