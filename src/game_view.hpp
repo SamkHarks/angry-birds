@@ -15,11 +15,13 @@ class GameView: public sf::RenderWindow {
         void setGameView();
         void setGameView(const sf::View& view);
         void handleResize(const float& width, const float& height);
+        void setUpdateHUD(bool updateHUD);
     private:
         sf::Vector2f defaultCenter_;
         sf::View gameView_;
         bool manualControl_ = true;
         bool updateView_ = false;
+        bool updateHUD_ = false;
 };
 
 #endif // GAME_VIEW_HPP

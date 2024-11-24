@@ -10,6 +10,9 @@ Score::Score() {
     text_.setOutlineColor(sf::Color::Black);
     text_.setOutlineThickness(2);
     text_.setString("Score: 0 High Score: " + std::to_string(highScore_));
+    sf::FloatRect textBounds = text_.getGlobalBounds();
+    float xPosition = VIEW.getWidth() - textBounds.width - 20;
+    text_.setPosition(xPosition, 10);
 }
 
 void Score::updatePosition(const sf::RenderWindow& window) {

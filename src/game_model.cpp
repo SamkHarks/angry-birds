@@ -1,5 +1,6 @@
 #include "game_model.hpp"
 #include "utils.hpp"
+#include "game_view.hpp"
 #include <algorithm>
 
 GameModel::GameModel() :
@@ -441,11 +442,12 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
     levelEditor_.handleResize();
 }
 
-void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window) {
+void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, GameView& view) {
     if (isRunning()) {
+        view.setUpdateHUD(true);
         world_.getCannon()->startLaunch();
     } else if (isLevelEditor()) {
-        levelEditor_.handleMouseClick(mousePosition, window);
+        levelEditor_.handleMouseClick(mousePosition, view);
     } else {
         if (currentMenu_->handleMouseClick(mousePosition)) {
             setState();
