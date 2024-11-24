@@ -26,6 +26,23 @@ LevelEditor::LevelEditor() : levelCreator_() {
     notifications_.init();
 }
 
+void LevelEditor::handleResize() {
+    cannon_.handleResize();
+    buttonGroups_.handleResize();
+    settings_.handleResize();
+    notifications_.handleResize();
+    // Update ground
+    b2Vec2 position = ground_.data.position;
+    sf::Sprite& sprite = ground_.sprite;
+    sf::Vector2f centerPosition = utils::B2ToSfCoords(position);
+    float heightSf = 100.f;
+    sprite.setPosition(0, centerPosition.y - heightSf * 1.2f);
+    // Update objects
+    for (auto& object : objects_) {
+        object.sprite.setPosition(utils::B2ToSfCoords(object.data.position));
+    }
+}
+
 
 void LevelEditor::draw(sf::RenderWindow& window) const {
     // Draw ground

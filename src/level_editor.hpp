@@ -105,6 +105,26 @@ struct ButtonGroup {
             editorButtons.push_back(button);
         }
     }
+
+    void handleResize() {
+        int offset = VIEW.getCenter().x - 200;
+        int shapeY = 15; int shapeX = 20; int y = 60;
+        for (int i = 0; i < BUTTONS; ++i) {
+            sf::RectangleShape& shape = i >= EDITOR_BUTTONS ? iconButtons[i - EDITOR_BUTTONS].shape : editorButtons[i].shape;
+            // Create icon buttons
+            if (i >= EDITOR_BUTTONS) {;
+                shape.setPosition(shapeX, shapeY);
+                shapeX += 90;
+                continue;
+            }
+            // Create editor buttons
+            int x = offset + (i < 3 ? 20 : 15);
+            shape.setPosition(offset, shapeY);
+            sf::Text& text = editorButtons[i].text;
+            text.setPosition(x,y);
+            offset += 80;
+        }
+    }
 };
 
 struct Notifications {
@@ -176,6 +196,11 @@ struct Notifications {
         background.setOutlineColor(sf::Color::Black);
         background.setOutlineThickness(3);
         background.setPosition(VIEW.getCenter().x, 150);
+    }
+    void handleResize() {
+        background.setPosition(VIEW.getCenter().x, 150);
+        updateTextPositions(true, messages);
+        updateTextPositions(true, errors);
     }
     
     private:
@@ -251,8 +276,6 @@ struct CheckboxGroup {
     sf::RectangleShape background;
     void init(const IconButton& button) {
         iconButton = button;
-        int backgroundPositionY = 100;
-        int padding = 20;
         int basePositionY = backgroundPositionY + padding;
         int gap = 50;
         int size = 30;
@@ -264,7 +287,6 @@ struct CheckboxGroup {
         checkmark.setSize(sf::Vector2f(size, size));
         checkmark.setTexture(&resourceManager.getTexture("/assets/images/checkmark.png"));
         // Get the maximum width of the text & set Text
-        int shapeX = 0;
         std::vector<sf::Text> sfTexts;
         for (int i = 0; i < texts.size(); ++i) {
             sf::Text text;
@@ -305,6 +327,17 @@ struct CheckboxGroup {
         background.setSize(sf::Vector2f(width, height));
         background.setFillColor(sf::Color(0, 0, 0, 200));
         background.setPosition(padding, backgroundPositionY);
+    }
+    void handleResize() {
+        background.setPosition(padding, backgroundPositionY);
+        for (int i = 0; i < checkBoxes.size(); ++i) {
+            Checkbox& checkbox = checkBoxes[static_cast<Type>(i)];
+            sf::Text& text = checkbox.text;
+            sf::RectangleShape &checkmark = checkbox.checkmark;
+            sf::RectangleShape &shape = checkbox.shape;
+            shape.setPosition(shapeX, text.getPosition().y);
+            checkmark.setPosition(shape.getPosition());
+        }
     }
     bool isHovered(const sf::Vector2f& mousePosition) const {
         return isOpen && background.getGlobalBounds().contains(mousePosition);
@@ -358,11 +391,13 @@ struct CheckboxGroup {
         }
     }
     private:
+        int backgroundPositionY = 100;
+        int padding = 20;
+        int shapeX = 0;
         bool isOpen = false;
         IconButton iconButton;
         std::unordered_map<Type, Checkbox> checkBoxes;
         int hoveredIndex = -1;
-        //std::vector<Checkbox> checkboxes;
         void updateHoveredItem(bool isHovered) {
             if (hoveredIndex == -1) return;
             Checkbox& checkbox = checkBoxes[static_cast<Type>(hoveredIndex)];
@@ -414,6 +449,7 @@ class LevelEditor {
         void handleKeyRelease();
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleMouseRelease();
+        void handleResize();
         const int getSelectedItem() const;
         void createObject();
         Item convertIndexToItem() const;

@@ -22,8 +22,7 @@ Cannon::Cannon() {
 }
 
 void Cannon::handleResize() {
-    cannon_.barrelSprite.setPosition(utils::B2ToSfCoords(BIRD_INITIAL_POSITION));
-    cannon_.wheelsSprite.setPosition(utils::B2ToSfCoords(b2Vec2(BIRD_INITIAL_POSITION.x, BIRD_INITIAL_POSITION.y - 0.2f)));
+    cannon_.handleResize();
 }
 
 void Cannon::draw(sf::RenderWindow &window) const {

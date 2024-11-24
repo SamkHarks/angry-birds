@@ -438,6 +438,7 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
         }
     }
     world_.handleResize();
+    levelEditor_.handleResize();
 }
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, const sf::RenderWindow& window) {
