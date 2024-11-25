@@ -22,7 +22,7 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - **High score** - WIP (save high scores for each user and view user's high score for each level, menu for displaying all high scores missing)
 - **Sound effects and background music** - WIP (currently menu has bg music and cannon has launch sound) 
 - **Cross-platform support for Windows, Linux, and macOS**
-#### Level Editor example
+#### Level Editor example - saving fails
 ![Level Editor](assets/images/level_editor_example.png)
 ## Prerequisites
 
