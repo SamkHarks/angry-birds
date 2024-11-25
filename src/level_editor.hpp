@@ -528,7 +528,6 @@ class LevelEditor {
         int selectedItem_ = 0;
         bool isDragging_ = false;
         bool isPressed_ = false;
-        sf::Vector2f dragOffset_;
         DragOffsets dragOffsets_;
         void updateItem(bool isSelected);
         void updateIntersectingColors();
