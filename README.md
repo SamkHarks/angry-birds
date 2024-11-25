@@ -3,8 +3,7 @@
 
 Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the original Angry Birds. This game is built using **SFML** (Simple and Fast Multimedia Library) for rendering and input handling, and **Box2D** for realistic physics simulation. Launch birds with a cannon to destroy structures and defeat the pigs!
 
-<!-- Full-width image -->
-![Level Editor](assets/images/level_editor_example.png)
+![Level Selector](assets/images/level_selector_3.png)
 
 ## Features
 - **2D Physics Simulation** powered by **Box2D**
@@ -23,7 +22,8 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - **High score** - WIP (save high scores for each user and view user's high score for each level, menu for displaying all high scores missing)
 - **Sound effects and background music** - WIP (currently menu has bg music and cannon has launch sound) 
 - **Cross-platform support for Windows, Linux, and macOS**
-
+#### Level Editor example
+![Level Editor](assets/images/level_editor_example.png)
 ## Prerequisites
 
 To build and run the game, ensure the following dependencies are installed:
