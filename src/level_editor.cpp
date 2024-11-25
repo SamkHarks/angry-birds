@@ -24,9 +24,32 @@ LevelEditor::LevelEditor() : levelCreator_() {
     cannon_.init();
     // Initialize notifications
     notifications_.init();
+    // Add background
+    int height = VIEW.getHeight();
+    sf::Texture& backgroundImage = ResourceManager::getInstance().getTexture("/assets/images/background2.jpg");
+    auto size = backgroundImage.getSize();
+    auto scaleFactor = utils::getScaleFactor(size.x, size.y, VIEW.getWidth() * 2.f, height * 1.8f);
+    background_.setSize(sf::Vector2f(size.x * scaleFactor, size.y * scaleFactor));
+    background_.setTexture(&backgroundImage);
+    background_.setPosition(0,-height+ 200);
 }
 
 void LevelEditor::handleResize() {
+    // Original dimensions of the background image
+    float originalWidth = WORLD_WIDTH;
+    float originalHeight = WORLD_HEIGHT;
+
+    // Calculate the scale factors based on the new window size
+    float scaleX = (2 * VIEW.getWidth()) / originalWidth;
+    float scaleY = (1.8f * VIEW.getHeight()) / originalHeight;
+
+    // Choose the smaller of the two scale factors
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    // Apply the scaling to the background (this scales both axes proportionally)
+    background_.setScale(scaleFactor, scaleFactor);
+    background_.setPosition(0, -VIEW.getHeight() + 200);
+
     cannon_.handleResize();
     buttonGroups_.handleResize();
     settings_.handleResize();
@@ -45,6 +68,8 @@ void LevelEditor::handleResize() {
 
 
 void LevelEditor::draw(sf::RenderWindow& window) const {
+    // Draw background
+    window.draw(background_);
     // Draw ground
     window.draw(ground_.sprite);
     // Draw editor buttons

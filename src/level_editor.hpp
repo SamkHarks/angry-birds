@@ -525,6 +525,7 @@ class LevelEditor {
         std::vector<LevelObject> objects_;
         std::vector<Bird::Type> birdList_;
         ButtonGroup buttonGroups_;
+        sf::RectangleShape background_;
         int selectedItem_ = 0;
         bool isDragging_ = false;
         bool isPressed_ = false;
