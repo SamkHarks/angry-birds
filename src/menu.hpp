@@ -20,6 +20,7 @@ class Menu {
             GAME_OVER,      // The game over menu.
         };
         Menu(Type type);
+        virtual ~Menu() = default;
         virtual void draw(sf::RenderWindow& window) const = 0;
         const int getSelectedItem() const;
         void setSelectedItem(int nextItem);
@@ -38,8 +39,6 @@ class Menu {
     protected:
         sf::RectangleShape woodenSign_;
         sf::RectangleShape background_;
-        sf::Texture backgroundImage_;
-        sf::SoundBuffer backgroundMusicBuffer_;
         sf::Sound backgroundMusic_;
         int buttonAmount_ = 0;
         std::vector<sf::Text> menuItems_;
