@@ -5,9 +5,8 @@
 UserSelector::UserSelector() : userLoader_(*this) {
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     ResourceManager& resourceManager = ResourceManager::getInstance();
-    font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     // set prompt text
-    promptText_.setFont(font_);
+    promptText_.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
     promptText_.setString("Add new player:");
     promptText_.setFillColor(sf::Color::White);
     promptText_.setOutlineColor(sf::Color::Black);
@@ -20,7 +19,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
     std::vector<std::string> texts = { "Yes", "No", "Back" };
     acceptText_.resize(texts.size());
     for(int i = 0; i < texts.size(); i++) {
-        acceptText_[i].setFont(font_);
+        acceptText_[i].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         acceptText_[i].setString(texts[i]);
         acceptText_[i].setFillColor(sf::Color::White);
         acceptText_[i].setOutlineColor(sf::Color::Black);
@@ -33,7 +32,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
         acceptText_[i].setPosition(SCREEN_CENTER.x + (xOffset), SCREEN_CENTER.y + yOffset);
     }
     // set player text
-    playerText_.setFont(font_);
+    playerText_.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
     playerText_.setFillColor(sf::Color::White);
     playerText_.setOutlineColor(sf::Color::Black);
     playerText_.setOutlineThickness(5);
@@ -102,7 +101,7 @@ void UserSelector::initializePlayerNames() {
     playerNames_.clear();
     playerNames_.resize(userCount);
     for (int i = 0; i < userCount; i++) {
-        playerNames_[i].setFont(font_);
+        playerNames_[i].setFont(ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         playerNames_[i].setFillColor(sf::Color::White);
         playerNames_[i].setOutlineColor(sf::Color::Black);
         playerNames_[i].setOutlineThickness(5);

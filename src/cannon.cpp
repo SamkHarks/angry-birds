@@ -4,11 +4,9 @@
 
 Cannon::Cannon() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
-    font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
-
     cannon_.init();
 
-    powerText_.setFont(font_);
+    powerText_.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
     powerText_.setString("Power: 0 %");   
     powerText_.setFillColor(sf::Color::White);
     powerText_.setCharacterSize(40);

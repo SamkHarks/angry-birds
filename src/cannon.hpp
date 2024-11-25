@@ -58,7 +58,6 @@ class Cannon {
     private:
         CannonSprites cannon_;
         sf::Text powerText_;
-        sf::Font font_;
         sf::Sound launchSound_;
         sf::Clock pressClock_;
         float power_ = 0;

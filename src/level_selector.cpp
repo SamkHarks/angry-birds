@@ -11,11 +11,10 @@ LevelSelector::LevelSelector() {
     ResourceManager& resourceManager = ResourceManager::getInstance();
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     // Load font
-    font_ = resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     std::vector<std::string> button_texts = { "Level 1", "Back" };
     for (int i = 0; i < button_texts.size(); ++i) {
         sf::Text text;
-        text.setFont(font_);
+        text.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         text.setCharacterSize(55);
         text.setFillColor(sf::Color::White);
         text.setOutlineColor(sf::Color::Black);
@@ -45,12 +44,12 @@ LevelSelector::LevelSelector() {
         sign_[i].setOrigin(sign_[i].getGlobalBounds().width / 2, sign_[i].getGlobalBounds().height / 2);
         int xOffset = i == 0 ? -SIGN_X_OFFSET : SIGN_X_OFFSET;
         sign_[i].setPosition(SCREEN_CENTER.x + xOffset, SCREEN_CENTER.y + SIGN_Y_OFFSET);
-        signText_[i].setFont(font_);
+        signText_[i].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         signText_[i].setFillColor(sf::Color::White);
         signText_[i].setOutlineColor(sf::Color::Black);
         signText_[i].setOutlineThickness(3);
     }
-    signText_[2].setFont(font_);
+    signText_[2].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
     signText_[2].setFillColor(sf::Color::White);
     signText_[2].setOutlineColor(sf::Color::Black);
     signText_[2].setOutlineThickness(3);

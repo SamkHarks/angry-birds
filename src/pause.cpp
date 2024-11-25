@@ -1,6 +1,7 @@
 #include "pause.hpp"
 #include "utils.hpp"
 #include <iostream>
+#include "resource_manager.hpp"
 
 Pause::Pause() : Menu(Menu::Type::PAUSE) {
     // Create menu items
@@ -37,6 +38,7 @@ void Pause::updatePosition(const sf::RenderWindow& window) {
 }
 
 void Pause::updateTitle(const sf::RenderWindow& window) {
+    ResourceManager& resourceManager = ResourceManager::getInstance();
     int yOffset = 340;
     float radius = 680;
     std::string title = "Game Paused";
@@ -50,7 +52,7 @@ void Pause::updateTitle(const sf::RenderWindow& window) {
     float totalWidth = 0.0f;
     for (char c : title) {
         sf::Text tempText;
-        tempText.setFont(font_);
+        tempText.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         tempText.setString(c);
         tempText.setCharacterSize(80);
         tempText.setOutlineThickness(5);
@@ -62,7 +64,7 @@ void Pause::updateTitle(const sf::RenderWindow& window) {
     title_.resize(title.size());
     float currentAngle = startAngle;
     for (size_t i = 0; i < title.size(); ++i) {
-        title_[i].setFont(font_);
+        title_[i].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         title_[i].setString(title[i]);
         title_[i].setFillColor(sf::Color::White);
         title_[i].setOutlineColor(sf::Color::Black);

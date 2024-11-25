@@ -5,7 +5,6 @@
 
 Menu::Menu(Type type) : type_(type), menuItems_(buttonAmount_) {
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
-    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
     woodenSign_.setSize(sf::Vector2f(860, 860));
     woodenSign_.setTexture(&ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png"));
     woodenSign_.setOrigin(woodenSign_.getGlobalBounds().width / 2, woodenSign_.getGlobalBounds().height / 2);
@@ -97,6 +96,7 @@ void Menu::updateMusic(sf::SoundSource::Status newStatus) {
 }
 
 void Menu::setTitle(const std::string& title, float radius, int yOffset) {
+    ResourceManager& resourceManager = ResourceManager::getInstance();
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     // Define the circular path segment
     sf::Vector2f center(SCREEN_CENTER.x, SCREEN_CENTER.y+yOffset);
@@ -107,7 +107,7 @@ void Menu::setTitle(const std::string& title, float radius, int yOffset) {
     float totalWidth = 0.0f;
     for (char c : title) {
         sf::Text tempText;
-        tempText.setFont(font_);
+        tempText.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         tempText.setString(c);
         tempText.setCharacterSize(80);
         tempText.setOutlineThickness(5);
@@ -118,7 +118,7 @@ void Menu::setTitle(const std::string& title, float radius, int yOffset) {
     title_.resize(title.size());
     float currentAngle = startAngle;
     for (size_t i = 0; i < title.size(); ++i) {
-        title_[i].setFont(font_);
+        title_[i].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         title_[i].setString(title[i]);
         title_[i].setFillColor(sf::Color::White);
         title_[i].setOutlineColor(sf::Color::Black);
@@ -172,7 +172,7 @@ void Menu::updateMenuItems() {
     const MenuItemLayout &layout = getMenuItemLayout();
 
     for (int i = 0; i < buttonAmount_; ++i) {
-        menuItems_[i].setFont(font_);
+        menuItems_[i].setFont(ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         menuItems_[i].setString(buttonNames[i]);
         menuItems_[i].setFillColor(sf::Color::White);
         menuItems_[i].setOutlineColor(sf::Color::Black);

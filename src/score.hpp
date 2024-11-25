@@ -32,7 +32,6 @@ private:
     int stars_ = 0;
     std::vector<HighScore> highScores_;
     sf::Text text_;
-    sf::Font font_;
 };
 
 #endif // SCORE_HPP

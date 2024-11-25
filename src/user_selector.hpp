@@ -53,7 +53,6 @@ class UserSelector {
         const IndexRange& getIndexRange() const;
         void setIndexRange(Item item);
     private:
-        sf::Font font_;
         sf::Text promptText_; // Text prompt for player name
         sf::Text playerText_; // Text input for player name
         sf::Text loadHeaderText_; // Text header for load player screen

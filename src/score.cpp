@@ -3,8 +3,7 @@
 
 
 Score::Score() {
-    font_ = ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf");
-    text_.setFont(font_);
+    text_.setFont(ResourceManager::getInstance().getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
     text_.setCharacterSize(40);
     text_.setFillColor(sf::Color::White);
     text_.setOutlineColor(sf::Color::Black);

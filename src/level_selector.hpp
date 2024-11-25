@@ -47,7 +47,6 @@ class LevelSelector {
         std::vector<sf::RectangleShape> buttons_;
         sf::Texture rightArrow_;
         sf::Texture leftArrow_;
-        sf::Font font_;
         Item selectedItem_ = Item::LEVEL;
         std::vector<Level> levels_;
         int levelIndex_ = 0;
