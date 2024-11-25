@@ -9,12 +9,10 @@ Menu::Menu(Type type) : type_(type), menuItems_(buttonAmount_) {
     woodenSign_.setTexture(&ResourceManager::getInstance().getTexture("/assets/images/wooden_sign.png"));
     woodenSign_.setOrigin(woodenSign_.getGlobalBounds().width / 2, woodenSign_.getGlobalBounds().height / 2);
     woodenSign_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 30);
-    backgroundImage_ = ResourceManager::getInstance().getTexture("/assets/images/background.jpg");
-    backgroundMusicBuffer_ = ResourceManager::getInstance().getSoundBuffer("/assets/sounds/menu_2.wav");
     background_.setSize(sf::Vector2f(VIEW.getWidth(), VIEW.getHeight()));
-    background_.setTexture(&backgroundImage_);
+    background_.setTexture(&ResourceManager::getInstance().getTexture("/assets/images/background.jpg"));
     background_.setPosition(0,0);
-    backgroundMusic_.setBuffer(backgroundMusicBuffer_);
+    backgroundMusic_.setBuffer(ResourceManager::getInstance().getSoundBuffer("/assets/sounds/menu_2.wav"));
     backgroundMusic_.setVolume(10);
     backgroundMusic_.setLoop(true);
 }

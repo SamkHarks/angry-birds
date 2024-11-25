@@ -6,13 +6,14 @@ const float STAR_SIZE = 100;
 const int SIGN_X_OFFSET = 530;
 const int SIGN_Y_OFFSET = 200;
 const int BUTTON_X_OFFSET = 280;
+const int ITEMS = 2;
 
-LevelSelector::LevelSelector() {
+LevelSelector::LevelSelector() : buttons_(ITEMS), sign_(ITEMS), signText_(ITEMS + 1), stars_(ITEMS + 2) {
     ResourceManager& resourceManager = ResourceManager::getInstance();
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     // Load font
     std::vector<std::string> button_texts = { "Level 1", "Back" };
-    for (int i = 0; i < button_texts.size(); ++i) {
+    for (int i = 0; i < ITEMS; ++i) {
         sf::Text text;
         text.setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         text.setCharacterSize(55);
@@ -27,16 +28,13 @@ LevelSelector::LevelSelector() {
     }
 
     // Load level image
-    levelImage_ = resourceManager.getTexture("/assets/screenshots/level1.png");
     level_.setSize(sf::Vector2f(VIEW.getWidth(),VIEW.getHeight()));
-    level_.setTexture(&levelImage_);
+    level_.setTexture(&resourceManager.getTexture("/assets/screenshots/level1.png"));
     level_.setOrigin(level_.getGlobalBounds().width / 2, level_.getGlobalBounds().height / 2);
     level_.setScale(0.27f, 0.27f);
     level_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y + 20);
 
     // Load name sign
-    sign_.resize(2);
-    signText_.resize(3);
     for (int i = 0; i < 2; ++i) {
         sign_[i].setSize(sf::Vector2f(320, 320));
         std::string path = "/assets/images/wooden_sign" + std::to_string(i + 2) + ".png";
@@ -55,14 +53,12 @@ LevelSelector::LevelSelector() {
     signText_[2].setOutlineThickness(3);
 
     // Load arrow textures
-    leftArrow_ = resourceManager.getTexture("/assets/images/wooden_arrow2.png");
-    rightArrow_ = resourceManager.getTexture("/assets/images/wooden_arrow.png");
-    buttons_.resize(2);
     for (int i = 0; i < 2; ++i) {
         buttons_[i].setSize(sf::Vector2f(100, 100));
         auto globalBounds = buttons_[i].getGlobalBounds();
         buttons_[i].setOrigin(globalBounds.width / 2, globalBounds.height / 2);
-        buttons_[i].setTexture(i == 0 ? &leftArrow_ : &rightArrow_);
+        std::string path = i == 0 ? "/assets/images/wooden_arrow2.png" : "/assets/images/wooden_arrow.png";
+        buttons_[i].setTexture(&resourceManager.getTexture(path));
         buttons_[i].setPosition(SCREEN_CENTER.x + (i == 0 ? -BUTTON_X_OFFSET : BUTTON_X_OFFSET), SCREEN_CENTER.y + 20);
     }
 
@@ -70,7 +66,6 @@ LevelSelector::LevelSelector() {
     loadLevels();
 
     // Load stars
-    stars_.resize(4);
     float starSize = 100;
     for (size_t i = 0; i < stars_.size(); ++i) {
         stars_[i].setTexture(resourceManager.getTexture("/assets/images/stars_" + std::to_string(i) + ".png"));
@@ -218,8 +213,7 @@ void LevelSelector::setLevelText() {
 }
 
 void LevelSelector::setLevelImage() {
-    levelImage_ = ResourceManager::getInstance().getTexture("/assets/screenshots/" + levels_[levelIndex_].image);
-    level_.setTexture(&levelImage_);
+    level_.setTexture(&ResourceManager::getInstance().getTexture("/assets/screenshots/" + levels_[levelIndex_].image));
 }
 
 void LevelSelector::setLevel(Item item) {

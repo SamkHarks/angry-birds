@@ -29,7 +29,6 @@ class Object {
         virtual bool shouldRemove() const;
 
     protected:
-        sf::Texture texture_;
         sf::Sprite sprite_;
         b2Body *body_;
         float health_;

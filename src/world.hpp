@@ -65,7 +65,6 @@ class World {
         int levelIndex_ = 0;
         Cannon *cannon_;
         sf::RectangleShape background_;
-        sf::Texture background_image_;
         int totalPigCount_ = 0;
         int totalBirdCount_ = 0;
         std::string fileName_;

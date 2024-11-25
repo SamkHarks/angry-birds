@@ -3,8 +3,7 @@
 #include "resource_manager.hpp"
 
 Object::Object(b2Body *body, Type type, std::string texture_file, float health, bool isDestrucable) : body_(body), type_(type), health_(health), isDestrucable_(isDestrucable) {
-    texture_ = ResourceManager::getInstance().getTexture(texture_file);
-    sprite_.setTexture(texture_);
+    sprite_.setTexture(ResourceManager::getInstance().getTexture(texture_file));
 }
 
 b2Body* Object::getBody() {

@@ -2,7 +2,10 @@
 #include "utils.hpp"
 #include "resource_manager.hpp"
 
-UserSelector::UserSelector() : userLoader_(*this) {
+const int NUM_BUTTONS = 2;
+const int ACCEPT_TEXT = 3;
+
+UserSelector::UserSelector() : userLoader_(*this), acceptText_(ACCEPT_TEXT), buttons_(NUM_BUTTONS) {
     sf::Vector2f SCREEN_CENTER = VIEW.getCenter();
     ResourceManager& resourceManager = ResourceManager::getInstance();
     // set prompt text
@@ -17,8 +20,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
     promptText_.setPosition(SCREEN_CENTER.x, SCREEN_CENTER.y - 50);
     // set accept text
     std::vector<std::string> texts = { "Yes", "No", "Back" };
-    acceptText_.resize(texts.size());
-    for(int i = 0; i < texts.size(); i++) {
+    for(int i = 0; i < ACCEPT_TEXT; i++) {
         acceptText_[i].setFont(resourceManager.getFont("/assets/fonts/BerkshireSwash-Regular.ttf"));
         acceptText_[i].setString(texts[i]);
         acceptText_[i].setFillColor(sf::Color::White);
@@ -53,8 +55,7 @@ UserSelector::UserSelector() : userLoader_(*this) {
     );
 
     // Load arrow textures
-    buttons_.resize(2);
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < NUM_BUTTONS; ++i) {
         buttons_[i].setSize(sf::Vector2f(100, 100));
         auto globalBounds = buttons_[i].getGlobalBounds();
         buttons_[i].setOrigin(globalBounds.width / 2, globalBounds.height / 2);

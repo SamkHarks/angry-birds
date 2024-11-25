@@ -42,11 +42,8 @@ class LevelSelector {
         std::vector<sf::Text> signText_;
         std::vector<sf::RectangleShape> sign_;
         sf::RectangleShape level_;
-        sf::Texture levelImage_;
         std::vector<sf::Text> menuItems_;
         std::vector<sf::RectangleShape> buttons_;
-        sf::Texture rightArrow_;
-        sf::Texture leftArrow_;
         Item selectedItem_ = Item::LEVEL;
         std::vector<Level> levels_;
         int levelIndex_ = 0;

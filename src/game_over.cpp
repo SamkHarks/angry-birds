@@ -1,20 +1,18 @@
 #include "game_over.hpp"
 #include "utils.hpp"
 #include <vector>
+#include "resource_manager.hpp"
 
-GameOver::GameOver() : Menu(Menu::Type::GAME_OVER) {
+const int NUM_STARS = 4;
+
+GameOver::GameOver() : Menu(Menu::Type::GAME_OVER), starSprites_(NUM_STARS) {
     const sf::Vector2f &SCREEN_CENTER = VIEW.getCenter();
-    // Load star textures
-    starTextures_.resize(4);
-    for (int i = 0; i < 4; ++i) {
-        if (!utils::loadFromFile(starTextures_[i], "/assets/images/stars_" + std::to_string(i) + ".png")) {
-            throw std::runtime_error("Failed to load texture file: assets/images/stars_" + std::to_string(i) + ".png");
-        }
-    }
+    auto getFilePath = [](int i) {
+        return "/assets/images/stars_" + std::to_string(i) + ".png";
+    };
     // Create star sprites
-    starSprites_.resize(4);
-    for (size_t i = 0; i < starSprites_.size(); ++i) {
-        starSprites_[i].setTexture(starTextures_[i]);
+    for (size_t i = 0; i < NUM_STARS; ++i) {
+        starSprites_[i].setTexture(ResourceManager::getInstance().getTexture(getFilePath(i)));
         starSprites_[i].setScale(1, 0.7);
         auto textureRect = starSprites_[i].getTextureRect();
         starSprites_[i].setOrigin(textureRect.width / 2.f, textureRect.height / 2.f);

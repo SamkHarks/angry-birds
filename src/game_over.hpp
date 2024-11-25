@@ -15,7 +15,6 @@ class GameOver: public Menu {
         void setHasNextlevel(bool hasNextLevl);
     private:
         Score* scoreManager_ = nullptr;
-        std::vector<sf::Texture> starTextures_;
         std::vector<sf::Sprite> starSprites_;
         sf::Clock clock_;
         const std::vector<std::string>& getButtonNames() const override;
