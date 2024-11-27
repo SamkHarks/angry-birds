@@ -29,7 +29,7 @@ file(GLOB SOURCES src/*.cpp)
 
 add_executable(AngryBirds ${SOURCES})
 target_link_libraries(AngryBirds PRIVATE sfml-graphics sfml-audio box2d nlohmann_json::nlohmann_json)
-target_compile_features(AngryBirds PRIVATE cxx_std_17)
+target_compile_features(AngryBirds PRIVATE cxx_std_20)
 
 # Copy assets directory to build directory
 add_custom_command(TARGET AngryBirds POST_BUILD
