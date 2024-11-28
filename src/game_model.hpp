@@ -71,9 +71,6 @@ class GameModel {
         LevelEditor levelEditor_;
         bool updateView_ = false;
         void handleLevelEnd();
-        void handleCollisions();
-        void handleObjectState();
-        void handleBirdState();
         void handleMainMenuState();
         void handleGameOverState();
         void handleSettingsState();

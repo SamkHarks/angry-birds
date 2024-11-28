@@ -34,9 +34,6 @@ class World {
         Bird *GetBird();
         const Bird* GetBird() const;
         b2World* getWorld();
-        std::list<Object *> getObjects();
-        void removeObject(Object *object);
-        void removeBird();
         void resetBird();
         int getRemainingBirdCount() const;
         int getRemainingPigCount() const;
@@ -56,6 +53,9 @@ class World {
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleKeyPress(const sf::Keyboard::Key& code);
         void updateHUD(const sf::RenderWindow& window);
+        void handleCollisions();
+        void handleBirdState();
+        void handleObjectState();
     private:
         b2World *world_;
         b2Vec2 gravity_;
@@ -74,6 +74,8 @@ class World {
         std::list<SfObject> sfObjects_;
         LevelLoader levelLoader_;
         friend class LevelLoader;
+        std::list<Object*>::iterator removeObject(std::list<Object*>::iterator it);
+        void removeBird();
 };
 
 #endif // WORLD_HPP

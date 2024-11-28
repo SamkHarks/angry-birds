@@ -104,10 +104,6 @@ b2World* World::getWorld() {
     return world_;
 }
 
-std::list<Object *> World::getObjects() {
-    return objects_;
-}
-
 Bird* World::GetBird() {
     if (birds_.empty()) {
         return nullptr;
@@ -136,10 +132,15 @@ void World::draw(sf::RenderWindow &window) const {
     cannon_->draw(window);
 }
 
-void World::removeObject(Object *object) {
+std::list<Object*>::iterator World::removeObject(std::list<Object*>::iterator it) {
+    Object* object = *it;
+    // Remove object from the Box2D world
     world_->DestroyBody(object->getBody());
-    objects_.remove(object);
+    // Erase the object from the list and return the next valid iterator & free memory
+    it = objects_.erase(it);
     delete object;
+    // Return the next valid iterator
+    return it;
 }
 
 void World::removeBird() {
@@ -352,3 +353,52 @@ void World::updateHUD(const sf::RenderWindow& window) {
     cannon_->updateTextPosition(window);
     updateRemainingCountPositions(window);
 }
+
+void World::handleCollisions() {
+    // Check for collisions
+    for (b2Contact *ce = world_->GetContactList(); ce; ce = ce->GetNext()) {
+        b2Contact *c = ce;
+
+        Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
+        Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
+
+        if (objA == nullptr || objB == nullptr) {
+            continue;
+        }
+        
+        objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
+        objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
+    }
+}
+
+
+void World::handleObjectState() {
+    // Check if any objects are destroyed or out of bounds otherwise update them
+   for (std::list<Object*>::iterator it = objects_.begin(); it != objects_.end(); ) {
+        Object* object = *it;
+        if (object->shouldRemove()) {
+            if (object->getType() == Object::Type::Pig) {
+                updateRemainingCounts(object->getTypeAsChar());
+            }
+            updateScore(object->getDestructionScore());
+            it = removeObject(it); // Remove object and get next valid iterator
+        } else {
+            object->update();
+            ++it; // Safe to increment iterator
+        }
+    }
+}
+
+void World::handleBirdState() {
+    // Check if the bird is destroyed or out of bounds otherwise update it
+    Bird *bird = GetBird();
+    if (bird != nullptr) {
+        if (bird->shouldRemove()) {
+            updateRemainingCounts(bird->getTypeAsChar());
+            removeBird();
+        } else {
+            bird->update();
+        }
+    }
+}
+

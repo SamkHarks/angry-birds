@@ -30,11 +30,11 @@ void GameModel::update() {
             handleLevelEnd();
         }
         // Handle collisions
-        handleCollisions();
+        world_.handleCollisions();
 
         // Handle object state and bird state
-        handleObjectState();
-        handleBirdState();
+        world_.handleObjectState();
+        world_.handleBirdState();
     } else if (isLevelEditor()) {
         levelEditor_.update();
     }
@@ -56,47 +56,6 @@ void GameModel::handleLevelEnd() {
     gameOverMenu.setScoreManager(&world_.getScore());
     gameOverMenu.setHasNextlevel(gameSelector.getLevelSelector().hasNextLevel());
     gameOverMenu.updateMenuItems();
-}
-
-void GameModel::handleCollisions() {
-    // Check for collisions
-    for (b2Contact *ce = world_.getWorld()->GetContactList(); ce; ce = ce->GetNext()) {
-        b2Contact *c = ce;
-
-        Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
-        Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
-        
-        objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
-        objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
-    }
-}
-
-void GameModel::handleObjectState() {
-    // Check if any objects are destroyed or out of bounds otherwise update them
-    for (auto object : world_.getObjects()) {
-        if (object->shouldRemove()) {
-            if (object->getType() == Object::Type::Pig) {
-                world_.updateRemainingCounts(object->getTypeAsChar());
-            }
-            world_.updateScore(object->getDestructionScore());
-            world_.removeObject(object);
-        } else {
-            object->update();
-        }
-    }
-}
-
-void GameModel::handleBirdState() {
-    // Check if the bird is destroyed or out of bounds otherwise update it
-    Bird *bird = world_.GetBird();
-    if (bird != nullptr) {
-        if (bird->shouldRemove()) {
-            world_.updateRemainingCounts(bird->getTypeAsChar());
-            world_.removeBird();
-        } else {
-            bird->update();
-        }
-    }
 }
 
 const GameModel::State& GameModel::getState() const {
