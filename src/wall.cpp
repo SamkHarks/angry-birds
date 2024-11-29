@@ -28,13 +28,13 @@ void Wall::handleCollision(Object* objectB) {
     float damage = objectB->getBody()->GetLinearVelocity().LengthSquared();
     switch (objectB->getType()) {
         case Type::Bird:
-            damage = damage * 0.2f;
+            damage = damage * 0.25f;
             break;
         case Type::Pig:
             damage = damage * 0.2f;
             break;
         case Type::Wall:
-            damage = damage * 0.5f;
+            damage = damage * 0.3f;
             break;
         default:
             break;

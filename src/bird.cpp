@@ -106,7 +106,7 @@ void Bird::handleCollision(Object* objectB) {
             damage = damage * 0.5;
             break;
         case Object::Type::Wall:
-            damage = damage * 2.f;
+            damage = damage * 1.5f;
             break;
         case Object::Type::Ground:
             if (prevY_ > 0.95f) {
