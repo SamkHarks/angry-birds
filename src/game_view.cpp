@@ -30,7 +30,9 @@ void GameView::updateCamera(GameModel& model) {
         const Bird* activeBird = world.GetBird();
         if (activeBird && activeBird->isMoving()) {
             sf::Vector2f birdPosition = utils::B2ToSfCoords(activeBird->getBody()->GetPosition());
-            gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), WORLD_WIDTH - (gameView_.getSize().x*0.5f)), std::min(birdPosition.y, defaultCenter_.y));
+            auto height = VIEW.getHeight();
+            auto worldTop = -height + 200; // Take into account how worlds bg is positioned
+            gameView_.setCenter(std::min(std::max(birdPosition.x, defaultCenter_.x), WORLD_WIDTH - (gameView_.getSize().x*0.5f)), std::max(std::min(birdPosition.y, defaultCenter_.y), worldTop + (0.5f*height)));
             manualControl_ = false;
             updateView_ = true;
         } else if (!manualControl_) {
