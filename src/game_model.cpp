@@ -414,6 +414,12 @@ void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, GameView
     }
 }
 
+void GameModel::handleMouseRightClick(const sf::Vector2f& mousePosition) {
+    if (isRunning()) {
+        world_.useBirdPower();
+    }
+}
+
 void GameModel::handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition) {
     if (button == sf::Mouse::Button::Left) {
         if (isRunning() && world_.getCannon()->isLaunching()) {

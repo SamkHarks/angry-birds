@@ -359,15 +359,14 @@ void World::handleCollisions() {
     for (b2Contact *ce = world_->GetContactList(); ce; ce = ce->GetNext()) {
         b2Contact *c = ce;
 
-        Object *objA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
-        Object *objB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
+        Object *objectA = reinterpret_cast<Object *>(c->GetFixtureA()->GetUserData().pointer);
+        Object *objectB = reinterpret_cast<Object *>(c->GetFixtureB()->GetUserData().pointer);
 
-        if (objA == nullptr || objB == nullptr) {
+        if (objectA == nullptr || objectB == nullptr) {
             continue;
         }
-        
-        objA->handleCollision(objB->getBody()->GetLinearVelocity().Length());
-        objB->handleCollision(objA->getBody()->GetLinearVelocity().Length());
+        objectA->handleCollision(objectB);
+        objectB->handleCollision(objectA);
     }
 }
 
@@ -399,6 +398,13 @@ void World::handleBirdState() {
         } else {
             bird->update();
         }
+    }
+}
+
+void World::useBirdPower() {
+    Bird *bird = GetBird();
+    if (bird != nullptr) {
+        bird->usePower();
     }
 }
 

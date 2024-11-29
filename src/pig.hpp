@@ -11,6 +11,7 @@ class Pig : public Object {
         virtual char getTypeAsChar() const override;
         virtual int getDestructionScore() const override;
         virtual bool shouldRemove() const override;
+        virtual void handleCollision(Object* objectB) override;
 };
 
 #endif //PIG_HPP

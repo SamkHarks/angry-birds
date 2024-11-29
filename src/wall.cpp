@@ -20,3 +20,30 @@ char Wall::getTypeAsChar() const {
 bool Wall::shouldRemove() const {
     return isDestroyed() || isOutOfBounds();
 }
+
+void Wall::handleCollision(Object* objectB) {
+    if (!isDestrucable_ || objectB->getType() == Type::Ground) {
+        return; // Later add logic for unbreakable walls
+    }
+    float damage = objectB->getBody()->GetLinearVelocity().LengthSquared();
+    switch (objectB->getType()) {
+        case Type::Bird:
+            damage = damage * 0.2f;
+            break;
+        case Type::Pig:
+            damage = damage * 0.2f;
+            break;
+        case Type::Wall:
+            damage = damage * 0.5f;
+            break;
+        default:
+            break;
+    }
+    if (damage <= 0.01f) {
+        return; // ignore small impacts
+    }
+    health_ -= damage;
+    if (health_ <= 0) {
+        isDestroyed_ = true;
+    }
+}

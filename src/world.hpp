@@ -56,6 +56,7 @@ class World {
         void handleCollisions();
         void handleBirdState();
         void handleObjectState();
+        void useBirdPower();
     private:
         b2World *world_;
         b2Vec2 gravity_;

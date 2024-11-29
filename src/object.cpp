@@ -26,14 +26,8 @@ sf::Sprite& Object::getSprite() {
     return sprite_;
 }
 
-void Object::handleCollision(float damage) {
-    if (!isDestrucable_ || damage <= 0.01f) {
-        return;
-    }
-    health_ -= damage;
-    if (health_ <= 0) {
-        isDestroyed_ = true;
-    }
+void Object::handleCollision(Object* objectB) {
+    // Default implementation does nothing
 }
 
 bool Object::isDestroyed() const {
@@ -47,6 +41,7 @@ bool Object::isOutOfBounds() const {
 
 void Object::update() {
     b2Vec2 position = body_->GetPosition();
+    prevY_ = position.y;
     sf::Sprite& sprite = this->getSprite();
     sf::Vector2f position_pixels = utils::B2ToSfCoords(position);
     sprite.setPosition(position_pixels.x, position_pixels.y);

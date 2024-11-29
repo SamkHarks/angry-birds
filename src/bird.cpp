@@ -73,3 +73,57 @@ float Bird::getActiveTime() const {
 bool Bird::getIsPaused() const {
     return isPaused_;
 }
+
+void RedBird::usePower() {
+    if (isPowerUsed_ || !isLaunched_) {
+        return;
+    }
+    float power = 10.f;
+    b2Vec2 force = b2Vec2(0, -power); // Apply force downwards
+    body_->ApplyLinearImpulse(force, body_->GetPosition(), true);
+    body_->SetBullet(true);
+    isPowerUsed_ = true;
+}
+
+void BlueBird::usePower() {
+    if (isPowerUsed_) {
+        return;
+    }
+    //TODO: Implement power
+}
+
+void GreenBird::usePower() {
+    if (isPowerUsed_) {
+        return;
+    }
+    // TODO: Implement power
+}
+
+void Bird::handleCollision(Object* objectB) {
+    float damage = objectB->getBody()->GetLinearVelocity().LengthSquared();
+    switch (objectB->getType()) {
+        case Object::Type::Pig:
+            damage = damage * 0.5;
+            break;
+        case Object::Type::Wall:
+            damage = damage * 2.f;
+            break;
+        case Object::Type::Ground:
+            if (prevY_ > 0.95f) {
+                damage = body_->GetLinearVelocity().Length() * 0.1f;
+            } else {
+                damage = 0;
+            }
+            break;
+        default:
+            break;
+    }
+    
+    if (damage <= 0.1f) {
+        return;
+    }
+    health_ -= damage;
+    if (health_ <= 0) {
+        isDestroyed_ = true;
+    }
+}

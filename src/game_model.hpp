@@ -53,6 +53,7 @@ class GameModel {
         void handleMouseMove(const sf::Vector2f& mousePosition);
         void handleResize(const sf::RenderWindow& window);
         void handleMouseLeftClick(const sf::Vector2f& mousePosition, GameView& view);
+        void handleMouseRightClick(const sf::Vector2f& mousePosition);
         void handleMouseRelease(const sf::Mouse::Button& button, const sf::Vector2f& mousePosition);
         void draw(sf::RenderWindow& window) const;
         void switchMenu(Menu::Type type, State state);

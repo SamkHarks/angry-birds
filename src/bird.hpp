@@ -12,6 +12,8 @@ class Bird : public Object {
         };
         Bird(b2Body *body, std::string textureFile, Type birdType, float radius);
         virtual char getTypeAsChar() const override = 0;
+        virtual void usePower() = 0;
+        virtual void handleCollision(Object* objectB) override;
         Type getBirdType() const;
         bool isLaunched() const;
         void setLaunched(bool launched);
@@ -19,10 +21,11 @@ class Bird : public Object {
         bool getIsPaused() const;
         bool shouldRemove() const override;
         float getActiveTime() const;
-        private:
+        protected:
             Type birdType_;
             bool isLaunched_ = false;
             bool isPaused_ = false;
+            bool isPowerUsed_ = false;
             float pausedTime_ = 0;
             sf::Clock pressClock_;
             sf::Clock pauseClock_;
@@ -32,18 +35,21 @@ class RedBird : public Bird {
     public:
         RedBird(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
+        virtual void usePower() override;
 };
 
 class BlueBird : public Bird {
     public:
         BlueBird(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
+        virtual void usePower() override;
 };
 
 class GreenBird : public Bird {
     public:
         GreenBird(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
+        virtual void usePower() override;
 };
 
 

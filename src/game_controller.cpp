@@ -94,10 +94,7 @@ void GameController::handleMousePress(const sf::Mouse::Button& mouseButton, cons
             model_.handleMouseLeftClick(mousePosition, view_);
             break;
         case sf::Mouse::Button::Right:
-            // TODO: Implement mouse right actions
-            if (model_.getState() == GameModel::State::RUNNING) {
-                model_.getWorld().resetBird();
-            }
+            model_.handleMouseRightClick(mousePosition);
             break;
         default:
             break;

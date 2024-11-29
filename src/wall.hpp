@@ -8,6 +8,7 @@ class Wall : public Object {
         Wall(b2Body *body, float hx, float hy);
         virtual char getTypeAsChar() const override;
         bool shouldRemove() const override;
+        virtual void handleCollision(Object* objectB) override;
 };
 
 #endif // WALL_HPP
