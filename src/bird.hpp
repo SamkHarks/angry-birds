@@ -14,6 +14,8 @@ class Bird : public Object {
         virtual char getTypeAsChar() const override = 0;
         virtual void usePower() = 0;
         virtual void handleCollision(Object* objectB) override;
+        virtual void handleKeyPress(const sf::Keyboard::Key& code) {};
+        virtual int getDamageMultiplier() const override;
         Type getBirdType() const;
         bool isLaunched() const;
         void setLaunched(bool launched);
@@ -21,6 +23,7 @@ class Bird : public Object {
         bool getIsPaused() const;
         bool shouldRemove() const override;
         float getActiveTime() const;
+        bool getIsPowerUsed() const;
         protected:
             Type birdType_;
             bool isLaunched_ = false;
@@ -50,6 +53,8 @@ class GreenBird : public Bird {
         GreenBird(b2Body *body, float radius);
         virtual char getTypeAsChar() const override;
         virtual void usePower() override;
+        void handleKeyPress(const sf::Keyboard::Key& code) override;
+        int getDamageMultiplier() const override;
 };
 
 

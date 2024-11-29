@@ -344,6 +344,16 @@ void World::handleKeyPress(const sf::Keyboard::Key& code) {
         } else if (activeBird && activeBird->getIsPaused()) {
             activeBird->setIsPaused(false);
         }
+    } else if (
+        code == sf::Keyboard::W
+        || code == sf::Keyboard::S
+        || code == sf::Keyboard::A
+        || code == sf::Keyboard::D
+    ) {
+        Bird* activeBird = GetBird();
+        if (activeBird && activeBird->getBirdType() == Bird::Type::Green) {
+            activeBird->handleKeyPress(code);
+        }
     }
 
 }

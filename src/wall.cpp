@@ -42,7 +42,7 @@ void Wall::handleCollision(Object* objectB) {
     if (damage <= 0.01f) {
         return; // ignore small impacts
     }
-    health_ -= damage;
+    health_ -= damage * objectB->getDamageMultiplier();
     if (health_ <= 0) {
         isDestroyed_ = true;
     }

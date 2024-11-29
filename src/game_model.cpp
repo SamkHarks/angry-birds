@@ -110,12 +110,18 @@ void GameModel::handleKeyPress(const sf::Keyboard::Key& code) {
                 state_ = State::LEVEL_EDITOR;
             }
             break;
-        case sf::Keyboard::Key::R:
-        case sf::Keyboard::Key::T:
         case sf::Keyboard::Key::A:
         case sf::Keyboard::Key::W:
         case sf::Keyboard::Key::D:
         case sf::Keyboard::Key::S:
+            if (isRunning()) {
+                world_.handleKeyPress(code);
+            } else if (isLevelEditor()) {
+                levelEditor_.handleKeyPress(code);
+            }
+            break;
+        case sf::Keyboard::Key::R:
+        case sf::Keyboard::Key::T:
         case sf::Keyboard::Key::Delete:
             if (isLevelEditor()) {
                 levelEditor_.handleKeyPress(code);

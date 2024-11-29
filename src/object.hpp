@@ -27,7 +27,7 @@ class Object {
         virtual int getDestructionScore() const;
         bool isOutOfBounds() const;
         virtual bool shouldRemove() const;
-
+        virtual int getDamageMultiplier() const { return 1; }
     protected:
         sf::Sprite sprite_;
         b2Body *body_;

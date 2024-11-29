@@ -51,7 +51,7 @@ bool Bird::shouldRemove() const {
    	if (this->isOutOfBounds()) {
 		return true;
 	}
-    if (getActiveTime() >= 5.f) {
+    if (getActiveTime() >= 7.f) {
         return true;
     }
     return false;
@@ -96,7 +96,44 @@ void GreenBird::usePower() {
     if (isPowerUsed_) {
         return;
     }
-    // TODO: Implement power
+    isPowerUsed_ = true;
+}
+
+void GreenBird::handleKeyPress(const sf::Keyboard::Key& code) {
+    if (!isPowerUsed_) {
+        return; // Power not yet activated
+    }
+    float controlForce = 20.0f;
+    b2Vec2 force(0.0f, 0.0f);
+    auto maxSpeed = 5.0f; // Maximum speed of the bird
+    // Check for the key pressed and modify the force vector accordingly
+    switch (code) {
+        case sf::Keyboard::W:
+            force.y = controlForce;
+            break;
+        case sf::Keyboard::S:
+            force.y = -controlForce;
+            break;
+        case sf::Keyboard::A:
+            force.x = -controlForce;
+            break;
+        case sf::Keyboard::D:
+            force.x = controlForce;
+            break;
+    }
+
+    // Apply the force to the bird's body at its center of mass to modify direction
+    body_->ApplyForceToCenter(force, true);
+
+    // Limit the speed of the bird
+    b2Vec2 velocity = body_->GetLinearVelocity();
+    float currentSpeed = velocity.Length();
+
+    // Clamp the speed to the maximum value
+    if (currentSpeed > maxSpeed) {
+        velocity *= (maxSpeed / currentSpeed); // Normalize and scale down the velocity
+        body_->SetLinearVelocity(velocity);
+    }
 }
 
 void Bird::handleCollision(Object* objectB) {
@@ -122,8 +159,24 @@ void Bird::handleCollision(Object* objectB) {
     if (damage <= 0.1f) {
         return;
     }
-    health_ -= damage;
+    health_ -= damage * this->getDamageMultiplier();
     if (health_ <= 0) {
         isDestroyed_ = true;
+    }
+}
+
+bool Bird::getIsPowerUsed() const {
+    return isPowerUsed_;
+}
+
+int Bird::getDamageMultiplier() const {
+    return 1;
+}
+
+int GreenBird::getDamageMultiplier() const {
+    if (isPowerUsed_) {
+        return 10;
+    } else {
+        return 1;
     }
 }
