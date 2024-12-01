@@ -3,6 +3,7 @@
 
 #include "object.hpp"
 #include <list>
+#include <memory>
 
 /**
 * @brief MiniBird class, a smaller projectile of the original bird class. Only used by BlueBird when it uses its power
