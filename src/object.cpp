@@ -64,3 +64,7 @@ int Object::getDestructionScore() const {
 bool Object::shouldRemove() const {
     return false;
 }
+
+void Object::draw(sf::RenderWindow &window) const {
+    window.draw(sprite_);
+}

@@ -123,11 +123,11 @@ void World::draw(sf::RenderWindow &window) const {
     scoreManager_.draw(window);
     drawRemainingCounts(window);
     for (auto object : objects_) {
-        window.draw(object->getSprite());
+        object->draw(window);
     }
     const Bird* bird = GetBird();
     if (bird != nullptr && bird->isLaunched()) {
-        window.draw(bird->getSprite());
+        bird->draw(window);
     }
     cannon_->draw(window);
 }

@@ -24,6 +24,7 @@ bool Pig::shouldRemove() const {
 void Pig::handleCollision(Object* objectB) {
     float damage = objectB->getBody()->GetLinearVelocity().LengthSquared();
     switch (objectB->getType()) {
+        case Object::Type::MiniBird:
         case Object::Type::Bird:
             damage = damage * 0.2f;
             break;

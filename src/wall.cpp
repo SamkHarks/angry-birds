@@ -27,6 +27,7 @@ void Wall::handleCollision(Object* objectB) {
     }
     float damage = objectB->getBody()->GetLinearVelocity().LengthSquared();
     switch (objectB->getType()) {
+        case Type::MiniBird:
         case Type::Bird:
             damage = damage * 0.25f;
             break;

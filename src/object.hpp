@@ -4,6 +4,9 @@
 #include <box2d/box2d.h>
 #include <SFML/Graphics.hpp>
 
+/**
+ * @brief Object class, the base class for all objects in the game, Bird, Pig, Ground, Wall and MiniBird
+ */
 class Object {
     public:
         enum class Type {
@@ -11,9 +14,11 @@ class Object {
             Pig,
             Ground,
             Wall,
+            MiniBird  // A smaller projectile of the original bird
         };
         Object(b2Body *body, Type type, std::string texture_file, float health = 0, bool isDestrucable = false);
         virtual ~Object() = default;
+        virtual void draw(sf::RenderWindow &window) const;
         b2Body* getBody();
         const b2Body* getBody() const;
         sf::Sprite& getSprite();
