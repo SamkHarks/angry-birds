@@ -17,7 +17,10 @@ Welcome to my **Angry Birds Game**, a physics-based 2D game inspired by the orig
 - **Level selector (menu)** - Choose level for current user and see how many stars user has achieved for each level
 - **User selector (menu)** - Create new users & load existing users
 - **Level end menu** - Shows achieved stars, go to next level, go to main menu or exit
-- **Three birds with different powers** - WIP (Currently 3 different birds but powers are not implemented)
+- **Three birds with different powers:**
+    - **Red Bird:** When its power is activated, the Red Bird adds a strong downward impulse, drastically increasing its velocity towards the ground. This allows the bird to crash into objects with great force, making it highly effective against targets below it.
+    - **Green Bird:** The Green Bird's power gives the player full control over its movement for a limited time. Using the keyboard, the player can manually fly the bird toward objects, allowing for precision targeting and destruction.
+    - **Blue Bird:** Upon activation, the Blue Bird splits into three smaller "MiniBird" projectiles, which fly in different directions. This spread attack is useful for covering a wider area and hitting multiple targets at once.
 - **Multiple levels with destructible environments** - Currently 3 levels
 - **High score** - WIP (save high scores for each user and view user's high score for each level, menu for displaying all high scores missing)
 - **Sound effects and background music** - WIP (currently menu has bg music and cannon has launch sound) 
@@ -76,13 +79,10 @@ sudo apt install libxrandr-dev libxcursor-dev libudev-dev \
 
 ## How to Play
 ![Custom Level Example](assets/images/custom_level_example.png)
-1. Aim the cannon to control the angle, and hold down the mouse button to adjust the power of the bird launch.
-2. Use different bird powers to destroy pigs - WIP
-3. Release to fire the bird at the structures.
-4. Destroy all the pigs on each level to progress to the next.
-
-
-The game features different levels with increasing difficulty and complex structures to destroy.
+1. **Aim the Cannon:** Use the mouse to control the angle of the cannon. Hold down the left mouse button to adjust the power of the bird launch.
+2. **Launch the Bird:** Release the left mouse button to fire the bird at the target structures.
+3. **Activate Bird Powers:** After launching, press the right mouse button to activate the bird's special power (each bird has a unique power—see the "Three Birds with Different Powers" section for details).
+4. **Complete the Level:** Destroy all the pigs on each level to progress to the next one.
 
 ## Project Structure and MVC Pattern
 This project follows the **Model-View-Controller (MVC)** architectural pattern, which helps organize the code by separating concerns:
