@@ -71,16 +71,11 @@ class RedBird : public Bird {
 class BlueBird : public Bird {
     public:
         BlueBird(b2Body *body, float radius);
-        ~BlueBird() override {
-            for (auto& miniBird : miniBirds_) {
-                miniBird->getBody()->GetWorld()->DestroyBody(miniBird->getBody());
-            }
-            miniBirds_.clear();
-        }
         void draw(sf::RenderWindow &window) const override;
         char getTypeAsChar() const override;
         void update() override;
         void usePower() override;
+        void destroyMiniBirds();
         std::list<std::unique_ptr<MiniBird>>::iterator removeDestroyedMiniBird(std::list<std::unique_ptr<MiniBird>>::iterator it);
     private:
         void createMiniBird(b2Vec2 position);

@@ -154,6 +154,13 @@ void BlueBird::createMiniBird(b2Vec2 position) {
     miniBirds_.push_back(std::move(miniBird));
 }
 
+void BlueBird::destroyMiniBirds() {
+    for (auto& miniBird : miniBirds_) {
+        miniBird->getBody()->GetWorld()->DestroyBody(miniBird->getBody());
+    }
+    miniBirds_.clear();
+}
+
 void BlueBird::usePower() {
     if (isPowerUsed_ || !isLaunched_) {
         return;
