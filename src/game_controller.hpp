@@ -9,7 +9,7 @@ class GameController {
         GameController(GameModel& model, GameView& view, EventQueue& eventQueue);
         void handleEvents();
         void setEventQueue(EventQueue* eventQueue);
-        void handleQueueEvents();
+        void handleDispatchedEvents();
     private:
         GameModel& model_;
         GameView& view_;

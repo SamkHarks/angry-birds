@@ -13,6 +13,7 @@ class GameView: public sf::RenderWindow {
         void updateCamera(GameModel& model);
         void updateCamera(const sf::Keyboard::Key& code);
         void updateHUD(GameModel& model);
+        void setDefaultView();
         void setGameView();
         void setGameView(const sf::View& view);
         void handleResize(const float& width, const float& height);
@@ -22,7 +23,6 @@ class GameView: public sf::RenderWindow {
         sf::View gameView_;
         EventDispatcher* eventDispatcher_ = nullptr;
         bool manualControl_ = true;
-        bool updateView_ = false;
 };
 
 #endif // GAME_VIEW_HPP

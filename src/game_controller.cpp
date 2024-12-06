@@ -4,7 +4,7 @@
 GameController::GameController(GameModel& model, GameView& view, EventQueue& eventQueue) : model_(model), view_(view), eventQueue_(eventQueue) {}
 
 // handle events from queue
-void GameController::handleQueueEvents() {
+void GameController::handleDispatchedEvents() {
     while (eventQueue_.hasEvents()) {
         Event event = eventQueue_.poll();
         switch (event.getType()) {
@@ -14,6 +14,12 @@ void GameController::handleQueueEvents() {
             case Event::Type::ScoreUpdated:
             case Event::Type::UpdateHUD:
                 view_.updateHUD(model_);
+                break;
+            case Event::Type::UpdateView:
+                view_.setGameView();
+                break;
+            case Event::Type::DefaultView:
+                view_.setDefaultView();
                 break;
             default:
                 break;

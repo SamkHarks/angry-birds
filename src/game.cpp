@@ -12,8 +12,7 @@ void Game::run() {
         controller_.handleEvents();
         model_.update();
         view_.updateCamera(model_);
-        view_.setGameView();
-        controller_.handleQueueEvents();
+        controller_.handleDispatchedEvents();
         view_.render(model_);
         controlFrameRate();
     }
