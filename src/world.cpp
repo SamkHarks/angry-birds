@@ -234,6 +234,7 @@ void World::updateRemainingCounts(char type) {
             break;
         }
     }
+    eventDispatcher_->dispatch(Event(Event::Type::ObjectCountUpdated));
 }
 
 const std::string& World::getLevelName() const {
@@ -416,5 +417,11 @@ void World::useBirdPower() {
     if (bird != nullptr) {
         bird->usePower();
     }
+}
+
+void World::setEventDispatchers(EventDispatcher* eventDispatcher) {
+    cannon_->setEventDispatcher(eventDispatcher);
+    scoreManager_.setEventDispatcher(eventDispatcher);
+    eventDispatcher_ = eventDispatcher;
 }
 

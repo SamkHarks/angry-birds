@@ -11,7 +11,7 @@ void GameView::setGameView() {
     if (updateView_) {
         this->setView(gameView_);
         updateView_ = false;
-        updateHUD_ = true;
+        eventDispatcher_->dispatch(Event(Event::Type::UpdateHUD));
     }
 
 }
@@ -21,7 +21,7 @@ void GameView::setGameView(const sf::View& view) {
     this->setView(view);
     auto x = view.getSize().x;
     defaultCenter_ = view.getCenter();
-    updateHUD_ = true;
+    eventDispatcher_->dispatch(Event(Event::Type::UpdateHUD));
 }
 
 void GameView::updateCamera(GameModel& model) {
@@ -74,16 +74,11 @@ void GameView::updateCamera(const sf::Keyboard::Key& code) {
 
 // Update HUD elements to keep them in the same position
 void GameView::updateHUD(GameModel& model) {
-    if (!updateHUD_) return; // Prevent unnecessary updates
     if (model.isRunning() || model.isPausedAtRunning()) {
         World& world = model.getWorld();
         world.updateHUD(*this);
-        if (!world.getCannon()->isLaunching()) {
-            updateHUD_ = false;
-        }
     } else if (model.isLevelEditor() || model.isPaused()) {
         model.getLevelEditor().updateHUD(*this);
-        updateHUD_ = false;
     }
 }
 
@@ -93,7 +88,7 @@ void GameView::handleResize(const float& width, const float& height) {
     gameView_.setCenter(width / 2, height / 2);
     this->setView(gameView_);
     defaultCenter_ = gameView_.getCenter();
-    updateHUD_ = true;
+    eventDispatcher_->dispatch(Event(Event::Type::UpdateHUD));
 }
 
 void GameView::render(const GameModel& model) {
@@ -110,6 +105,6 @@ void GameView::draw(const GameModel& model) {
     }
 }
 
-void GameView::setUpdateHUD(bool updateHUD) {
-    updateHUD_ = updateHUD;
+void GameView::setEventDispatcher(EventDispatcher* eventDispatcher) {
+    eventDispatcher_ = eventDispatcher;
 }

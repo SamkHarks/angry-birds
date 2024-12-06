@@ -44,6 +44,7 @@ void Cannon::setPower(float duration) {
 void Cannon::startLaunch() {
     pressClock_.restart();
     isLaunching_ = true;
+    eventDispatcher_->dispatch(Event(Event::Type::BirdLaunching));
 }
 
 void Cannon::launchBird(Bird* bird) {
@@ -59,12 +60,14 @@ void Cannon::launchBird(Bird* bird) {
     float y = sin(utils::DegreesToRadians(direction)) * power_;
     bird->getBody()->ApplyLinearImpulseToCenter(b2Vec2(x, y), true);
     bird->setLaunched(true);
+    eventDispatcher_->dispatch(Event(Event::Type::BirdLaunched));
 }
 
 void Cannon::update() {
     if (isLaunching_) {
         float duration = pressClock_.getElapsedTime().asSeconds();
         setPower(duration);
+        eventDispatcher_->dispatch(Event(Event::Type::BirdLaunching));
     }
 }
 
@@ -92,4 +95,8 @@ void Cannon::handleMouseMove(const sf::Vector2f& mousePosition) {
     sf::Vector2f difference = mousePosition - canonCenter;
     float direction = utils::getDirection(difference);
     setAngle(direction);
+}
+
+void Cannon::setEventDispatcher(EventDispatcher* eventDispatcher) {
+    eventDispatcher_ = eventDispatcher;
 }

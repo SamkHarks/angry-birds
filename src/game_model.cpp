@@ -15,6 +15,10 @@ GameModel::GameModel() :
         currentMenu_ = menus_[Menu::Type::MAIN].get();  // Start with main menu
     }
 
+void GameModel::setEventDispatcher(EventDispatcher* dispatcher) {
+    world_.setEventDispatchers(dispatcher);
+}
+
 void GameModel::update() {
     if (isRunning()) {
         world_.step();
@@ -409,7 +413,6 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, GameView& view) {
     if (isRunning()) {
-        view.setUpdateHUD(true);
         world_.getCannon()->startLaunch();
     } else if (isLevelEditor()) {
         levelEditor_.handleMouseClick(mousePosition, view);

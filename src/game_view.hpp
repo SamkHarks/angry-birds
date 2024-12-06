@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "game_model.hpp"
+#include "event.hpp"
 
 class GameView: public sf::RenderWindow {
     public:
@@ -15,13 +16,13 @@ class GameView: public sf::RenderWindow {
         void setGameView();
         void setGameView(const sf::View& view);
         void handleResize(const float& width, const float& height);
-        void setUpdateHUD(bool updateHUD);
+        void setEventDispatcher(EventDispatcher* eventDispatcher);
     private:
         sf::Vector2f defaultCenter_;
         sf::View gameView_;
+        EventDispatcher* eventDispatcher_ = nullptr;
         bool manualControl_ = true;
         bool updateView_ = false;
-        bool updateHUD_ = false;
 };
 
 #endif // GAME_VIEW_HPP

@@ -6,11 +6,14 @@
 
 class GameController {
     public:
-        GameController(GameModel& model, GameView& view);
+        GameController(GameModel& model, GameView& view, EventQueue& eventQueue);
         void handleEvents();
+        void setEventQueue(EventQueue* eventQueue);
+        void handleQueueEvents();
     private:
         GameModel& model_;
         GameView& view_;
+        EventQueue& eventQueue_;
         // Handle different types of events
         void handleKeyPress(const sf::Keyboard::Key& code);
         void handleKeyRelease(const sf::Keyboard::Key& code);

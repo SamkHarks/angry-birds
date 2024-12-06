@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "resource_manager.hpp"
+#include "event.hpp"
 
 struct HighScore {
     std::string player;
@@ -26,10 +27,12 @@ public:
     int getStars() const;
     void setStars(int stars);
     void setLevelEndText(const std::string& levelName);
+    void setEventDispatcher(EventDispatcher* eventDispatcher);
 private:
     int currentScore_ = 0;
     int highScore_ = 0;
     int stars_ = 0;
+    EventDispatcher* eventDispatcher_ = nullptr;
     std::vector<HighScore> highScores_;
     sf::Text text_;
 };
