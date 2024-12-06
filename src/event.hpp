@@ -16,6 +16,8 @@ class Event {
             ObjectCountUpdated,
             ScoreUpdated,
             UpdateHUD,
+            UpdateView,
+            DefaultView,
         };
         explicit Event(Type type) : type_(type) {}
         Type getType() const { return type_; }
