@@ -146,6 +146,10 @@ std::list<Object*>::iterator World::removeObject(std::list<Object*>::iterator it
 void World::removeBird() {
     if (!birds_.empty()) {
         Bird* bird = birds_.front();
+        if (bird->getBirdType() == Bird::Type::Blue) {
+            BlueBird* blueBird = dynamic_cast<BlueBird*>(bird);
+            blueBird->destroyMiniBirds();
+        }
         world_->DestroyBody(bird->getBody());
         birds_.pop_front();
         delete bird;
@@ -234,6 +238,7 @@ void World::updateRemainingCounts(char type) {
             break;
         }
     }
+    eventDispatcher_->dispatch(Event(Event::Type::ObjectCountUpdated));
 }
 
 const std::string& World::getLevelName() const {
@@ -416,5 +421,11 @@ void World::useBirdPower() {
     if (bird != nullptr) {
         bird->usePower();
     }
+}
+
+void World::setEventDispatchers(EventDispatcher* eventDispatcher) {
+    cannon_->setEventDispatcher(eventDispatcher);
+    scoreManager_.setEventDispatcher(eventDispatcher);
+    eventDispatcher_ = eventDispatcher;
 }
 

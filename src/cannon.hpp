@@ -6,6 +6,7 @@
 #include "bird.hpp"
 #include "utils.hpp"
 #include "resource_manager.hpp"
+#include "event.hpp"
 
 struct CannonSprites {
     void init() {
@@ -55,11 +56,13 @@ class Cannon {
         int getTextWidth() const;
         void handleResize();
         void handleMouseMove(const sf::Vector2f& mousePosition);
+        void setEventDispatcher(EventDispatcher* eventDispatcher);
     private:
         CannonSprites cannon_;
         sf::Text powerText_;
         sf::Sound launchSound_;
         sf::Clock pressClock_;
+        EventDispatcher* eventDispatcher_ = nullptr;
         float power_ = 0;
         bool isLaunching_ = false;
 };

@@ -30,6 +30,7 @@ void Score::setPosition(const sf::Vector2f& position) {
 void Score::update(int score) {
     currentScore_ += score;
     text_.setString("Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
+    eventDispatcher_->dispatch(Event(Event::Type::ScoreUpdated));
 }
 
 void Score::reset() {
@@ -50,6 +51,7 @@ void Score::setHighScores(const std::vector<HighScore>& highScores) {
 void Score::updateHighScore(int highScore) {
     highScore_ = highScore;
     text_.setString("Score: " + std::to_string(currentScore_) + " High Score: " + std::to_string(highScore_));
+    eventDispatcher_->dispatch(Event(Event::Type::ScoreUpdated));
 }
 
 bool Score::updateHighScores(const HighScore& highScore) {
@@ -86,4 +88,8 @@ void Score::setLevelEndText(const std::string& levelName) {
 
 const std::vector<HighScore>& Score::getHighScores() const {
     return highScores_;
+}
+
+void Score::setEventDispatcher(EventDispatcher* eventDispatcher) {
+    eventDispatcher_ = eventDispatcher;
 }

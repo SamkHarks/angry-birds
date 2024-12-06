@@ -57,8 +57,10 @@ class World {
         void handleBirdState();
         void handleObjectState();
         void useBirdPower();
+        void setEventDispatchers(EventDispatcher* eventDispatcher);
     private:
         b2World *world_;
+        EventDispatcher* eventDispatcher_;
         b2Vec2 gravity_;
         std::list<Object *> objects_;
         std::list<Bird *> birds_;

@@ -61,13 +61,13 @@ class GameModel {
         bool isPaused() const;
         bool isPausedAtRunning() const;
         bool isLevelEditor() const;
-        bool updateView() const;
-        void setUpdateView(bool updateView);
         LevelEditor& getLevelEditor();
+        void setEventDispatcher(EventDispatcher* dispatcher);
     private:
         State state_;
         std::unordered_map<Menu::Type, std::unique_ptr<Menu>> menus_;
         Menu *currentMenu_;
+        EventDispatcher* eventDispatcher_ = nullptr;
         World world_;
         LevelEditor levelEditor_;
         bool updateView_ = false;

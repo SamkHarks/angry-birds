@@ -15,6 +15,11 @@ GameModel::GameModel() :
         currentMenu_ = menus_[Menu::Type::MAIN].get();  // Start with main menu
     }
 
+void GameModel::setEventDispatcher(EventDispatcher* dispatcher) {
+    world_.setEventDispatchers(dispatcher);
+    eventDispatcher_ = dispatcher;
+}
+
 void GameModel::update() {
     if (isRunning()) {
         world_.step();
@@ -42,7 +47,7 @@ void GameModel::update() {
 
 void GameModel::handleLevelEnd() {
     // Set state, update score and player, and set Score for level end menu
-    updateView_ = true; // Force view update to center the view
+    eventDispatcher_->dispatch(Event(Event::Type::DefaultView));
     switchMenu(Menu::Type::GAME_OVER, State::GAME_OVER);
     auto &gameOverMenu = getMenu<GameOver>(Menu::Type::GAME_OVER);
     auto &gameSelector = getMenu<GameSelector>(Menu::Type::GAME_SELECTOR);
@@ -177,6 +182,7 @@ void GameModel::handleMainMenuState() {
         pauseMenu.setPausedState(Pause::PausedState::LEVEL_EDITOR);
         pauseMenu.updateMenuItems();
         state_ = State::LEVEL_EDITOR;
+        eventDispatcher_->dispatch(Event(Event::Type::UpdateHUD));
     } else if (selectedItem == 2) {
         switchMenu(Menu::Type::SETTINGS, State::SETTINGS);
     } else {
@@ -344,7 +350,7 @@ void GameModel::handlePauseState() {
                 state_ = State::RUNNING;
             } else if (selectedItem == 2) {
                 switchMenu(Menu::Type::MAIN, State::MENU);
-                updateView_ = true; // Center the view back to default
+                eventDispatcher_->dispatch(Event(Event::Type::DefaultView)); // Center the view back to default
             } else if (selectedItem == 3) {
                 state_ = State::QUIT;
             }
@@ -356,7 +362,7 @@ void GameModel::handlePauseState() {
                 state_ = State::LEVEL_EDITOR;
             } else if (selectedItem == 1) {
                 switchMenu(Menu::Type::MAIN, State::MENU);
-                updateView_ = true; // Center the view back to default
+                eventDispatcher_->dispatch(Event(Event::Type::DefaultView)); // Center the view back to default
             } else if (selectedItem == 2) {
                 state_ = State::QUIT;
             }
@@ -409,7 +415,6 @@ void GameModel::handleResize(const sf::RenderWindow& window) {
 
 void GameModel::handleMouseLeftClick(const sf::Vector2f& mousePosition, GameView& view) {
     if (isRunning()) {
-        view.setUpdateHUD(true);
         world_.getCannon()->startLaunch();
     } else if (isLevelEditor()) {
         levelEditor_.handleMouseClick(mousePosition, view);
@@ -463,14 +468,6 @@ bool GameModel::isPaused() const {
 
 bool GameModel::isPausedAtRunning() const {
     return isPaused() && getMenu<Pause>(Menu::Type::PAUSE).getPausedState() == Pause::PausedState::RUNNING;
-}
-
-bool GameModel::updateView() const {
-    return updateView_;
-}
-
-void GameModel::setUpdateView(bool updateView) {
-    updateView_ = updateView;
 }
 
 bool GameModel::isLevelEditor() const {

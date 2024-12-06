@@ -1,7 +1,10 @@
 #include "game.hpp"
 #include "world.hpp"
 
-Game::Game() : model_(), view_(), controller_(model_, view_) {}
+Game::Game(): model_(), view_(), eventQueue_(), controller_(model_, view_, eventQueue_), eventDispatcher_(std::make_unique<EventDispatcher>(eventQueue_)) {
+    model_.setEventDispatcher(eventDispatcher_.get());
+    view_.setEventDispatcher(eventDispatcher_.get());
+}
 
 void Game::run() {
     while (view_.isOpen()) {
@@ -9,8 +12,7 @@ void Game::run() {
         controller_.handleEvents();
         model_.update();
         view_.updateCamera(model_);
-        view_.setGameView();
-        view_.updateHUD(model_);
+        controller_.handleDispatchedEvents();
         view_.render(model_);
         controlFrameRate();
     }

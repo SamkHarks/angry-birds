@@ -1,7 +1,31 @@
 #include "game_controller.hpp"
 
 
-GameController::GameController(GameModel& model, GameView& view) : model_(model), view_(view) {}
+GameController::GameController(GameModel& model, GameView& view, EventQueue& eventQueue) : model_(model), view_(view), eventQueue_(eventQueue) {}
+
+// handle events from queue
+void GameController::handleDispatchedEvents() {
+    while (eventQueue_.hasEvents()) {
+        Event event = eventQueue_.poll();
+        switch (event.getType()) {
+            case Event::Type::BirdLaunching:
+            case Event::Type::BirdLaunched:
+            case Event::Type::ObjectCountUpdated:
+            case Event::Type::ScoreUpdated:
+            case Event::Type::UpdateHUD:
+                view_.updateHUD(model_);
+                break;
+            case Event::Type::UpdateView:
+                view_.setGameView();
+                break;
+            case Event::Type::DefaultView:
+                view_.setDefaultView();
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 void GameController::handleEvents() {
     const sf::Vector2f& mousePosition = view_.mapPixelToCoords(sf::Mouse::getPosition(view_));
